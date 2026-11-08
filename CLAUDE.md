@@ -24,9 +24,11 @@ Versões fixadas de propósito (não atualizar sem testar):
 ## Arquitetura
 - `packages/<feature>/lib/src/{data,domain,presentation}`
 - `domain` não importa Flutter, Dio nem pacotes de `data`
+- Models da API (`packages/search/lib/src/data/models`) estendem `Model<E>`: `factory X.fromJson` escrito à mão (sem freezed/json_serializable) e `toEntity()`. Model nova precisa entrar no `switch` de `Model.fromJson<T>`
 - Repositórios retornam `Either<Failure, T>`; nunca lançam exceção para cima
 - 404 da API vira `NotFoundFailure` → estado `notFound` (não é erro genérico)
 - Estados de tela são sealed classes do freezed: loading, success, empty, notFound, error
+- O state fica em `x_state.dart` como `part of 'x_cubit.dart'` (eventos do Bloc idem); os imports ficam só na cubit e quem usa o state importa a cubit
 - Cancelamento: o datasource cancela o `CancelToken` anterior a cada busca; o Bloc descarta resultados antigos
 
 ## Regras

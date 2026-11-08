@@ -1,9 +1,12 @@
 import 'package:core/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/entities/favorite_item.dart';
 import '../../domain/usecases/favorites_usecases.dart';
-import 'favorites_state.dart';
+
+part 'favorites_cubit.freezed.dart';
+part 'favorites_state.dart';
 
 /// App-wide favorites state: one instance shared by search, details and the
 /// favorites page, so a heart toggled anywhere updates everywhere.

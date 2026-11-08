@@ -8,8 +8,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:search/src/domain/entities/episode.dart';
 import 'package:search/src/domain/entities/location.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
-import 'package:search/src/presentation/bloc/search_event.dart';
-import 'package:search/src/presentation/bloc/search_state.dart';
 import 'package:search/src/presentation/widgets/result_cards.dart';
 import 'package:search/src/presentation/widgets/search_results_view.dart';
 

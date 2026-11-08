@@ -8,16 +8,7 @@ import '../../domain/entities/location.dart';
 import '../../domain/usecases/details_usecases.dart';
 
 part 'details_cubit.freezed.dart';
-
-@freezed
-sealed class DetailsState with _$DetailsState {
-  const factory DetailsState.loading() = DetailsLoading;
-  const factory DetailsState.character(Character character) = DetailsCharacter;
-  const factory DetailsState.episode(Episode episode) = DetailsEpisode;
-  const factory DetailsState.location(Location location) = DetailsLocation;
-  const factory DetailsState.notFound() = DetailsNotFound;
-  const factory DetailsState.error(String message) = DetailsError;
-}
+part 'details_state.dart';
 
 /// Loads one resource by (type, id), so the details route works the same from
 /// search results, favorites or a deep link.

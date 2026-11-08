@@ -1,9 +1,4 @@
-import 'package:core/domain.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../domain/entities/favorite_item.dart';
-
-part 'favorites_state.freezed.dart';
+part of 'favorites_cubit.dart';
 
 @freezed
 sealed class FavoritesState with _$FavoritesState {

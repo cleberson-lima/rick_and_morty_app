@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/favorite_item.dart';
 import '../cubit/favorites_cubit.dart';
-import '../cubit/favorites_state.dart';
 
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({this.onOpen, super.key});

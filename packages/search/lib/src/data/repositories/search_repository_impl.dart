@@ -5,7 +5,7 @@ import '../../domain/entities/episode.dart';
 import '../../domain/entities/location.dart';
 import '../../domain/repositories/search_repository.dart';
 import '../datasources/search_remote_data_source.dart';
-import '../models/api_models.dart';
+import '../models/models.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
   const SearchRepositoryImpl(this._remote);
@@ -16,19 +16,19 @@ class SearchRepositoryImpl implements SearchRepository {
   Future<Either<Failure, PageResult<Character>>> searchCharacters(
     String name, {
     int page = 1,
-  }) => _page(() => _remote.searchCharacters(name, page), (m) => m.toEntity());
+  }) => _page(() => _remote.searchCharacters(name, page));
 
   @override
   Future<Either<Failure, PageResult<Episode>>> searchEpisodes(
     String name, {
     int page = 1,
-  }) => _page(() => _remote.searchEpisodes(name, page), (m) => m.toEntity());
+  }) => _page(() => _remote.searchEpisodes(name, page));
 
   @override
   Future<Either<Failure, PageResult<Location>>> searchLocations(
     String name, {
     int page = 1,
-  }) => _page(() => _remote.searchLocations(name, page), (m) => m.toEntity());
+  }) => _page(() => _remote.searchLocations(name, page));
 
   @override
   Future<Either<Failure, Character>> getCharacter(int id) =>
@@ -42,15 +42,15 @@ class SearchRepositoryImpl implements SearchRepository {
   Future<Either<Failure, Location>> getLocation(int id) =>
       _guard(() async => (await _remote.getLocation(id)).toEntity());
 
-  Future<Either<Failure, PageResult<E>>> _page<M, E>(
-    Future<PageModel<M>> Function() request,
-    E Function(M) toEntity,
+  /// Every [Model] knows its entity, so a page maps itself item by item.
+  Future<Either<Failure, PageResult<E>>> _page<E>(
+    Future<PageModel<Model<E>>> Function() request,
   ) => _guard(() async {
-    final model = await request();
+    final page = await request();
     return PageResult<E>(
-      items: model.results.map(toEntity).toList(growable: false),
-      totalCount: model.info.count,
-      nextPage: parseNextPage(model.info.next),
+      items: [for (final model in page.results) model.toEntity()],
+      totalCount: page.count,
+      nextPage: page.nextPage,
     );
   });
 
