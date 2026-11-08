@@ -30,3 +30,11 @@ dev_dependencies:
   mocktail: ^1.0.5
 
 flutter:
+  # Phosphor icon fonts (MIT), see lib/src/ui/phosphor_icons.dart.
+  fonts:
+    - family: Phosphor
+      fonts:
+        - asset: assets/fonts/Phosphor.ttf
+    - family: PhosphorFill
+      fonts:
+        - asset: assets/fonts/Phosphor-Fill.ttf
