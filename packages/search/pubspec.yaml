@@ -23,6 +23,7 @@ dependencies:
   stream_transform: ^2.1.2
 
 dev_dependencies:
+  auto_injector: ^2.2.0
   bloc_test: ^10.0.0
   build_runner: ^2.16.1
   flutter_test:
