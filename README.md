@@ -46,8 +46,23 @@ melos run gen
 ```bash
 melos run analyze    # dart analyze --fatal-infos em todo o workspace
 melos run test       # flutter test em cada pacote
-melos run coverage   # lcov.info por pacote
+melos run coverage   # testes com cobertura; falha abaixo de 80%
 ```
+
+### Cobertura
+
+| Pacote | Linhas cobertas |
+| --- | --- |
+| core | 97,0% |
+| favorites | 93,2% |
+| search | 89,9% |
+| **Total** | **92,4%** (791/856) |
+
+O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
+
+Para ver por arquivo: `dart run tool/coverage_report.dart --files`.
+
+Os testes cobrem modelos com JSON real da API (`test/fixtures`), repositórios (sucesso, 404, timeout, sem rede, cancelamento), o `SearchBloc` (debounce, resposta antiga descartada, paginação), a injeção de dependências de cada módulo e as telas em cada estado (incluindo layout de tablet).
 
 ## Arquitetura
 
