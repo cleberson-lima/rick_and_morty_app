@@ -35,7 +35,9 @@ melos:
       packageFilters:
         dirExists: test
     coverage:
-      description: Run tests with coverage (lcov.info per package).
-      exec: flutter test --coverage
-      packageFilters:
-        dirExists: test
+      description: >-
+        Run tests with coverage, merge into coverage/lcov.info (generated code
+        excluded) and fail below 80% line coverage.
+      run: >-
+        melos exec --dir-exists=test -- flutter test --coverage &&
+        dart run tool/coverage_report.dart --min=80
