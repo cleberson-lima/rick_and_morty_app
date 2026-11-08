@@ -14,10 +14,11 @@ Failure mapExceptionToFailure(Object error) {
       DioExceptionType.receiveTimeout ||
       DioExceptionType.transformTimeout ||
       DioExceptionType.connectionError => const Failure.network(),
-      DioExceptionType.badResponse =>
-        error.response?.statusCode == 404
-            ? const Failure.notFound()
-            : Failure.server(statusCode: error.response?.statusCode),
+      DioExceptionType.badResponse => switch (error.response?.statusCode) {
+        404 => const Failure.notFound(),
+        429 => const Failure.tooManyRequests(),
+        final status => Failure.server(statusCode: status),
+      },
       DioExceptionType.badCertificate => const Failure.network(),
       DioExceptionType.unknown =>
         error.error is SocketException

@@ -56,12 +56,13 @@ extension FailurePatterns on Failure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NotFoundFailure value)?  notFound,TResult Function( NetworkFailure value)?  network,TResult Function( ServerFailure value)?  server,TResult Function( CancelledFailure value)?  cancelled,TResult Function( CacheFailure value)?  cache,TResult Function( UnexpectedFailure value)?  unexpected,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( NotFoundFailure value)?  notFound,TResult Function( NetworkFailure value)?  network,TResult Function( TooManyRequestsFailure value)?  tooManyRequests,TResult Function( ServerFailure value)?  server,TResult Function( CancelledFailure value)?  cancelled,TResult Function( CacheFailure value)?  cache,TResult Function( UnexpectedFailure value)?  unexpected,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case NotFoundFailure() when notFound != null:
 return notFound(_that);case NetworkFailure() when network != null:
-return network(_that);case ServerFailure() when server != null:
+return network(_that);case TooManyRequestsFailure() when tooManyRequests != null:
+return tooManyRequests(_that);case ServerFailure() when server != null:
 return server(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case CacheFailure() when cache != null:
 return cache(_that);case UnexpectedFailure() when unexpected != null:
@@ -83,12 +84,13 @@ return unexpected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NotFoundFailure value)  notFound,required TResult Function( NetworkFailure value)  network,required TResult Function( ServerFailure value)  server,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( CacheFailure value)  cache,required TResult Function( UnexpectedFailure value)  unexpected,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( NotFoundFailure value)  notFound,required TResult Function( NetworkFailure value)  network,required TResult Function( TooManyRequestsFailure value)  tooManyRequests,required TResult Function( ServerFailure value)  server,required TResult Function( CancelledFailure value)  cancelled,required TResult Function( CacheFailure value)  cache,required TResult Function( UnexpectedFailure value)  unexpected,}){
 final _that = this;
 switch (_that) {
 case NotFoundFailure():
 return notFound(_that);case NetworkFailure():
-return network(_that);case ServerFailure():
+return network(_that);case TooManyRequestsFailure():
+return tooManyRequests(_that);case ServerFailure():
 return server(_that);case CancelledFailure():
 return cancelled(_that);case CacheFailure():
 return cache(_that);case UnexpectedFailure():
@@ -106,12 +108,13 @@ return unexpected(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NotFoundFailure value)?  notFound,TResult? Function( NetworkFailure value)?  network,TResult? Function( ServerFailure value)?  server,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( CacheFailure value)?  cache,TResult? Function( UnexpectedFailure value)?  unexpected,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( NotFoundFailure value)?  notFound,TResult? Function( NetworkFailure value)?  network,TResult? Function( TooManyRequestsFailure value)?  tooManyRequests,TResult? Function( ServerFailure value)?  server,TResult? Function( CancelledFailure value)?  cancelled,TResult? Function( CacheFailure value)?  cache,TResult? Function( UnexpectedFailure value)?  unexpected,}){
 final _that = this;
 switch (_that) {
 case NotFoundFailure() when notFound != null:
 return notFound(_that);case NetworkFailure() when network != null:
-return network(_that);case ServerFailure() when server != null:
+return network(_that);case TooManyRequestsFailure() when tooManyRequests != null:
+return tooManyRequests(_that);case ServerFailure() when server != null:
 return server(_that);case CancelledFailure() when cancelled != null:
 return cancelled(_that);case CacheFailure() when cache != null:
 return cache(_that);case UnexpectedFailure() when unexpected != null:
@@ -132,11 +135,12 @@ return unexpected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  notFound,TResult Function()?  network,TResult Function( int? statusCode)?  server,TResult Function()?  cancelled,TResult Function()?  cache,TResult Function()?  unexpected,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  notFound,TResult Function()?  network,TResult Function()?  tooManyRequests,TResult Function( int? statusCode)?  server,TResult Function()?  cancelled,TResult Function()?  cache,TResult Function()?  unexpected,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case NotFoundFailure() when notFound != null:
 return notFound();case NetworkFailure() when network != null:
-return network();case ServerFailure() when server != null:
+return network();case TooManyRequestsFailure() when tooManyRequests != null:
+return tooManyRequests();case ServerFailure() when server != null:
 return server(_that.statusCode);case CancelledFailure() when cancelled != null:
 return cancelled();case CacheFailure() when cache != null:
 return cache();case UnexpectedFailure() when unexpected != null:
@@ -158,11 +162,12 @@ return unexpected();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  notFound,required TResult Function()  network,required TResult Function( int? statusCode)  server,required TResult Function()  cancelled,required TResult Function()  cache,required TResult Function()  unexpected,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  notFound,required TResult Function()  network,required TResult Function()  tooManyRequests,required TResult Function( int? statusCode)  server,required TResult Function()  cancelled,required TResult Function()  cache,required TResult Function()  unexpected,}) {final _that = this;
 switch (_that) {
 case NotFoundFailure():
 return notFound();case NetworkFailure():
-return network();case ServerFailure():
+return network();case TooManyRequestsFailure():
+return tooManyRequests();case ServerFailure():
 return server(_that.statusCode);case CancelledFailure():
 return cancelled();case CacheFailure():
 return cache();case UnexpectedFailure():
@@ -180,11 +185,12 @@ return unexpected();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  notFound,TResult? Function()?  network,TResult? Function( int? statusCode)?  server,TResult? Function()?  cancelled,TResult? Function()?  cache,TResult? Function()?  unexpected,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  notFound,TResult? Function()?  network,TResult? Function()?  tooManyRequests,TResult? Function( int? statusCode)?  server,TResult? Function()?  cancelled,TResult? Function()?  cache,TResult? Function()?  unexpected,}) {final _that = this;
 switch (_that) {
 case NotFoundFailure() when notFound != null:
 return notFound();case NetworkFailure() when network != null:
-return network();case ServerFailure() when server != null:
+return network();case TooManyRequestsFailure() when tooManyRequests != null:
+return tooManyRequests();case ServerFailure() when server != null:
 return server(_that.statusCode);case CancelledFailure() when cancelled != null:
 return cancelled();case CacheFailure() when cache != null:
 return cache();case UnexpectedFailure() when unexpected != null:
@@ -252,6 +258,38 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
     return 'Failure.network()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class TooManyRequestsFailure extends Failure {
+  const TooManyRequestsFailure(): super._();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is TooManyRequestsFailure);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+    return 'Failure.tooManyRequests()';
 }
 
 

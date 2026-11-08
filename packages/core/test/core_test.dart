@@ -27,6 +27,13 @@ void main() {
       );
     });
 
+    test('429 is tooManyRequests', () {
+      expect(
+        mapExceptionToFailure(_dio(DioExceptionType.badResponse, status: 429)),
+        const Failure.tooManyRequests(),
+      );
+    });
+
     test('other statuses are server failures with the code', () {
       expect(
         mapExceptionToFailure(_dio(DioExceptionType.badResponse, status: 503)),
@@ -71,6 +78,7 @@ void main() {
         Failure.notFound(),
         Failure.network(),
         Failure.server(statusCode: 500),
+        Failure.tooManyRequests(),
         Failure.cancelled(),
         Failure.cache(),
         Failure.unexpected(),

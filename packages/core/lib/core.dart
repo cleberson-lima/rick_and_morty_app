@@ -6,6 +6,7 @@ export 'src/di/core_module.dart';
 export 'src/navigation/app_routes.dart';
 export 'src/network/dio_factory.dart';
 export 'src/network/failure_mapper.dart';
+export 'src/network/rate_limit_retry_interceptor.dart';
 export 'src/theme/app_theme.dart';
 export 'src/theme/theme_cubit.dart';
 export 'src/theme/theme_toggle_button.dart';

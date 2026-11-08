@@ -60,6 +60,10 @@ void main() {
         _dioError(DioExceptionType.badResponse, status: 404),
         const Failure.notFound(),
       ),
+      '429 → tooManyRequests': (
+        _dioError(DioExceptionType.badResponse, status: 429),
+        const Failure.tooManyRequests(),
+      ),
       '500 → server': (
         _dioError(DioExceptionType.badResponse, status: 500),
         const Failure.server(statusCode: 500),
