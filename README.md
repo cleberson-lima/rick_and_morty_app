@@ -4,9 +4,9 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 
 ## Download
 
-> O link é publicado na fase de entrega (GitHub Releases).
->
-> [Baixar APK (última versão)](https://github.com/<seu-usuario>/rick_and_morty/releases/latest/download/app-release.apk)
+[Baixar APK (última versão)](https://github.com/cleberson-lima/rick_and_morty_app/releases/latest/download/app-release.apk)
+
+> O link aponta sempre para a release mais recente em [GitHub Releases](https://github.com/cleberson-lima/rick_and_morty_app/releases) e passa a funcionar após a publicação da primeira versão.
 
 ## Funcionalidades
 
