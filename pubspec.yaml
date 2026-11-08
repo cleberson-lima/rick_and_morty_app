@@ -1,0 +1,41 @@
+name: rick_and_morty_workspace
+description: Rick and Morty search app — Melos monorepo.
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ">=3.41.0"
+
+workspace:
+  - apps/rick_and_morty_app
+  - packages/core
+  - packages/favorites
+  - packages/search
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  melos: 8.10.1
+
+melos:
+  scripts:
+    analyze:
+      description: Static analysis across all packages.
+      run: dart analyze --fatal-infos .
+    format:
+      description: Format all Dart files.
+      run: dart format .
+    gen:
+      description: Run build_runner in every package that uses it.
+      exec: dart run build_runner build --delete-conflicting-outputs
+      packageFilters:
+        dependsOn: build_runner
+    test:
+      description: Run tests in every package that has a test folder.
+      exec: flutter test
+      packageFilters:
+        dirExists: test
+    coverage:
+      description: Run tests with coverage (lcov.info per package).
+      exec: flutter test --coverage
+      packageFilters:
+        dirExists: test
