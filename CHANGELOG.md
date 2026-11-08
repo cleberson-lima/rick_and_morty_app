@@ -24,6 +24,11 @@ Primeira versão publicada.
 - Workflows do GitHub Actions: **CI** (formatação, análise, testes e cobertura mínima de 80%) e **release** (APK assinado anexado à release a cada tag `v*`).
 - Relatório de cobertura unificado (`melos run coverage`): 91,3% das linhas, sem contar código gerado.
 
+### Alterado
+
+- As models da API estendem a classe abstrata `Model`, com `fromJson` escrito à mão e `toEntity()`. `Model.fromJson<T>` é a factory central, o que eliminou o código gerado dessas classes.
+- Os states das cubits ficam em arquivos próprios (`x_state.dart`), declarados como `part` da cubit.
+
 ### Corrigido
 
 - Erro **429** (limite de requisições da API) ao avançar rápido pelas últimas páginas de personagens: a requisição agora é repetida com espera crescente e, se ainda falhar, mostra uma mensagem própria.
