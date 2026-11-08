@@ -75,7 +75,7 @@ void main() {
     );
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.text('S01E01'), findsOneWidget);
+    expect(find.text('Pilot | S01E01'), findsOneWidget);
   });
 
   testWidgets('a failed page offers an explicit retry', (tester) async {
