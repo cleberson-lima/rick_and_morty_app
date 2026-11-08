@@ -10,10 +10,11 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 
 ## Funcionalidades
 
-- Busca por nome em três abas (personagens, episódios, locais) com **debounce de 400 ms** e **cancelamento** da requisição anterior
+- Página inicial no layout do protótipo do Figma: topo com seletor de tema **Escuro / Claro**, busca única com filtros (**Personagens / Localizações / Episódios**) e seções com prévia de cada tipo e **Ver todos**
+- Busca por nome com **debounce de 400 ms** e **cancelamento** da requisição anterior
 - **Paginação** com scroll infinito (`info.next` da API) e "tentar novamente" quando uma página falha
 - Estados de **carregamento** (skeleton), **erro** com retry, **vazio** e **não encontrado** (a API responde 404 quando nada casa com a busca)
-- **Detalhes** de cada item, acessíveis da busca, dos favoritos ou por deep link (`/details/:type/:id`)
+- **Detalhes** de cada item no layout do protótipo (personagem com cards de origem e última localização; episódio; local), com seção **"Mais ..."** e **paginação numerada**; acessíveis da busca, dos favoritos ou por deep link (`/details/:type/:id`)
 - **Favoritos** persistidos localmente: salvar, listar, remover; o coração fica sincronizado em todas as telas
 - Tema **claro/escuro** persistido, Google Fonts, cache de imagens em disco
 - **Responsivo**: lista em celular, grade de 2 a 4 colunas em tablet/paisagem; detalhes lado a lado em telas largas
@@ -52,10 +53,10 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 
 | Pacote | Linhas cobertas |
 | --- | --- |
-| core | 97,0% |
+| core | 89,9% |
 | favorites | 93,2% |
-| search | 89,9% |
-| **Total** | **92,4%** (791/856) |
+| search | 91,7% |
+| **Total** | **91,3%** (1256/1375) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
@@ -103,7 +104,7 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 | Detalhes carregam por `(tipo, id)` | A mesma rota serve para busca, favoritos e deep link. |
 | Arquivos gerados versionados | O avaliador consegue rodar sem `build_runner`. |
 
-> **Fonte e cores:** `AppTheme.fontFamily` (Lato) e `AppTheme.seed` são provisórios até a conferência com o protótipo do Figma; trocar ali atualiza o app inteiro.
+> **Fonte e cores:** `AppTheme.fontFamily` (Inter) e as cores em `AppColors` foram tiradas do protótipo do Figma por inspeção visual e ainda serão conferidas no inspetor; trocar ali atualiza o app inteiro.
 
 ## Build de release (Android)
 
