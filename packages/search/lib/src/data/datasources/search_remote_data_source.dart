@@ -1,7 +1,7 @@
 import 'package:core/domain.dart';
 import 'package:dio/dio.dart';
 
-import '../models/api_models.dart';
+import '../models/models.dart';
 
 abstract interface class SearchRemoteDataSource {
   Future<PageModel<CharacterModel>> searchCharacters(String name, int page);
@@ -34,13 +34,12 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
     return _tokens[type] = CancelToken();
   }
 
-  Future<PageModel<T>> _search<T>(
+  Future<PageModel<M>> _search<M extends Model<Object?>>(
     ResourceType type,
     String name,
     int page,
-    T Function(Map<String, Object?>) fromJson,
   ) async {
-    final response = await _dio.get<Map<String, Object?>>(
+    final response = await _dio.get<Json>(
       '/${type.name}/',
       queryParameters: {
         if (name.isNotEmpty) 'name': name,
@@ -48,38 +47,37 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
       },
       cancelToken: _renewToken(type),
     );
-    return PageModel.fromJson(
-      response.data!,
-      (json) => fromJson(json! as Map<String, Object?>),
-    );
+    return PageModel<M>.fromJson(response.data!);
   }
 
-  Future<Map<String, Object?>> _getById(ResourceType type, int id) async {
-    final response = await _dio.get<Map<String, Object?>>('/${type.name}/$id');
-    return response.data!;
+  Future<M> _getById<M extends Model<Object?>>(
+    ResourceType type,
+    int id,
+  ) async {
+    final response = await _dio.get<Json>('/${type.name}/$id');
+    return Model.fromJson<M>(response.data!);
   }
 
   @override
   Future<PageModel<CharacterModel>> searchCharacters(String name, int page) =>
-      _search(ResourceType.character, name, page, CharacterModel.fromJson);
+      _search(ResourceType.character, name, page);
 
   @override
   Future<PageModel<EpisodeModel>> searchEpisodes(String name, int page) =>
-      _search(ResourceType.episode, name, page, EpisodeModel.fromJson);
+      _search(ResourceType.episode, name, page);
 
   @override
   Future<PageModel<LocationModel>> searchLocations(String name, int page) =>
-      _search(ResourceType.location, name, page, LocationModel.fromJson);
+      _search(ResourceType.location, name, page);
 
   @override
-  Future<CharacterModel> getCharacter(int id) async =>
-      CharacterModel.fromJson(await _getById(ResourceType.character, id));
+  Future<CharacterModel> getCharacter(int id) =>
+      _getById(ResourceType.character, id);
 
   @override
-  Future<EpisodeModel> getEpisode(int id) async =>
-      EpisodeModel.fromJson(await _getById(ResourceType.episode, id));
+  Future<EpisodeModel> getEpisode(int id) => _getById(ResourceType.episode, id);
 
   @override
-  Future<LocationModel> getLocation(int id) async =>
-      LocationModel.fromJson(await _getById(ResourceType.location, id));
+  Future<LocationModel> getLocation(int id) =>
+      _getById(ResourceType.location, id);
 }
