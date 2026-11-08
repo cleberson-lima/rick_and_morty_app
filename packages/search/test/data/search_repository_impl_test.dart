@@ -53,6 +53,8 @@ void main() {
       expect(value.items.first.name, 'Rick Sanchez');
       expect(value.items.first.status, CharacterStatus.alive);
       expect(value.items.first.episodeCount, greaterThan(0));
+      expect(value.items.first.originId, 1, reason: 'from origin.url');
+      expect(value.items.first.locationId, 3, reason: 'from location.url');
     });
 
     final cases = <String, (DioException, Failure)>{

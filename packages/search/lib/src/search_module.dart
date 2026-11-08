@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart'
@@ -13,6 +14,7 @@ import 'domain/repositories/search_repository.dart';
 import 'domain/usecases/details_usecases.dart';
 import 'domain/usecases/search_usecases.dart';
 import 'presentation/bloc/details_cubit.dart';
+import 'presentation/bloc/more_items_cubit.dart';
 import 'presentation/bloc/search_bloc.dart';
 import 'presentation/pages/details_page.dart';
 import 'presentation/pages/search_page.dart';
@@ -37,8 +39,22 @@ class SearchModule extends Module {
       ..add<CharacterSearchBloc>(CharacterSearchBloc.new)
       ..add<EpisodeSearchBloc>(EpisodeSearchBloc.new)
       ..add<LocationSearchBloc>(LocationSearchBloc.new)
-      ..add<DetailsCubit>(DetailsCubit.new);
+      ..add<DetailsCubit>(DetailsCubit.new)
+      // "Mais ..." sections get their own data source: it cancels the
+      // previous search of the same type, and must not cancel the home page.
+      ..add<MoreCharactersCubit>(
+        () => MoreCharactersCubit(SearchCharactersUseCase(_isolated(i))),
+      )
+      ..add<MoreEpisodesCubit>(
+        () => MoreEpisodesCubit(SearchEpisodesUseCase(_isolated(i))),
+      )
+      ..add<MoreLocationsCubit>(
+        () => MoreLocationsCubit(SearchLocationsUseCase(_isolated(i))),
+      );
   }
+
+  static SearchRepository _isolated(Injector i) =>
+      SearchRepositoryImpl(SearchRemoteDataSourceImpl(i.get<Dio>()));
 
   @override
   void routes(RouteManager r) {
@@ -100,11 +116,29 @@ class _DetailsRoute extends StatelessWidget {
         ),
       );
     }
-    return BlocProvider(
-      create: (_) => Modular.get<DetailsCubit>()..load(type, id),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<DetailsCubit>(
+          create: (_) => Modular.get<DetailsCubit>()..load(type, id),
+        ),
+        switch (type) {
+          ResourceType.character => BlocProvider<MoreItemsCubit<Character>>(
+            create: (_) => Modular.get<MoreCharactersCubit>()..load(1),
+          ),
+          ResourceType.episode => BlocProvider<MoreItemsCubit<Episode>>(
+            create: (_) => Modular.get<MoreEpisodesCubit>()..load(1),
+          ),
+          ResourceType.location => BlocProvider<MoreItemsCubit<Location>>(
+            create: (_) => Modular.get<MoreLocationsCubit>()..load(1),
+          ),
+        },
+      ],
       child: Builder(
         builder: (context) => DetailsPage(
           onRetry: () => context.read<DetailsCubit>().load(type, id),
+          onOpenDetails: (type, id) =>
+              Modular.to.pushNamed(AppRoutes.details(type, id)),
+          onOpenFavorites: () => Modular.to.pushNamed(AppRoutes.favorites),
         ),
       ),
     );

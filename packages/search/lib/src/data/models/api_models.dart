@@ -7,6 +7,17 @@ import '../../domain/entities/location.dart';
 part 'api_models.freezed.dart';
 part 'api_models.g.dart';
 
+/// Extracts the trailing id from a resource URL
+/// (`https://rickandmortyapi.com/api/location/3` → 3). Empty or missing
+/// URLs (unknown origin) give `null`.
+int? idFromResourceUrl(String? url) {
+  if (url == null || url.isEmpty) return null;
+  final segments = Uri.tryParse(url)?.pathSegments.where((s) => s.isNotEmpty);
+  return segments == null || segments.isEmpty
+      ? null
+      : int.tryParse(segments.last);
+}
+
 /// `info` block of every paginated response.
 @freezed
 abstract class InfoModel with _$InfoModel {
@@ -75,6 +86,8 @@ abstract class CharacterModel with _$CharacterModel {
     gender: gender,
     originName: origin.name,
     locationName: location.name,
+    originId: idFromResourceUrl(origin.url),
+    locationId: idFromResourceUrl(location.url),
     imageUrl: image,
     episodeCount: episode.length,
   );
