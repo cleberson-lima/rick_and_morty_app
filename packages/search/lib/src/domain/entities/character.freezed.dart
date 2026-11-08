@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Character {
 
- int get id; String get name; CharacterStatus get status; String get species; String get type; String get gender; String get originName; String get locationName; String get imageUrl; int get episodeCount;
+ int get id; String get name; CharacterStatus get status; String get species; String get type; String get gender; String get originName; String get locationName;/// Ids of the origin / last location, or `null` when unknown.
+ int? get originId; int? get locationId; String get imageUrl; int get episodeCount;
 /// Create a copy of Character
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +28,20 @@ $CharacterCopyWith<Character> get copyWith => _$CharacterCopyWithImpl<Character>
 @override
 bool operator ==(Object other) {
   final _this = this as Character;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Character&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.species, _this.species) || other.species == _this.species)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&(identical(other.originName, _this.originName) || other.originName == _this.originName)&&(identical(other.locationName, _this.locationName) || other.locationName == _this.locationName)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl)&&(identical(other.episodeCount, _this.episodeCount) || other.episodeCount == _this.episodeCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Character&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.species, _this.species) || other.species == _this.species)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.gender, _this.gender) || other.gender == _this.gender)&&(identical(other.originName, _this.originName) || other.originName == _this.originName)&&(identical(other.locationName, _this.locationName) || other.locationName == _this.locationName)&&(identical(other.originId, _this.originId) || other.originId == _this.originId)&&(identical(other.locationId, _this.locationId) || other.locationId == _this.locationId)&&(identical(other.imageUrl, _this.imageUrl) || other.imageUrl == _this.imageUrl)&&(identical(other.episodeCount, _this.episodeCount) || other.episodeCount == _this.episodeCount));
 }
 
 
 @override
 int get hashCode {
   final _this = this as Character;
-  return Object.hash(runtimeType,_this.id,_this.name,_this.status,_this.species,_this.type,_this.gender,_this.originName,_this.locationName,_this.imageUrl,_this.episodeCount);
+  return Object.hash(runtimeType,_this.id,_this.name,_this.status,_this.species,_this.type,_this.gender,_this.originName,_this.locationName,_this.originId,_this.locationId,_this.imageUrl,_this.episodeCount);
 }
 
 @override
 String toString() {
   final _this = this as Character;
-  return 'Character(id: ${_this.id}, name: ${_this.name}, status: ${_this.status}, species: ${_this.species}, type: ${_this.type}, gender: ${_this.gender}, originName: ${_this.originName}, locationName: ${_this.locationName}, imageUrl: ${_this.imageUrl}, episodeCount: ${_this.episodeCount})';
+  return 'Character(id: ${_this.id}, name: ${_this.name}, status: ${_this.status}, species: ${_this.species}, type: ${_this.type}, gender: ${_this.gender}, originName: ${_this.originName}, locationName: ${_this.locationName}, originId: ${_this.originId}, locationId: ${_this.locationId}, imageUrl: ${_this.imageUrl}, episodeCount: ${_this.episodeCount})';
 }
 
 
@@ -51,7 +52,7 @@ abstract mixin class $CharacterCopyWith<$Res>  {
   factory $CharacterCopyWith(Character value, $Res Function(Character) _then) = _$CharacterCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, CharacterStatus status, String species, String type, String gender, String originName, String locationName, String imageUrl, int episodeCount
+ int id, String name, CharacterStatus status, String species, String type, String gender, String originName, String locationName, int? originId, int? locationId, String imageUrl, int episodeCount
 });
 
 
@@ -68,7 +69,7 @@ class _$CharacterCopyWithImpl<$Res>
 
 /// Create a copy of Character
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? status = null,Object? species = null,Object? type = null,Object? gender = null,Object? originName = null,Object? locationName = null,Object? imageUrl = null,Object? episodeCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? status = null,Object? species = null,Object? type = null,Object? gender = null,Object? originName = null,Object? locationName = null,Object? originId = freezed,Object? locationId = freezed,Object? imageUrl = null,Object? episodeCount = null,}) {
   return _then(Character(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -78,7 +79,9 @@ as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non
 as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as String,originName: null == originName ? _self.originName : originName // ignore: cast_nullable_to_non_nullable
 as String,locationName: null == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
-as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,originId: freezed == originId ? _self.originId : originId // ignore: cast_nullable_to_non_nullable
+as int?,locationId: freezed == locationId ? _self.locationId : locationId // ignore: cast_nullable_to_non_nullable
+as int?,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,episodeCount: null == episodeCount ? _self.episodeCount : episodeCount // ignore: cast_nullable_to_non_nullable
 as int,
   ));
@@ -165,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  CharacterStatus status,  String species,  String type,  String gender,  String originName,  String locationName,  String imageUrl,  int episodeCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  CharacterStatus status,  String species,  String type,  String gender,  String originName,  String locationName,  int? originId,  int? locationId,  String imageUrl,  int episodeCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Character() when $default != null:
-return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.gender,_that.originName,_that.locationName,_that.imageUrl,_that.episodeCount);case _:
+return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.gender,_that.originName,_that.locationName,_that.originId,_that.locationId,_that.imageUrl,_that.episodeCount);case _:
   return orElse();
 
 }
@@ -186,10 +189,10 @@ return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  CharacterStatus status,  String species,  String type,  String gender,  String originName,  String locationName,  String imageUrl,  int episodeCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  CharacterStatus status,  String species,  String type,  String gender,  String originName,  String locationName,  int? originId,  int? locationId,  String imageUrl,  int episodeCount)  $default,) {final _that = this;
 switch (_that) {
 case _Character():
-return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.gender,_that.originName,_that.locationName,_that.imageUrl,_that.episodeCount);case _:
+return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.gender,_that.originName,_that.locationName,_that.originId,_that.locationId,_that.imageUrl,_that.episodeCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +209,10 @@ return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  CharacterStatus status,  String species,  String type,  String gender,  String originName,  String locationName,  String imageUrl,  int episodeCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  CharacterStatus status,  String species,  String type,  String gender,  String originName,  String locationName,  int? originId,  int? locationId,  String imageUrl,  int episodeCount)?  $default,) {final _that = this;
 switch (_that) {
 case _Character() when $default != null:
-return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.gender,_that.originName,_that.locationName,_that.imageUrl,_that.episodeCount);case _:
+return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.gender,_that.originName,_that.locationName,_that.originId,_that.locationId,_that.imageUrl,_that.episodeCount);case _:
   return null;
 
 }
@@ -221,7 +224,7 @@ return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.
 
 
 class _Character implements Character {
-  const _Character({required this.id, required this.name, required this.status, required this.species, required this.type, required this.gender, required this.originName, required this.locationName, required this.imageUrl, required this.episodeCount});
+  const _Character({required this.id, required this.name, required this.status, required this.species, required this.type, required this.gender, required this.originName, required this.locationName, this.originId, this.locationId, required this.imageUrl, required this.episodeCount});
   
 
 @override final  int id;
@@ -232,6 +235,9 @@ class _Character implements Character {
 @override final  String gender;
 @override final  String originName;
 @override final  String locationName;
+/// Ids of the origin / last location, or `null` when unknown.
+@override final  int? originId;
+@override final  int? locationId;
 @override final  String imageUrl;
 @override final  int episodeCount;
 
@@ -245,18 +251,18 @@ _$CharacterCopyWith<_Character> get copyWith => __$CharacterCopyWithImpl<_Charac
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Character&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.status, status) || other.status == status)&&(identical(other.species, species) || other.species == species)&&(identical(other.type, type) || other.type == type)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.originName, originName) || other.originName == originName)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.episodeCount, episodeCount) || other.episodeCount == episodeCount));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Character&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.status, status) || other.status == status)&&(identical(other.species, species) || other.species == species)&&(identical(other.type, type) || other.type == type)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.originName, originName) || other.originName == originName)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.originId, originId) || other.originId == originId)&&(identical(other.locationId, locationId) || other.locationId == locationId)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.episodeCount, episodeCount) || other.episodeCount == episodeCount));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,name,status,species,type,gender,originName,locationName,imageUrl,episodeCount);
+    return Object.hash(runtimeType,id,name,status,species,type,gender,originName,locationName,originId,locationId,imageUrl,episodeCount);
 }
 
 @override
 String toString() {
-    return 'Character(id: $id, name: $name, status: $status, species: $species, type: $type, gender: $gender, originName: $originName, locationName: $locationName, imageUrl: $imageUrl, episodeCount: $episodeCount)';
+    return 'Character(id: $id, name: $name, status: $status, species: $species, type: $type, gender: $gender, originName: $originName, locationName: $locationName, originId: $originId, locationId: $locationId, imageUrl: $imageUrl, episodeCount: $episodeCount)';
 }
 
 
@@ -267,7 +273,7 @@ abstract mixin class _$CharacterCopyWith<$Res> implements $CharacterCopyWith<$Re
   factory _$CharacterCopyWith(_Character value, $Res Function(_Character) _then) = __$CharacterCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, CharacterStatus status, String species, String type, String gender, String originName, String locationName, String imageUrl, int episodeCount
+ int id, String name, CharacterStatus status, String species, String type, String gender, String originName, String locationName, int? originId, int? locationId, String imageUrl, int episodeCount
 });
 
 
@@ -284,7 +290,7 @@ class __$CharacterCopyWithImpl<$Res>
 
 /// Create a copy of Character
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? status = null,Object? species = null,Object? type = null,Object? gender = null,Object? originName = null,Object? locationName = null,Object? imageUrl = null,Object? episodeCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? status = null,Object? species = null,Object? type = null,Object? gender = null,Object? originName = null,Object? locationName = null,Object? originId = freezed,Object? locationId = freezed,Object? imageUrl = null,Object? episodeCount = null,}) {
   return _then(_Character(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -294,7 +300,9 @@ as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non
 as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
 as String,originName: null == originName ? _self.originName : originName // ignore: cast_nullable_to_non_nullable
 as String,locationName: null == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
-as String,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String,originId: freezed == originId ? _self.originId : originId // ignore: cast_nullable_to_non_nullable
+as int?,locationId: freezed == locationId ? _self.locationId : locationId // ignore: cast_nullable_to_non_nullable
+as int?,imageUrl: null == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String,episodeCount: null == episodeCount ? _self.episodeCount : episodeCount // ignore: cast_nullable_to_non_nullable
 as int,
   ));

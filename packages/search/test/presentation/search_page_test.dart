@@ -12,6 +12,7 @@ import 'package:search/src/presentation/bloc/search_bloc.dart';
 import 'package:search/src/presentation/bloc/search_event.dart';
 import 'package:search/src/presentation/bloc/search_state.dart';
 import 'package:search/src/presentation/pages/search_page.dart';
+import 'package:search/src/presentation/widgets/home_hero.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../test_data.dart';
@@ -27,6 +28,22 @@ class _LocationBloc extends MockBloc<SearchEvent, SearchState<Location>>
 
 class _FavoritesCubit extends MockCubit<FavoritesState>
     implements FavoritesCubit {}
+
+const _pilot = Episode(
+  id: 1,
+  name: 'Pilot',
+  airDate: 'December 2, 2013',
+  code: 'S01E01',
+  characterCount: 19,
+);
+
+const _earth = Location(
+  id: 1,
+  name: 'Earth (C-137)',
+  type: 'Planet',
+  dimension: 'Dimension C-137',
+  residentCount: 27,
+);
 
 void main() {
   late _CharacterBloc characters;
@@ -44,19 +61,29 @@ void main() {
     episodes = _EpisodeBloc();
     locations = _LocationBloc();
     favorites = _FavoritesCubit();
-    when(() => episodes.state).thenReturn(const SearchState.initial());
-    when(() => locations.state).thenReturn(const SearchState.initial());
+    when(() => characters.state).thenReturn(
+      const SearchState.success(query: '', items: [rick, morty], totalCount: 2),
+    );
+    when(() => episodes.state).thenReturn(
+      const SearchState.success(query: '', items: [_pilot], totalCount: 1),
+    );
+    when(() => locations.state).thenReturn(
+      const SearchState.success(query: '', items: [_earth], totalCount: 1),
+    );
     when(
       () => favorites.state,
     ).thenReturn(const FavoritesState.loaded(items: []));
   });
 
   Future<void> pump(
-    WidgetTester tester,
-    SearchState<Character> state, {
+    WidgetTester tester, {
     void Function(ResourceType, int)? onOpen,
+    VoidCallback? onOpenFavorites,
   }) async {
-    when(() => characters.state).thenReturn(state);
+    // Tall phone, so the whole overview is laid out without scrolling.
+    tester.view.physicalSize = const Size(400, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
@@ -68,86 +95,106 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light(useGoogleFonts: false),
-          home: SearchPage(onOpenDetails: onOpen),
+          home: SearchPage(
+            onOpenDetails: onOpen,
+            onOpenFavorites: onOpenFavorites,
+          ),
         ),
       ),
     );
   }
 
-  testWidgets('starts by listing all characters', (tester) async {
-    await pump(tester, const SearchState.initial());
+  testWidgets('loads the three unfiltered lists on start', (tester) async {
+    await pump(tester);
 
-    verify(() => characters.add(any(that: isA<SearchSubmitted>()))).called(1);
-    expect(find.byType(LoadingSkeleton), findsOneWidget);
+    for (final bloc in [characters, episodes, locations]) {
+      final event =
+          verify(() => bloc.add(captureAny())).captured.single
+              as SearchSubmitted;
+      expect(event.query, '');
+    }
   });
 
-  testWidgets('shows results and opens details on tap', (tester) async {
-    ResourceType? openedType;
-    int? openedId;
+  testWidgets('overview shows hero, sections and footer', (tester) async {
+    var favoritesOpened = false;
+    await pump(tester, onOpenFavorites: () => favoritesOpened = true);
+
+    expect(find.textContaining('lugar.', findRichText: true), findsOneWidget);
+    expect(find.text(HomeHero.lightTagline), findsOneWidget);
+    expect(find.text('Personagens'), findsWidgets);
+    expect(find.text('Episódios'), findsWidgets);
+    expect(find.text('Localizações'), findsWidgets);
+    expect(find.text('Rick Sanchez'), findsOneWidget);
+    expect(find.text('Pilot | S01E01'), findsOneWidget);
+    expect(find.text('Planet'), findsOneWidget, reason: 'location card');
+    expect(find.text('Voltar ao topo'), findsOneWidget);
+
+    await tester.tap(find.text('Lista de favoritos'));
+    expect(favoritesOpened, isTrue);
+  });
+
+  testWidgets('tapping a card opens its details', (tester) async {
+    ResourceType? type;
+    int? id;
     await pump(
       tester,
-      const SearchState.success(query: '', items: [rick, morty], totalCount: 2),
-      onOpen: (type, id) {
-        openedType = type;
-        openedId = id;
+      onOpen: (t, i) {
+        type = t;
+        id = i;
       },
     );
 
-    expect(find.text('Rick Sanchez'), findsOneWidget);
-    expect(find.text('Morty Smith'), findsOneWidget);
-    expect(find.text('2 resultados'), findsOneWidget);
-
     await tester.tap(find.text('Morty Smith'));
-    expect(openedType, ResourceType.character);
-    expect(openedId, 2);
+
+    expect(type, ResourceType.character);
+    expect(id, 2);
   });
 
-  testWidgets('shows the not-found message with the query', (tester) async {
-    await pump(tester, const SearchState.notFound(query: 'xyz'));
-
-    expect(find.text('Nenhum resultado'), findsOneWidget);
-    expect(find.textContaining('"xyz"'), findsOneWidget);
-  });
-
-  testWidgets('error state retries the same query', (tester) async {
-    await pump(
-      tester,
-      const SearchState.error(query: 'rick', message: 'Sem conexão'),
-    );
-    clearInteractions(characters);
-
-    await tester.tap(find.text('Tentar novamente'));
-
-    final event =
-        verify(() => characters.add(captureAny())).captured.single
-            as SearchSubmitted;
-    expect(event.query, 'rick');
-  });
-
-  testWidgets('typing dispatches debounced query events', (tester) async {
-    await pump(tester, const SearchState.initial());
+  testWidgets('typing searches the selected filter and shows results', (
+    tester,
+  ) async {
+    await pump(tester);
     clearInteractions(characters);
 
     await tester.enterText(find.byType(TextField), 'rick');
+    await tester.pump();
 
     final event =
         verify(() => characters.add(captureAny())).captured.single
             as SearchQueryChanged;
     expect(event.query, 'rick');
+    expect(find.byType(HomeHero), findsNothing, reason: 'results mode');
+    expect(find.byTooltip('Voltar ao início'), findsOneWidget);
   });
 
-  testWidgets('switching tabs searches the current query there', (
+  testWidgets('"Ver todos" lists every location', (tester) async {
+    await pump(tester);
+
+    await tester.tap(find.byTooltip('Ver todos: Localizações'));
+    await tester.pump();
+
+    expect(find.byType(HomeHero), findsNothing);
+    expect(find.text('Earth (C-137)'), findsOneWidget);
+    final chip = tester.widget<PillButton>(
+      find.byKey(const ValueKey('filter-location')),
+    );
+    expect(chip.filled, isTrue, reason: 'Locais filter selected');
+  });
+
+  testWidgets('a filter re-runs the current query for its type', (
     tester,
   ) async {
-    await pump(tester, const SearchState.initial());
+    await pump(tester);
     await tester.enterText(find.byType(TextField), 'pilot');
+    await tester.pump();
+    clearInteractions(episodes);
 
-    await tester.tap(find.text('Episódios'));
-    // Run the tab animation frame by frame: the skeleton pulses forever, so
-    // pumpAndSettle would never return.
-    for (var i = 0; i < 10; i++) {
-      await tester.pump(const Duration(milliseconds: 100));
-    }
+    // The filters scroll horizontally: bring the chip into view first.
+    final chip = find.byKey(const ValueKey('filter-episode'));
+    await tester.ensureVisible(chip);
+    await tester.pump();
+    await tester.tap(chip);
+    await tester.pump();
 
     final event =
         verify(() => episodes.add(captureAny())).captured.single
@@ -155,18 +202,48 @@ void main() {
     expect(event.query, 'pilot');
   });
 
-  testWidgets('uses a grid on tablets', (tester) async {
-    tester.view.physicalSize = const Size(1200, 900);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-
-    await pump(
-      tester,
-      const SearchState.success(query: '', items: [rick, morty], totalCount: 2),
+  testWidgets('back returns to the overview and resets filtered lists', (
+    tester,
+  ) async {
+    await pump(tester);
+    await tester.enterText(find.byType(TextField), 'rick');
+    await tester.pump();
+    when(() => characters.state).thenReturn(
+      const SearchState.success(query: 'rick', items: [rick], totalCount: 1),
     );
+    clearInteractions(characters);
 
-    final rickTop = tester.getTopLeft(find.text('Rick Sanchez'));
-    final mortyTop = tester.getTopLeft(find.text('Morty Smith'));
-    expect(rickTop.dy, mortyTop.dy, reason: 'side by side in one row');
+    await tester.tap(find.byTooltip('Voltar ao início'));
+    await tester.pump();
+
+    expect(find.byType(HomeHero), findsOneWidget);
+    final event =
+        verify(() => characters.add(captureAny())).captured.single
+            as SearchSubmitted;
+    expect(event.query, '');
+  });
+
+  testWidgets('a failed section offers a retry', (tester) async {
+    when(
+      () => episodes.state,
+    ).thenReturn(const SearchState.error(query: '', message: 'Sem conexão'));
+    await pump(tester);
+    clearInteractions(episodes);
+
+    await tester.tap(find.text('Tentar novamente'));
+
+    final event =
+        verify(() => episodes.add(captureAny())).captured.single
+            as SearchSubmitted;
+    expect(event.query, '');
+  });
+
+  testWidgets('the theme selector switches to dark', (tester) async {
+    await pump(tester);
+
+    await tester.tap(find.text('Escuro'));
+    await tester.pump();
+
+    expect(theme.state, ThemeMode.dark);
   });
 }

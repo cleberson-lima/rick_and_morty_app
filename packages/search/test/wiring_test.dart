@@ -8,6 +8,7 @@ import 'package:search/src/domain/repositories/search_repository.dart';
 import 'package:search/src/domain/usecases/details_usecases.dart';
 import 'package:search/src/domain/usecases/search_usecases.dart';
 import 'package:search/src/presentation/bloc/details_cubit.dart';
+import 'package:search/src/presentation/bloc/more_items_cubit.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -86,6 +87,12 @@ void main() {
     expect(injector.get<EpisodeSearchBloc>(), isA<SearchBloc<Episode>>());
     expect(injector.get<LocationSearchBloc>(), isA<SearchBloc<Location>>());
     expect(injector.get<DetailsCubit>(), isA<DetailsCubit>());
+    expect(
+      injector.get<MoreCharactersCubit>(),
+      isA<MoreItemsCubit<Character>>(),
+    );
+    expect(injector.get<MoreEpisodesCubit>(), isA<MoreItemsCubit<Episode>>());
+    expect(injector.get<MoreLocationsCubit>(), isA<MoreItemsCubit<Location>>());
 
     await Future.wait([first.close(), second.close()]);
   });

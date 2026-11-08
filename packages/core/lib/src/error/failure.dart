@@ -14,7 +14,11 @@ sealed class Failure with _$Failure {
   /// No connection, DNS failure or timeout.
   const factory Failure.network() = NetworkFailure;
 
-  /// The API answered with a non-404 error status.
+  /// The API answered 429: too many requests in a short time, even after
+  /// the automatic retries in `RateLimitRetryInterceptor`.
+  const factory Failure.tooManyRequests() = TooManyRequestsFailure;
+
+  /// The API answered with another error status.
   const factory Failure.server({int? statusCode}) = ServerFailure;
 
   /// The request was cancelled because a newer one replaced it.
@@ -29,6 +33,8 @@ sealed class Failure with _$Failure {
     NotFoundFailure() => 'Nada encontrado.',
     NetworkFailure() =>
       'Sem conexão com a internet. Verifique sua rede e tente novamente.',
+    TooManyRequestsFailure() =>
+      'Muitas requisições em pouco tempo. Aguarde alguns segundos e tente novamente.',
     ServerFailure(:final statusCode) =>
       'O servidor respondeu com erro${statusCode != null ? ' ($statusCode)' : ''}. Tente novamente.',
     CancelledFailure() => 'Requisição cancelada.',

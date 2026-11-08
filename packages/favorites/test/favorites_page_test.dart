@@ -102,10 +102,10 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(Icons.favorite), findsOneWidget);
-    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsFill.heart), findsOneWidget);
+    expect(find.byIcon(PhosphorIconsRegular.heart), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.favorite_border));
+    await tester.tap(find.byIcon(PhosphorIconsRegular.heart));
     verify(() => cubit.toggle(pilot)).called(1);
   });
 }
