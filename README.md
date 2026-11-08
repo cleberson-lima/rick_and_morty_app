@@ -31,7 +31,6 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 ```bash
 dart pub global activate melos
 melos bootstrap
-cd apps/rick_and_morty_app
 flutter run
 ```
 
@@ -66,14 +65,16 @@ Os testes cobrem modelos com JSON real da API (`test/fixtures`), repositórios (
 
 ## Arquitetura
 
-Monorepo com **pub workspaces + Melos**. Cada feature é um pacote com **Clean Architecture** (`data` / `domain` / `presentation`).
+A raiz do repositório é um projeto Flutter padrão (o app). As features ficam em pacotes locais em `packages/`, ligados por **pub workspaces + Melos**, cada um com **Clean Architecture** (`data` / `domain` / `presentation`).
 
 ```
-apps/rick_and_morty_app/   # casca: main.dart, AppModule, AppWidget
+lib/                 # app: main.dart, AppModule (rotas), AppWidget (tema, cubits globais)
+android/  ios/       # projetos nativos
 packages/
-  core/                    # Dio, Failure, ResourceType, PageResult, tema, design system, AppRoutes
-  favorites/               # favoritos (shared_preferences) + FavoritesCubit global
-  search/                  # busca + detalhes (Rick and Morty API)
+  core/              # Dio, Failure, ResourceType, PageResult, tema, design system, AppRoutes
+  favorites/         # favoritos (shared_preferences) + FavoritesCubit global
+  search/            # busca + detalhes (Rick and Morty API)
+tool/                # scripts de desenvolvimento (relatório de cobertura)
 ```
 
 - `domain` é Dart puro: importa só `package:core/domain.dart` (sem Flutter, sem Dio).
@@ -107,7 +108,6 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 ## Build de release (Android)
 
 ```bash
-cd apps/rick_and_morty_app
 flutter build apk --release
 ```
 
@@ -121,7 +121,7 @@ Sem `android/key.properties`, o build de release é assinado com a chave de **de
    keytool -genkeypair -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
    ```
 
-2. Para assinar localmente, crie `apps/rick_and_morty_app/android/key.properties` (já está no `.gitignore`):
+2. Para assinar localmente, crie `android/key.properties` (já está no `.gitignore`):
 
    ```properties
    storePassword=<senha>

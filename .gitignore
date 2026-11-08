@@ -55,3 +55,6 @@ pubspec_overrides.yaml
 *.keystore
 key.properties
 **/android/key.properties
+
+# Flutter widget previews
+.widget_preview/
