@@ -1,14 +1,17 @@
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:core/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../../domain/entities/character.dart';
 import '../../domain/entities/episode.dart';
 import '../../domain/entities/location.dart';
 import '../../domain/usecases/search_usecases.dart';
-import 'search_event.dart';
-import 'search_state.dart';
+
+part 'search_bloc.freezed.dart';
+part 'search_event.dart';
+part 'search_state.dart';
 
 /// Waits for [duration] of silence, then runs only the latest event,
 /// abandoning a handler that is still awaiting an older one.

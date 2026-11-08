@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/search_bloc.dart';
-import '../bloc/search_event.dart';
-import '../bloc/search_state.dart';
 import 'result_cards.dart';
 
 /// Renders every [SearchState] of one tab: skeleton, results with infinite

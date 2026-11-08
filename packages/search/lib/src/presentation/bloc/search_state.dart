@@ -1,6 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'search_state.freezed.dart';
+part of 'search_bloc.dart';
 
 @freezed
 sealed class SearchState<T> with _$SearchState<T> {
