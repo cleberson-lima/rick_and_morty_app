@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -5,23 +6,28 @@ import '../../domain/entities/favorite_item.dart';
 import '../cubit/favorites_cubit.dart';
 import '../cubit/favorites_state.dart';
 
-/// Heart toggle bound to the app-wide [FavoritesCubit].
+/// Cyan heart toggle (outline / filled) bound to the app-wide
+/// [FavoritesCubit]. [compact] shrinks it for use inside cards.
 class FavoriteButton extends StatelessWidget {
-  const FavoriteButton({required this.item, super.key});
+  const FavoriteButton({required this.item, this.compact = false, super.key});
 
   final FavoriteItem item;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final isFavorite = context.select<FavoritesCubit, bool>(
       (cubit) => cubit.state.isFavorite(item.type, item.id),
     );
-    final color = Theme.of(context).colorScheme.error;
+    final color = Theme.of(context).colorScheme.primary;
     return IconButton(
       tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
       isSelected: isFavorite,
-      icon: const Icon(Icons.favorite_border),
-      selectedIcon: Icon(Icons.favorite, color: color),
+      color: color,
+      iconSize: compact ? 22 : 26,
+      visualDensity: compact ? VisualDensity.compact : null,
+      icon: const Icon(PhosphorIconsRegular.heart),
+      selectedIcon: const Icon(PhosphorIconsFill.heart),
       onPressed: () => context.read<FavoritesCubit>().toggle(item),
     );
   }

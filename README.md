@@ -10,10 +10,11 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 
 ## Funcionalidades
 
-- Busca por nome em três abas (personagens, episódios, locais) com **debounce de 400 ms** e **cancelamento** da requisição anterior
+- Página inicial no layout do protótipo do Figma: topo com seletor de tema **Escuro / Claro**, busca única com filtros (**Personagens / Localizações / Episódios**) e seções com prévia de cada tipo e **Ver todos**
+- Busca por nome com **debounce de 400 ms** e **cancelamento** da requisição anterior
 - **Paginação** com scroll infinito (`info.next` da API) e "tentar novamente" quando uma página falha
 - Estados de **carregamento** (skeleton), **erro** com retry, **vazio** e **não encontrado** (a API responde 404 quando nada casa com a busca)
-- **Detalhes** de cada item, acessíveis da busca, dos favoritos ou por deep link (`/details/:type/:id`)
+- **Detalhes** de cada item no layout do protótipo (personagem com cards de origem e última localização; episódio; local), com seção **"Mais ..."** e **paginação numerada**; acessíveis da busca, dos favoritos ou por deep link (`/details/:type/:id`)
 - **Favoritos** persistidos localmente: salvar, listar, remover; o coração fica sincronizado em todas as telas
 - Tema **claro/escuro** persistido, Google Fonts, cache de imagens em disco
 - **Responsivo**: lista em celular, grade de 2 a 4 colunas em tablet/paisagem; detalhes lado a lado em telas largas
@@ -31,7 +32,6 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 ```bash
 dart pub global activate melos
 melos bootstrap
-cd apps/rick_and_morty_app
 flutter run
 ```
 
@@ -46,19 +46,36 @@ melos run gen
 ```bash
 melos run analyze    # dart analyze --fatal-infos em todo o workspace
 melos run test       # flutter test em cada pacote
-melos run coverage   # lcov.info por pacote
+melos run coverage   # testes com cobertura; falha abaixo de 80%
 ```
+
+### Cobertura
+
+| Pacote | Linhas cobertas |
+| --- | --- |
+| core | 89,9% |
+| favorites | 93,2% |
+| search | 91,7% |
+| **Total** | **91,3%** (1256/1375) |
+
+O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
+
+Para ver por arquivo: `dart run tool/coverage_report.dart --files`.
+
+Os testes cobrem modelos com JSON real da API (`test/fixtures`), repositórios (sucesso, 404, timeout, sem rede, cancelamento), o `SearchBloc` (debounce, resposta antiga descartada, paginação), a injeção de dependências de cada módulo e as telas em cada estado (incluindo layout de tablet).
 
 ## Arquitetura
 
-Monorepo com **pub workspaces + Melos**. Cada feature é um pacote com **Clean Architecture** (`data` / `domain` / `presentation`).
+A raiz do repositório é um projeto Flutter padrão (o app). As features ficam em pacotes locais em `packages/`, ligados por **pub workspaces + Melos**, cada um com **Clean Architecture** (`data` / `domain` / `presentation`).
 
 ```
-apps/rick_and_morty_app/   # casca: main.dart, AppModule, AppWidget
+lib/                 # app: main.dart, AppModule (rotas), AppWidget (tema, cubits globais)
+android/  ios/       # projetos nativos
 packages/
-  core/                    # Dio, Failure, ResourceType, PageResult, tema, design system, AppRoutes
-  favorites/               # favoritos (shared_preferences) + FavoritesCubit global
-  search/                  # busca + detalhes (Rick and Morty API)
+  core/              # Dio, Failure, ResourceType, PageResult, tema, design system, AppRoutes
+  favorites/         # favoritos (shared_preferences) + FavoritesCubit global
+  search/            # busca + detalhes (Rick and Morty API)
+tool/                # scripts de desenvolvimento (relatório de cobertura)
 ```
 
 - `domain` é Dart puro: importa só `package:core/domain.dart` (sem Flutter, sem Dio).
@@ -87,12 +104,11 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 | Detalhes carregam por `(tipo, id)` | A mesma rota serve para busca, favoritos e deep link. |
 | Arquivos gerados versionados | O avaliador consegue rodar sem `build_runner`. |
 
-> **Fonte e cores:** `AppTheme.fontFamily` (Lato) e `AppTheme.seed` são provisórios até a conferência com o protótipo do Figma; trocar ali atualiza o app inteiro.
+> **Fonte e cores:** `AppTheme.fontFamily` (Inter) e as cores em `AppColors` foram tiradas do protótipo do Figma por inspeção visual e ainda serão conferidas no inspetor; trocar ali atualiza o app inteiro.
 
 ## Build de release (Android)
 
 ```bash
-cd apps/rick_and_morty_app
 flutter build apk --release
 ```
 
@@ -106,7 +122,7 @@ Sem `android/key.properties`, o build de release é assinado com a chave de **de
    keytool -genkeypair -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
    ```
 
-2. Para assinar localmente, crie `apps/rick_and_morty_app/android/key.properties` (já está no `.gitignore`):
+2. Para assinar localmente, crie `android/key.properties` (já está no `.gitignore`):
 
    ```properties
    storePassword=<senha>

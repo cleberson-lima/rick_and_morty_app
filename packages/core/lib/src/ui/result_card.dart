@@ -57,7 +57,9 @@ class ResultCard extends StatelessWidget {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 4, 12),
+                  // 8px vertically leaves room for title + subtitle +
+                  // caption + footer inside the fixed card height.
+                  padding: const EdgeInsets.fromLTRB(16, 8, 4, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -23,6 +23,10 @@ abstract class Character with _$Character {
     required String gender,
     required String originName,
     required String locationName,
+
+    /// Ids of the origin / last location, or `null` when unknown.
+    int? originId,
+    int? locationId,
     required String imageUrl,
     required int episodeCount,
   }) = _Character;

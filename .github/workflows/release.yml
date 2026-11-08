@@ -13,8 +13,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      APP_DIR: apps/rick_and_morty_app
     steps:
       - uses: actions/checkout@v4
 
@@ -57,7 +55,7 @@ jobs:
           done
 
       - name: Restore keystore
-        working-directory: ${{ env.APP_DIR }}/android
+        working-directory: android
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -73,7 +71,6 @@ jobs:
           } > key.properties
 
       - name: Build APK
-        working-directory: ${{ env.APP_DIR }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           flutter build apk --release \
@@ -83,10 +80,10 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.APP_DIR }}/build/app/outputs/flutter-apk/app-release.apk
+          files: build/app/outputs/flutter-apk/app-release.apk
           generate_release_notes: true
 
       - name: Remove signing files
         if: always()
-        working-directory: ${{ env.APP_DIR }}/android
+        working-directory: android
         run: rm -f app/upload-keystore.jks key.properties

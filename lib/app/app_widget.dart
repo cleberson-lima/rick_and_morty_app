@@ -26,8 +26,11 @@ class AppWidget extends StatelessWidget {
           darkTheme: AppTheme.dark(),
           themeMode: themeMode,
           routerConfig: Modular.routerConfig,
-          builder: (context, child) =>
-              FavoritesErrorListener(child: child ?? const SizedBox.shrink()),
+          builder: (context, child) => BottomSafeArea(
+            child: FavoritesErrorListener(
+              child: child ?? const SizedBox.shrink(),
+            ),
+          ),
         ),
       ),
     );

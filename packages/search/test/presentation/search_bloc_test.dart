@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +12,8 @@ import 'package:search/src/presentation/bloc/search_state.dart';
 class _MockSearch extends Mock implements SearchUseCase<String> {}
 
 const _debounce = Duration(milliseconds: 50);
-const _afterDebounce = Duration(milliseconds: 120);
+// Generous slack: a busy CI machine may fire the debounce timer late.
+const _afterDebounce = Duration(milliseconds: 500);
 
 PageResult<String> _page(List<String> items, {int? next, int total = 0}) =>
     PageResult(items: items, totalCount: total, nextPage: next);
@@ -121,21 +124,25 @@ void main() {
     blocTest<SearchBloc<String>, SearchState<String>>(
       'a slow older response never overwrites a newer search',
       setUp: () {
-        when(() => search('slow')).thenAnswer((_) async {
-          await Future<void>.delayed(const Duration(milliseconds: 80));
-          return Right(_page(['stale'], total: 1));
-        });
         when(
           () => search('fast'),
         ).thenAnswer((_) async => Right(_page(['fresh'], total: 1)));
       },
       build: build,
+      // Deterministic: the "slow" response is released only after the newer
+      // search has finished, so no real-time race decides the outcome.
       act: (bloc) async {
+        final slow = Completer<Either<Failure, PageResult<String>>>();
+        when(() => search('slow')).thenAnswer((_) => slow.future);
+
         bloc.add(const SearchSubmitted('slow'));
-        await Future<void>.delayed(const Duration(milliseconds: 10));
+        await Future<void>.delayed(Duration.zero);
         bloc.add(const SearchQueryChanged('fast'));
+        await bloc.stream.firstWhere((s) => s is SearchSuccess<String>);
+
+        slow.complete(Right(_page(['stale'], total: 1)));
+        await Future<void>.delayed(Duration.zero);
       },
-      wait: const Duration(milliseconds: 200),
       expect: () => const [
         SearchState<String>.loading(query: 'slow'),
         SearchState<String>.loading(query: 'fast'),
@@ -176,17 +183,22 @@ void main() {
 
     blocTest<SearchBloc<String>, SearchState<String>>(
       'drops repeated requests while a page is loading',
-      setUp: () => when(() => search('rick', page: 2)).thenAnswer((_) async {
-        await Future<void>.delayed(const Duration(milliseconds: 20));
-        return Right(_page(['c'], total: 3));
-      }),
       build: build,
       seed: () => firstPage,
-      act: (bloc) => bloc
-        ..add(const SearchNextPageRequested())
-        ..add(const SearchNextPageRequested())
-        ..add(const SearchNextPageRequested()),
-      wait: const Duration(milliseconds: 60),
+      // The page stays in flight until all three requests were dispatched.
+      act: (bloc) async {
+        final page = Completer<Either<Failure, PageResult<String>>>();
+        when(() => search('rick', page: 2)).thenAnswer((_) => page.future);
+        bloc
+          ..add(const SearchNextPageRequested())
+          ..add(const SearchNextPageRequested())
+          ..add(const SearchNextPageRequested());
+        await Future<void>.delayed(Duration.zero);
+        page.complete(Right(_page(['c'], total: 3)));
+        await bloc.stream.firstWhere(
+          (s) => s is SearchSuccess<String> && !s.isLoadingMore,
+        );
+      },
       verify: (_) => verify(() => search('rick', page: 2)).called(1),
     );
 

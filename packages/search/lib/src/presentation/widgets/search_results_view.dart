@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/search_bloc.dart';
 import '../bloc/search_event.dart';
 import '../bloc/search_state.dart';
+import 'result_cards.dart';
 
 /// Renders every [SearchState] of one tab: skeleton, results with infinite
 /// scroll, empty, not found and error with retry.
@@ -43,6 +44,16 @@ class SearchResultsView<T> extends StatelessWidget {
             message: 'A busca não retornou resultados.',
           ),
           SearchSuccess(:final items) => ResponsiveResultsView(
+            tileHeight: switch (type) {
+              ResourceType.character => CardSizes.characterHeight,
+              ResourceType.episode => CardSizes.episodeHeight,
+              ResourceType.location => CardSizes.locationHeight,
+            },
+            maxTileWidth: switch (type) {
+              ResourceType.character => CardSizes.characterMaxWidth,
+              ResourceType.episode => CardSizes.episodeMaxWidth,
+              ResourceType.location => CardSizes.locationMaxWidth,
+            },
             itemCount: items.length,
             itemBuilder: (context, index) => itemBuilder(context, items[index]),
             onEndReached: () => bloc.add(const SearchNextPageRequested()),

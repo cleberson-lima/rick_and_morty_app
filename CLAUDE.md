@@ -16,7 +16,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - Fixtures reais da API em `packages/search/test/fixtures/`; `FakeAdapter` (test/helpers.dart) exercita o Dio de verdade.
 
 ## Estrutura
-- `apps/rick_and_morty_app` — casca: `main.dart`, `AppModule`, `AppWidget`
+- raiz do repositório — o app Flutter (`lib/`, `android/`, `ios/`): `main.dart`, `AppModule`, `AppWidget`
 - `packages/core` — Dio client, `Failure`, `ResourceType`, tema, `ThemeCubit`, widgets em `lib/src/ui`
 - `packages/favorites` — favoritos persistidos (shared_preferences)
 - `packages/search` — busca de personagens, episódios e locais + tela de detalhe
