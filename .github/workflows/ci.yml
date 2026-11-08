@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+
+      - name: Install Melos
+        run: dart pub global activate melos 8.10.1
+
+      - name: Bootstrap workspace
+        run: melos bootstrap
+
+      - name: Check formatting (hand-written files)
+        run: |
+          dart format --output=none --set-exit-if-changed \
+            $(git ls-files '*.dart' | grep -vE '\.(g|freezed)\.dart$')
+
+      - name: Analyze
+        run: melos run analyze
+
+      - name: Test
+        run: melos run test
