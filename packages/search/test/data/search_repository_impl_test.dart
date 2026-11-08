@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:search/src/data/datasources/search_remote_data_source.dart';
-import 'package:search/src/data/models/api_models.dart';
+import 'package:search/src/data/models/models.dart';
 import 'package:search/src/data/repositories/search_repository_impl.dart';
 import 'package:search/src/domain/entities/character.dart';
 
@@ -29,9 +29,8 @@ void main() {
   late _MockRemote remote;
   late SearchRepositoryImpl repository;
 
-  final page = PageModel.fromJson(
+  final page = PageModel<CharacterModel>.fromJson(
     fixture('characters_page.json'),
-    (json) => CharacterModel.fromJson(json! as Map<String, Object?>),
   );
 
   setUp(() {
@@ -115,16 +114,12 @@ void main() {
 
   test('episodes and locations map to entities', () async {
     when(() => remote.searchEpisodes('pilot', 1)).thenAnswer(
-      (_) async => PageModel.fromJson(
-        fixture('episodes_page.json'),
-        (json) => EpisodeModel.fromJson(json! as Map<String, Object?>),
-      ),
+      (_) async =>
+          PageModel<EpisodeModel>.fromJson(fixture('episodes_page.json')),
     );
     when(() => remote.searchLocations('earth', 1)).thenAnswer(
-      (_) async => PageModel.fromJson(
-        fixture('locations_page.json'),
-        (json) => LocationModel.fromJson(json! as Map<String, Object?>),
-      ),
+      (_) async =>
+          PageModel<LocationModel>.fromJson(fixture('locations_page.json')),
     );
 
     final episodes = await repository.searchEpisodes('pilot');
@@ -153,11 +148,11 @@ void main() {
         name: 'Pilot',
         airDate: 'December 2, 2013',
         episode: 'S01E01',
-        characters: ['a', 'b'],
+        characterCount: 2,
       ),
     );
     when(() => remote.getLocation(1)).thenAnswer(
-      (_) async => const LocationModel(id: 1, name: 'Earth', residents: ['a']),
+      (_) async => const LocationModel(id: 1, name: 'Earth', residentCount: 1),
     );
 
     final episode = await repository.getEpisode(1);

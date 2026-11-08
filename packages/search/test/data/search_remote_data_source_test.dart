@@ -16,7 +16,7 @@ void main() {
 
       final page = await source.searchCharacters('rick', 2);
 
-      expect(page.info.count, 107);
+      expect(page.count, 107);
       expect(page.results.first.name, 'Rick Sanchez');
       expect(adapter.requests.single.path, '/character/');
       expect(adapter.requests.single.queryParameters, {
