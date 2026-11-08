@@ -9,8 +9,6 @@ import 'package:search/src/domain/entities/character.dart';
 import 'package:search/src/domain/entities/episode.dart';
 import 'package:search/src/domain/entities/location.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
-import 'package:search/src/presentation/bloc/search_event.dart';
-import 'package:search/src/presentation/bloc/search_state.dart';
 import 'package:search/src/presentation/pages/search_page.dart';
 import 'package:search/src/presentation/widgets/home_hero.dart';
 import 'package:shared_preferences/shared_preferences.dart';

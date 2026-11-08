@@ -6,8 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:search/src/domain/usecases/search_usecases.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
-import 'package:search/src/presentation/bloc/search_event.dart';
-import 'package:search/src/presentation/bloc/search_state.dart';
 
 class _MockSearch extends Mock implements SearchUseCase<String> {}
 

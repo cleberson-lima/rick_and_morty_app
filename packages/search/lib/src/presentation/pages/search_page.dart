@@ -6,7 +6,6 @@ import '../../domain/entities/character.dart';
 import '../../domain/entities/episode.dart';
 import '../../domain/entities/location.dart';
 import '../bloc/search_bloc.dart';
-import '../bloc/search_event.dart';
 import '../widgets/home_hero.dart';
 import '../widgets/home_section.dart';
 import '../widgets/result_cards.dart';
