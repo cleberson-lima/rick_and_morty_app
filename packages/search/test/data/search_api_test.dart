@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:core/types.dart';
+import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:search/src/data/models/models.dart';
@@ -179,6 +179,38 @@ void main() {
 
     expect(reported, [isA<TypeError>()]);
   });
+
+  test(
+    'with the offline cache, a repeated search works without network',
+    () async {
+      final cacheDir = await Directory.systemTemp.createTemp('search_cache');
+      addTearDown(() => cacheDir.delete(recursive: true));
+      var online = true;
+      final adapter = FakeAdapter((options) async {
+        if (!online) {
+          throw DioException.connectionError(
+            requestOptions: options,
+            reason: 'offline',
+          );
+        }
+        return jsonBody(fixture('characters_page.json'));
+      });
+      final api = SearchApi(
+        dioWith(adapter)..interceptors.add(OfflineCacheInterceptor(cacheDir)),
+      );
+
+      final first = _data(await api.searchCharacters('rick'));
+      online = false;
+      final offline = await api.searchCharacters('rick');
+
+      expect(_data(offline).items, first.items);
+      expect(
+        await api.searchCharacters('morty'),
+        const Failed<Never>(Failure.network()),
+        reason: 'never fetched, so nothing to fall back to',
+      );
+    },
+  );
 
   group('cancellation', () {
     test('a new search cancels the previous one of the same type', () async {
