@@ -132,15 +132,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String query)?  loading,TResult Function( String query,  List<T> items,  int totalCount,  int? nextPage,  bool isLoadingMore,  String? loadMoreError)?  success,TResult Function( String query)?  empty,TResult Function( String query)?  notFound,TResult Function( String query,  String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( String query)?  loading,TResult Function( String query,  List<T> items,  int totalCount,  int? nextPage,  bool isLoadingMore,  Failure? loadMoreFailure)?  success,TResult Function( String query)?  empty,TResult Function( String query)?  notFound,TResult Function( String query,  Failure failure)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SearchInitial() when initial != null:
 return initial();case SearchLoading() when loading != null:
 return loading(_that.query);case SearchSuccess() when success != null:
-return success(_that.query,_that.items,_that.totalCount,_that.nextPage,_that.isLoadingMore,_that.loadMoreError);case SearchEmpty() when empty != null:
+return success(_that.query,_that.items,_that.totalCount,_that.nextPage,_that.isLoadingMore,_that.loadMoreFailure);case SearchEmpty() when empty != null:
 return empty(_that.query);case SearchNotFound() when notFound != null:
 return notFound(_that.query);case SearchError() when error != null:
-return error(_that.query,_that.message);case _:
+return error(_that.query,_that.failure);case _:
   return orElse();
 
 }
@@ -158,15 +158,15 @@ return error(_that.query,_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String query)  loading,required TResult Function( String query,  List<T> items,  int totalCount,  int? nextPage,  bool isLoadingMore,  String? loadMoreError)  success,required TResult Function( String query)  empty,required TResult Function( String query)  notFound,required TResult Function( String query,  String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( String query)  loading,required TResult Function( String query,  List<T> items,  int totalCount,  int? nextPage,  bool isLoadingMore,  Failure? loadMoreFailure)  success,required TResult Function( String query)  empty,required TResult Function( String query)  notFound,required TResult Function( String query,  Failure failure)  error,}) {final _that = this;
 switch (_that) {
 case SearchInitial():
 return initial();case SearchLoading():
 return loading(_that.query);case SearchSuccess():
-return success(_that.query,_that.items,_that.totalCount,_that.nextPage,_that.isLoadingMore,_that.loadMoreError);case SearchEmpty():
+return success(_that.query,_that.items,_that.totalCount,_that.nextPage,_that.isLoadingMore,_that.loadMoreFailure);case SearchEmpty():
 return empty(_that.query);case SearchNotFound():
 return notFound(_that.query);case SearchError():
-return error(_that.query,_that.message);}
+return error(_that.query,_that.failure);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -180,15 +180,15 @@ return error(_that.query,_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String query)?  loading,TResult? Function( String query,  List<T> items,  int totalCount,  int? nextPage,  bool isLoadingMore,  String? loadMoreError)?  success,TResult? Function( String query)?  empty,TResult? Function( String query)?  notFound,TResult? Function( String query,  String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( String query)?  loading,TResult? Function( String query,  List<T> items,  int totalCount,  int? nextPage,  bool isLoadingMore,  Failure? loadMoreFailure)?  success,TResult? Function( String query)?  empty,TResult? Function( String query)?  notFound,TResult? Function( String query,  Failure failure)?  error,}) {final _that = this;
 switch (_that) {
 case SearchInitial() when initial != null:
 return initial();case SearchLoading() when loading != null:
 return loading(_that.query);case SearchSuccess() when success != null:
-return success(_that.query,_that.items,_that.totalCount,_that.nextPage,_that.isLoadingMore,_that.loadMoreError);case SearchEmpty() when empty != null:
+return success(_that.query,_that.items,_that.totalCount,_that.nextPage,_that.isLoadingMore,_that.loadMoreFailure);case SearchEmpty() when empty != null:
 return empty(_that.query);case SearchNotFound() when notFound != null:
 return notFound(_that.query);case SearchError() when error != null:
-return error(_that.query,_that.message);case _:
+return error(_that.query,_that.failure);case _:
   return null;
 
 }
@@ -300,7 +300,7 @@ as String,
 
 
 class SearchSuccess<T> extends SearchState<T> {
-  const SearchSuccess({required this.query, required  List<T> items, required this.totalCount, this.nextPage, this.isLoadingMore = false, this.loadMoreError}): _items = items,super._();
+  const SearchSuccess({required this.query, required  List<T> items, required this.totalCount, this.nextPage, this.isLoadingMore = false, this.loadMoreFailure}): _items = items,super._();
   
 
  final  String query;
@@ -314,7 +314,8 @@ class SearchSuccess<T> extends SearchState<T> {
  final  int totalCount;
  final  int? nextPage;
 @JsonKey() final  bool isLoadingMore;
- final  String? loadMoreError;
+/// Why the last "load more" failed; shown above a retry button.
+ final  Failure? loadMoreFailure;
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
@@ -326,18 +327,18 @@ $SearchSuccessCopyWith<T, SearchSuccess<T>> get copyWith => _$SearchSuccessCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchSuccess<T>&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.nextPage, nextPage) || other.nextPage == nextPage)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.loadMoreError, loadMoreError) || other.loadMoreError == loadMoreError));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchSuccess<T>&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.nextPage, nextPage) || other.nextPage == nextPage)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.loadMoreFailure, loadMoreFailure) || other.loadMoreFailure == loadMoreFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,query,const DeepCollectionEquality().hash(_items),totalCount,nextPage,isLoadingMore,loadMoreError);
+    return Object.hash(runtimeType,query,const DeepCollectionEquality().hash(_items),totalCount,nextPage,isLoadingMore,loadMoreFailure);
 }
 
 @override
 String toString() {
-    return 'SearchState<$T>.success(query: $query, items: $items, totalCount: $totalCount, nextPage: $nextPage, isLoadingMore: $isLoadingMore, loadMoreError: $loadMoreError)';
+    return 'SearchState<$T>.success(query: $query, items: $items, totalCount: $totalCount, nextPage: $nextPage, isLoadingMore: $isLoadingMore, loadMoreFailure: $loadMoreFailure)';
 }
 
 
@@ -348,11 +349,11 @@ abstract mixin class $SearchSuccessCopyWith<T,$Res> implements $SearchStateCopyW
   factory $SearchSuccessCopyWith(SearchSuccess<T> value, $Res Function(SearchSuccess<T>) _then) = _$SearchSuccessCopyWithImpl;
 @useResult
 $Res call({
- String query, List<T> items, int totalCount, int? nextPage, bool isLoadingMore, String? loadMoreError
+ String query, List<T> items, int totalCount, int? nextPage, bool isLoadingMore, Failure? loadMoreFailure
 });
 
 
-
+$FailureCopyWith<$Res>? get loadMoreFailure;
 
 }
 /// @nodoc
@@ -365,19 +366,31 @@ class _$SearchSuccessCopyWithImpl<T,$Res>
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? items = null,Object? totalCount = null,Object? nextPage = freezed,Object? isLoadingMore = null,Object? loadMoreError = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? items = null,Object? totalCount = null,Object? nextPage = freezed,Object? isLoadingMore = null,Object? loadMoreFailure = freezed,}) {
   return _then(SearchSuccess<T>(
 query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<T>,totalCount: null == totalCount ? _self.totalCount : totalCount // ignore: cast_nullable_to_non_nullable
 as int,nextPage: freezed == nextPage ? _self.nextPage : nextPage // ignore: cast_nullable_to_non_nullable
 as int?,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
-as bool,loadMoreError: freezed == loadMoreError ? _self.loadMoreError : loadMoreError // ignore: cast_nullable_to_non_nullable
-as String?,
+as bool,loadMoreFailure: freezed == loadMoreFailure ? _self.loadMoreFailure : loadMoreFailure // ignore: cast_nullable_to_non_nullable
+as Failure?,
   ));
 }
 
+/// Create a copy of SearchState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res>? get loadMoreFailure {
+    if (_self.loadMoreFailure == null) {
+    return null;
+  }
 
+  return $FailureCopyWith<$Res>(_self.loadMoreFailure!, (value) {
+    return _then(_self.copyWith(loadMoreFailure: value));
+  });
+}
 }
 
 /// @nodoc
@@ -520,11 +533,11 @@ as String,
 
 
 class SearchError<T> extends SearchState<T> {
-  const SearchError({required this.query, required this.message}): super._();
+  const SearchError({required this.query, required this.failure}): super._();
   
 
  final  String query;
- final  String message;
+ final  Failure failure;
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
@@ -536,18 +549,18 @@ $SearchErrorCopyWith<T, SearchError<T>> get copyWith => _$SearchErrorCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchError<T>&&(identical(other.query, query) || other.query == query)&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchError<T>&&(identical(other.query, query) || other.query == query)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,query,message);
+    return Object.hash(runtimeType,query,failure);
 }
 
 @override
 String toString() {
-    return 'SearchState<$T>.error(query: $query, message: $message)';
+    return 'SearchState<$T>.error(query: $query, failure: $failure)';
 }
 
 
@@ -558,11 +571,11 @@ abstract mixin class $SearchErrorCopyWith<T,$Res> implements $SearchStateCopyWit
   factory $SearchErrorCopyWith(SearchError<T> value, $Res Function(SearchError<T>) _then) = _$SearchErrorCopyWithImpl;
 @useResult
 $Res call({
- String query, String message
+ String query, Failure failure
 });
 
 
-
+$FailureCopyWith<$Res> get failure;
 
 }
 /// @nodoc
@@ -575,15 +588,24 @@ class _$SearchErrorCopyWithImpl<T,$Res>
 
 /// Create a copy of SearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? message = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? failure = null,}) {
   return _then(SearchError<T>(
 query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
-as String,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+as String,failure: null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure,
   ));
 }
 
-
+/// Create a copy of SearchState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res> get failure {
+  
+  return $FailureCopyWith<$Res>(_self.failure, (value) {
+    return _then(_self.copyWith(failure: value));
+  });
+}
 }
 
 // dart format on

@@ -14,7 +14,9 @@ sealed class SearchState<T> with _$SearchState<T> {
     required int totalCount,
     int? nextPage,
     @Default(false) bool isLoadingMore,
-    String? loadMoreError,
+
+    /// Why the last "load more" failed; shown above a retry button.
+    Failure? loadMoreFailure,
   }) = SearchSuccess<T>;
 
   /// The API answered 200 with zero results.
@@ -26,7 +28,7 @@ sealed class SearchState<T> with _$SearchState<T> {
 
   const factory SearchState.error({
     required String query,
-    required String message,
+    required Failure failure,
   }) = SearchError<T>;
 
   /// Query this state belongs to, or `null` before the first search.

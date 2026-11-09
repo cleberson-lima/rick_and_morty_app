@@ -3,12 +3,10 @@ import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/character.dart';
-import '../../domain/entities/episode.dart';
-import '../../domain/entities/location.dart';
+import '../../data/models/models.dart';
 import '../bloc/details_cubit.dart';
 import '../widgets/home_hero.dart';
-import '../widgets/more_section.dart';
+import '../widgets/related_items_section.dart';
 import '../widgets/result_cards.dart';
 
 typedef OpenDetails = void Function(ResourceType type, int id);
@@ -42,15 +40,15 @@ class DetailsPage extends StatelessWidget {
             ),
             DetailsNotFound() => _Message(
               topBar: topBar,
-              child: const StateView(
+              child: const MessageView(
                 icon: Icons.search_off,
                 title: 'Não encontrado',
                 message: 'Este item não existe ou foi removido da API.',
               ),
             ),
-            DetailsError(:final message) => _Message(
+            DetailsError(:final failure) => _Message(
               topBar: topBar,
-              child: StateView.error(message: message, onRetry: onRetry),
+              child: MessageView.failure(failure: failure, onRetry: onRetry),
             ),
             DetailsCharacter(:final character) => _Content<Character>(
               topBar: topBar,
@@ -58,7 +56,7 @@ class DetailsPage extends StatelessWidget {
                 character: character,
                 onOpenDetails: onOpenDetails,
               ),
-              more: MoreSection<Character>(
+              more: RelatedItemsSection<Character>(
                 title: 'Mais personagens',
                 icon: PhosphorIconsRegular.smiley,
                 tileHeight: CardSizes.characterHeight,
@@ -73,7 +71,7 @@ class DetailsPage extends StatelessWidget {
             DetailsEpisode(:final episode) => _Content<Episode>(
               topBar: topBar,
               header: _EpisodeHeader(episode: episode),
-              more: MoreSection<Episode>(
+              more: RelatedItemsSection<Episode>(
                 title: 'Mais episódios',
                 icon: PhosphorIconsRegular.monitorPlay,
                 tileHeight: CardSizes.episodeHeight,
@@ -88,7 +86,7 @@ class DetailsPage extends StatelessWidget {
             DetailsLocation(:final location) => _Content<Location>(
               topBar: topBar,
               header: _LocationHeader(location: location),
-              more: MoreSection<Location>(
+              more: RelatedItemsSection<Location>(
                 title: 'Mais localizações',
                 icon: PhosphorIconsRegular.planet,
                 tileHeight: CardSizes.locationHeight,

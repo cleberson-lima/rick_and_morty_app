@@ -5,12 +5,12 @@ import 'package:search/search.dart';
 
 class AppModule extends Module {
   @override
-  List<Module> get imports => [CoreModule(), FavoritesDataModule()];
+  List<Module> get imports => [CoreModule(), FavoritesBindingsModule()];
 
   @override
   void routes(RouteManager r) {
     r
       ..module(AppRoutes.search, module: SearchModule())
-      ..module('/favorites', module: FavoritesModule());
+      ..module('/favorites', module: FavoritesRoutesModule());
   }
 }

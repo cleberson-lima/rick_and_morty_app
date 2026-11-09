@@ -2,7 +2,7 @@
 
 ## Stack
 Flutter 3.41+, Dart 3.8+, Melos 8 (pub workspaces), flutter_modular, dio,
-freezed 4 (freezed_annotation 3) + json_serializable, dartz, mocktail, flutter_bloc + bloc_concurrency + bloc_test,
+freezed 4 (freezed_annotation 3) + json_serializable, mocktail, flutter_bloc + bloc_concurrency + bloc_test,
 shared_preferences, cached_network_image, google_fonts.
 
 Versões fixadas de propósito (não atualizar sem testar):
@@ -17,26 +17,28 @@ Versões fixadas de propósito (não atualizar sem testar):
 
 ## Estrutura
 - raiz do repositório — o app Flutter (`lib/`, `android/`, `ios/`): `main.dart`, `AppModule`, `AppWidget`
-- `packages/core` — Dio client, `Failure`, `ResourceType`, tema, `ThemeCubit`, widgets em `lib/src/ui`
+- `packages/core` — Dio client, `Result`, `Failure`, `ResourceType`, `PaginatedList`, tema, `ThemeCubit`, widgets em `lib/src/ui`
 - `packages/favorites` — favoritos persistidos (shared_preferences)
 - `packages/search` — busca de personagens, episódios e locais + tela de detalhe
 
 ## Arquitetura
-- `packages/<feature>/lib/src/{data,domain,presentation}`
-- `domain` não importa Flutter, Dio nem pacotes de `data`
-- Models da API (`packages/search/lib/src/data/models`) estendem `Model<E>`: `factory X.fromJson` escrito à mão (sem freezed/json_serializable) e `toEntity()`. Model nova precisa entrar no `switch` de `Model.fromJson<T>`
-- Repositórios retornam `Either<Failure, T>`; nunca lançam exceção para cima
+- `packages/<feature>/lib/src/{data,presentation}` — sem camada `domain`: nada de entidades, use cases ou contratos de repositório
+- `data/models`: uma classe freezed por recurso, com `@Freezed(fromJson: false, toJson: false)` e `factory X.fromJson` escrito à mão (models da API). A UI usa as models direto
+- `data/search_api.dart` (`SearchApi`) e `data/favorites_storage.dart` (`FavoritesStorage`) fazem o acesso; a model nova entra passando o `X.fromJson` para `_search`/`_getById`
+- API e storage retornam `Result<T>` (`Success(data)` / `Failed(failure)`, do `core`) e nunca lançam exceção; trate com `switch`, não com `try/catch`
 - 404 da API vira `NotFoundFailure` → estado `notFound` (não é erro genérico)
+- `Failure` não tem texto: os estados guardam o `Failure` e a UI usa `FailurePresentation` (`title`, `message`, `icon`) / `MessageView.failure` do `core`
 - Estados de tela são sealed classes do freezed: loading, success, empty, notFound, error
+- Cubit para carregar dados; Bloc só no `SearchBloc` (debounce/`restartable`/`droppable` pelos transformers de evento)
 - O state fica em `x_state.dart` como `part of 'x_cubit.dart'` (eventos do Bloc idem); os imports ficam só na cubit e quem usa o state importa a cubit
-- Cancelamento: o datasource cancela o `CancelToken` anterior a cada busca; o Bloc descarta resultados antigos
+- Cancelamento: o `SearchApi` cancela o `CancelToken` anterior do mesmo tipo a cada busca; o Bloc descarta resultados antigos. Telas que não podem se cancelar usam instâncias separadas do `SearchApi`
 
 ## Regras
-- Todo código novo vem com teste (unit para data/domain, widget para presentation)
+- Todo código novo vem com teste (unit para data e Bloc/Cubit, widget para telas)
 - Widgets reutilizáveis ficam em `packages/core/lib/src/ui`
 - Use `const` sempre que possível; listas com `.builder`/slivers
 - freezed 3+/4: classes `abstract class X with _$X` ou `sealed class X with _$X`
-- Commits em Conventional Commits (inglês); uma branch `feature/*` por tarefa
+- Commits em Conventional Commits (inglês); uma branch `feature/*` (ou `fix/*`) por tarefa, criada a partir da `main` e mesclada nela por PR. Não há `develop`
 - Arquivos gerados (`*.g.dart`, `*.freezed.dart`) são versionados
 
 ## Comandos

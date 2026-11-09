@@ -132,7 +132,7 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( Character character)?  character,TResult Function( Episode episode)?  episode,TResult Function( Location location)?  location,TResult Function()?  notFound,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( Character character)?  character,TResult Function( Episode episode)?  episode,TResult Function( Location location)?  location,TResult Function()?  notFound,TResult Function( Failure failure)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case DetailsLoading() when loading != null:
 return loading();case DetailsCharacter() when character != null:
@@ -140,7 +140,7 @@ return character(_that.character);case DetailsEpisode() when episode != null:
 return episode(_that.episode);case DetailsLocation() when location != null:
 return location(_that.location);case DetailsNotFound() when notFound != null:
 return notFound();case DetailsError() when error != null:
-return error(_that.message);case _:
+return error(_that.failure);case _:
   return orElse();
 
 }
@@ -158,7 +158,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( Character character)  character,required TResult Function( Episode episode)  episode,required TResult Function( Location location)  location,required TResult Function()  notFound,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( Character character)  character,required TResult Function( Episode episode)  episode,required TResult Function( Location location)  location,required TResult Function()  notFound,required TResult Function( Failure failure)  error,}) {final _that = this;
 switch (_that) {
 case DetailsLoading():
 return loading();case DetailsCharacter():
@@ -166,7 +166,7 @@ return character(_that.character);case DetailsEpisode():
 return episode(_that.episode);case DetailsLocation():
 return location(_that.location);case DetailsNotFound():
 return notFound();case DetailsError():
-return error(_that.message);}
+return error(_that.failure);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -180,7 +180,7 @@ return error(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( Character character)?  character,TResult? Function( Episode episode)?  episode,TResult? Function( Location location)?  location,TResult? Function()?  notFound,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( Character character)?  character,TResult? Function( Episode episode)?  episode,TResult? Function( Location location)?  location,TResult? Function()?  notFound,TResult? Function( Failure failure)?  error,}) {final _that = this;
 switch (_that) {
 case DetailsLoading() when loading != null:
 return loading();case DetailsCharacter() when character != null:
@@ -188,7 +188,7 @@ return character(_that.character);case DetailsEpisode() when episode != null:
 return episode(_that.episode);case DetailsLocation() when location != null:
 return location(_that.location);case DetailsNotFound() when notFound != null:
 return notFound();case DetailsError() when error != null:
-return error(_that.message);case _:
+return error(_that.failure);case _:
   return null;
 
 }
@@ -495,10 +495,10 @@ String toString() {
 
 
 class DetailsError implements DetailsState {
-  const DetailsError(this.message);
+  const DetailsError(this.failure);
   
 
- final  String message;
+ final  Failure failure;
 
 /// Create a copy of DetailsState
 /// with the given fields replaced by the non-null parameter values.
@@ -510,18 +510,18 @@ $DetailsErrorCopyWith<DetailsError> get copyWith => _$DetailsErrorCopyWithImpl<D
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is DetailsError&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is DetailsError&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,message);
+    return Object.hash(runtimeType,failure);
 }
 
 @override
 String toString() {
-    return 'DetailsState.error(message: $message)';
+    return 'DetailsState.error(failure: $failure)';
 }
 
 
@@ -532,11 +532,11 @@ abstract mixin class $DetailsErrorCopyWith<$Res> implements $DetailsStateCopyWit
   factory $DetailsErrorCopyWith(DetailsError value, $Res Function(DetailsError) _then) = _$DetailsErrorCopyWithImpl;
 @useResult
 $Res call({
- String message
+ Failure failure
 });
 
 
-
+$FailureCopyWith<$Res> get failure;
 
 }
 /// @nodoc
@@ -549,14 +549,23 @@ class _$DetailsErrorCopyWithImpl<$Res>
 
 /// Create a copy of DetailsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? failure = null,}) {
   return _then(DetailsError(
-null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure,
   ));
 }
 
-
+/// Create a copy of DetailsState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res> get failure {
+  
+  return $FailureCopyWith<$Res>(_self.failure, (value) {
+    return _then(_self.copyWith(failure: value));
+  });
+}
 }
 
 // dart format on

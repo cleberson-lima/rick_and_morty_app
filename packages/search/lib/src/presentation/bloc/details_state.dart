@@ -7,5 +7,5 @@ sealed class DetailsState with _$DetailsState {
   const factory DetailsState.episode(Episode episode) = DetailsEpisode;
   const factory DetailsState.location(Location location) = DetailsLocation;
   const factory DetailsState.notFound() = DetailsNotFound;
-  const factory DetailsState.error(String message) = DetailsError;
+  const factory DetailsState.error(Failure failure) = DetailsError;
 }

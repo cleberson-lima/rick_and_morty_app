@@ -90,26 +90,26 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 
 | Pacote | Linhas cobertas |
 | --- | --- |
-| core | 89,9% |
-| favorites | 93,2% |
-| search | 91,7% |
-| **Total** | **91,3%** (1256/1375) |
+| core | 90,9% |
+| favorites | 91,7% |
+| search | 91,6% |
+| **Total** | **91,4%** (1205/1318) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
 Para ver por arquivo: `dart run tool/coverage_report.dart --files`.
 
-Os testes cobrem modelos com JSON real da API (`test/fixtures`), repositórios (sucesso, 404, timeout, sem rede, cancelamento), o `SearchBloc` (debounce, resposta antiga descartada, paginação), a injeção de dependências de cada módulo e as telas em cada estado (incluindo layout de tablet).
+Os testes cobrem as models com JSON real da API (`test/fixtures`), o `SearchApi` e o `FavoritesStorage` (sucesso, 404, timeout, sem rede, cancelamento, armazenamento corrompido), o `SearchBloc` (debounce, resposta antiga descartada, paginação), a injeção de dependências de cada módulo e as telas em cada estado (incluindo layout de tablet).
 
 ## Arquitetura
 
-A raiz do repositório é um projeto Flutter padrão (o app). As features ficam em pacotes locais em `packages/`, ligados por **pub workspaces + Melos**, cada um com **Clean Architecture** (`data` / `domain` / `presentation`).
+A raiz do repositório é um projeto Flutter padrão (o app). As features ficam em pacotes locais em `packages/`, ligados por **pub workspaces + Melos**. Cada feature tem só duas camadas: `data` (consumo da API ou do armazenamento local + models) e `presentation` (Bloc/Cubit, páginas e widgets).
 
 ```
 lib/                 # app: main.dart, AppModule (rotas), AppWidget (tema, cubits globais)
 android/  ios/       # projetos nativos
 packages/
-  core/              # Dio, Failure, ResourceType, PageResult, tema, design system, AppRoutes
+  core/              # Dio, Result, Failure, ResourceType, PaginatedList, tema, design system, AppRoutes
   favorites/         # favoritos (shared_preferences) + FavoritesCubit global
   search/            # busca + detalhes (Rick and Morty API)
 tool/                # scripts de desenvolvimento (relatório de cobertura)
@@ -124,7 +124,7 @@ flowchart TD
     app["<b>app</b> (raiz)<br/>main.dart · AppModule · AppWidget"]
     search["<b>search</b><br/>busca + detalhes"]
     favorites["<b>favorites</b><br/>favoritos + FavoritesCubit"]
-    core["<b>core</b><br/>Dio · Failure · tema · widgets · AppRoutes"]
+    core["<b>core</b><br/>Dio · Result · Failure · tema · widgets · AppRoutes"]
     api[("Rick and Morty API")]
     prefs[("shared_preferences")]
 
@@ -138,42 +138,34 @@ flowchart TD
     favorites -. JSON local .-> prefs
 ```
 
-Camadas dentro de cada feature (exemplo do `search`). As duas camadas de fora dependem do `domain`, e o `domain` não depende de nenhuma: a `presentation` chama os use cases, e a `data` implementa o contrato do repositório.
+Camadas dentro de cada feature (exemplo do `search`): a tela lê o estado do Bloc/Cubit, que chama o `SearchApi` e recebe as models prontas.
 
 ```mermaid
-flowchart TB
-    subgraph presentation["presentation (Flutter)"]
+flowchart LR
+    subgraph presentation["presentation"]
         direction LR
-        page["SearchPage<br/>DetailsPage"] --> bloc["SearchBloc#lt;T#gt; · DetailsCubit<br/><i>estados sealed (freezed)</i>"]
-    end
-    subgraph domain["domain (Dart puro)"]
-        direction LR
-        usecase["Use cases"] --> contract["SearchRepository<br/><i>contrato</i>"]
-        contract --> entity["Entities<br/>Character · Episode · Location"]
+        page["SearchPage<br/>DetailsPage"] --> bloc["SearchBloc#lt;T#gt; · DetailsCubit · RelatedItemsCubit<br/><i>estados sealed (freezed)</i>"]
     end
     subgraph data["data"]
         direction LR
-        impl["SearchRepositoryImpl<br/><i>Either#lt;Failure, T#gt;</i>"] --> source["SearchRemoteDataSource<br/><i>Dio + CancelToken</i>"]
-        source --> model["Model#lt;E#gt;<br/><i>fromJson · toEntity()</i>"]
+        searchApi["SearchApi<br/><i>Dio + CancelToken · Result#lt;T#gt;</i>"] --> model["Character · Episode · Location<br/><i>fromJson</i>"]
     end
-    presentation -- chama os use cases --> domain
-    data -. implementa o contrato .-> domain
+    bloc --> searchApi
 ```
 
-- `domain` é Dart puro: importa só `package:core/domain.dart` (sem Flutter, sem Dio).
-- Repositórios retornam `Either<Failure, T>` (dartz) e nunca lançam exceção.
-- `Failure` é uma sealed class (freezed): `notFound`, `network`, `server`, `cancelled`, `cache`, `unexpected`. O 404 da busca vira o estado **não encontrado**, não um erro genérico.
+- **Models** (`data/models`): uma classe por recurso da API (`Character`, `Episode`, `Location`, `FavoriteItem`), com `fromJson` e igualdade por valor (freezed). A UI usa as models direto; não há entidades separadas.
+- **`SearchApi` e `FavoritesStorage`**: falam com a API e com o `shared_preferences` e nunca lançam exceção. Devolvem um `Result<T>` do `core`: `Success(data)` ou `Failed(failure)`, tratados com `switch`.
+- `Failure` é uma sealed class (freezed): `notFound`, `network`, `tooManyRequests`, `server`, `cancelled`, `cache`, `unexpected`. O 404 da busca vira o estado **não encontrado**, não um erro genérico. O texto mostrado ao usuário fica na `FailurePresentation`, na UI.
 - Estados de tela são sealed classes do freezed, tratados com `switch` exaustivo.
 
 ### Fluxo de uma busca
 
 1. `SearchPage` envia `SearchQueryChanged` ao Bloc da aba visível.
 2. O `SearchBloc<T>` aplica `debounce` (400 ms) + `restartable` (só a última busca importa).
-3. O `SearchRemoteDataSource` cancela o `CancelToken` anterior do mesmo tipo antes de disparar a nova requisição.
-4. O repositório converte `DioException` em `Failure` e devolve `Either<Failure, PageResult<T>>`.
-5. O Bloc descarta respostas antigas (contador de geração) e emite `loading` → `success` / `empty` / `notFound` / `error`.
+3. O `SearchApi` cancela o `CancelToken` anterior do mesmo tipo, faz a requisição e devolve `Result<PaginatedList<T>>`, com a `DioException` já convertida em `Failure`.
+4. O Bloc descarta respostas antigas (contador de geração) e emite `loading` → `success` / `empty` / `notFound` / `error`.
 
-Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próprio use case.
+Um único `SearchBloc<T>` genérico atende as três abas: cada aba recebe o método do `SearchApi` do seu tipo (`searchCharacters`, `searchEpisodes`, `searchLocations`).
 
 ### Decisões
 
@@ -181,7 +173,9 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 | --- | --- |
 | `flutter_modular` **6.4** (não 7.x) | A 7.x é uma reescrita marcada como "work in progress" e define `context.read/watch` que conflitam com o flutter_bloc. A 6.x é estável e é a API conhecida (`Module`, `binds`, `routes`). |
 | `google_fonts` **8.x** (não 9.x) | A 9.x usa o pacote `material_ui`, cujo `TextTheme` é um tipo diferente do `TextTheme` do SDK (`package:flutter/material.dart`). |
-| `flutter_bloc` + estados `sealed` | Eventos rastreáveis, `bloc_test`, transformers de concorrência (`restartable`, `droppable`). |
+| `flutter_bloc` + estados `sealed` | Cubits para carregar dados; Bloc só na busca, onde os transformers de evento dão debounce, `restartable` e `droppable` sem `Timer` à mão. |
+| Sem camada `domain` | O app só exibe dados da API: entidades, use cases e contratos de repositório duplicavam as models e repassavam chamadas sem nenhuma regra. |
+| `Result<T>` próprio (não `dartz`) | `Success`/`Failed` dizem o que cada caso é, ao contrário de `Left`/`Right`, e o `switch` do Dart trata os dois sem `fold`. |
 | Favoritos com `shared_preferences` (JSON) | Simples e suficiente para o volume; o `FavoriteItem` guarda um snapshot mínimo (tipo, id, nome, subtítulo, imagem) para listar sem rede. |
 | Detalhes carregam por `(tipo, id)` | A mesma rota serve para busca, favoritos e deep link. |
 | Arquivos gerados versionados | O avaliador consegue rodar sem `build_runner`. |
@@ -191,7 +185,8 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 ## Convenções
 
 - Commits em [Conventional Commits](https://www.conventionalcommits.org/) (inglês)
-- GitFlow simplificado: `main` (releases), `develop` (integração), `feature/*`, `fix/*`, `release/*`
+- Uma branch só, a `main`: cada tarefa sai em uma `feature/*` ou `fix/*` criada a partir dela e volta por PR, com o CI (`ci.yml`) passando
+- Release: tag `v*` em um commit da `main` (`release.yml`)
 
 ## Limitações conhecidas e próximos passos
 
@@ -201,19 +196,19 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Situação atual | Direção |
 | --- | --- | --- | --- |
-| 1 | Mensagens de UI no `Failure` | `Failure.message` tem texto em pt-BR e vive em `core` (domínio). Os estados (`SearchError`, `MoreItemsError`, `DetailsState.error`) guardam só a `String`, então a UI não reage ao tipo de falha (ex.: "tentar de novo" só para erro de rede). | Guardar o `Failure` no estado e traduzir na `presentation`, o que também prepara a l10n. |
-| 2 | `Model.fromJson<T>` com `switch (T)` | Checagem em runtime: esquecer de registrar uma model só aparece em execução (`ArgumentError`). | Passar o parser como função (`PageModel.fromJson(json, CharacterModel.fromJson)`), com segurança em tempo de compilação. |
-| 3 | `_guard` sem log | Em `SearchRepositoryImpl`, qualquer exceção inesperada (ex.: `TypeError` por mudança no JSON da API) vira `Failure.unexpected()` sem registro. | Logar em debug e integrar um serviço de crash report. |
+| 1 | ~~Mensagens de UI no `Failure`~~ **(resolvido)** | Os estados guardam o `Failure` e a extensão `FailurePresentation` (`core/lib/src/ui`) gera título, mensagem e ícone de cada caso; `MessageView.failure` monta a tela de erro. O `Failure` do domínio não tem mais texto. | Levar os textos da `FailurePresentation` para ARB junto com o item 8. |
+| 2 | ~~`Model.fromJson<T>` com `switch (T)`~~ **(resolvido)** | O `SearchApi` recebe o `fromJson` de cada model como função, verificado em tempo de compilação. O `Model<E>` não existe mais. | — |
+| 3 | `_guard` sem log | No `SearchApi`, qualquer exceção inesperada (ex.: `TypeError` por mudança no JSON da API) vira `Failure.unexpected()` sem registro. | Logar em debug e integrar um serviço de crash report. |
 | 4 | `search` depende de `favorites` | Necessário por causa do botão de favorito nos cards e nos detalhes. | `search` receber um builder do botão ou uma interface definida em `core`. |
 | 5 | Dois mecanismos de DI/ciclo de vida | O Modular entrega as instâncias e o `BlocProvider` as fecha, o que exige o `hide ModularWatchExtension`. `ThemeCubit` usa `BlocProvider.value` e `FavoritesCubit` usa `create`. O `flutter_modular` 6.x é uma versão antiga, um risco de manutenção a longo prazo. | Padronizar o ciclo de vida dos cubits globais e reavaliar o Modular quando a 7.x estabilizar. |
-| 6 | Repositório "isolado" criado à mão | `_isolated(i)` em `search_module.dart` contorna o container de DI para ter um `CancelToken` separado por cubit de "Mais ...". | Registrar uma factory do `SearchRemoteDataSource` no módulo. |
+| 6 | ~~Repositório "isolado" criado à mão~~ **(resolvido)** | Cada cubit de "Mais ..." recebe um `SearchApi` próprio (`SearchApi(i.get<Dio>())`), sem o `_isolated(i)`. | — |
 | 7 | Arquivos grandes | `details_page.dart` (463 linhas), `search_page.dart` (395) e `result_cards.dart` (269) concentram muitos widgets privados. | Quebrar em widgets menores, em arquivos próprios. |
 
 ### Produto
 
 | # | Ponto | Direção |
 | --- | --- | --- |
-| 8 | Textos fixos em pt-BR, sem `flutter_localizations`/ARB | Extrair os textos para ARB (depende do item 1). |
+| 8 | Textos fixos em pt-BR, sem `flutter_localizations`/ARB | Extrair os textos para ARB; as mensagens de erro já estão concentradas na `FailurePresentation`. |
 | 9 | Fonte Inter baixada pelo Google Fonts em runtime: no primeiro uso offline ou com rede lenta, aparece a fonte de fallback | Empacotar a Inter como asset do `core`, como já é feito com os ícones Phosphor. |
 | 10 | Sem cache dos dados da API, só das imagens. Sem rede, só os favoritos aparecem (eles guardam um snapshot) | Cache local das respostas (ex.: última busca e detalhes já abertos). |
 
@@ -233,8 +228,8 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 ### Prioridades
 
-1. Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).
-2. Parser por função em `Model`/`PageModel` (item 2).
+1. ~~Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).~~ Feito.
+2. ~~Parser por função em `Model`/`PageModel` (item 2).~~ Feito.
 3. Logging no `_guard` (item 3).
 4. Empacotar a fonte Inter e restringir a API key do Firebase (itens 9 e 13).
 5. Quebrar `details_page` e `search_page` em widgets menores (item 7).

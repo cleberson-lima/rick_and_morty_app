@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'favorites_data_test.dart' show pilot, rick;
+import 'favorites_storage_test.dart' show pilot, rick;
 
 class _FavoritesCubit extends MockCubit<FavoritesState>
     implements FavoritesCubit {}
@@ -80,7 +80,7 @@ void main() {
 
   testWidgets('error state retries loading', (tester) async {
     when(() => cubit.load()).thenAnswer((_) async {});
-    await pump(tester, const FavoritesState.error('falhou'));
+    await pump(tester, const FavoritesState.error(Failure.cache()));
 
     await tester.tap(find.text('Tentar novamente'));
 

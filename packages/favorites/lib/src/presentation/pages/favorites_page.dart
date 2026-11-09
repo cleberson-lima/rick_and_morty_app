@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/favorite_item.dart';
+import '../../data/models/favorite_item.dart';
 import '../cubit/favorites_cubit.dart';
 
 class FavoritesPage extends StatelessWidget {
@@ -21,11 +21,11 @@ class FavoritesPage extends StatelessWidget {
       body: BlocBuilder<FavoritesCubit, FavoritesState>(
         builder: (context, state) => switch (state) {
           FavoritesLoading() => const LoadingSkeleton(),
-          FavoritesError(:final message) => StateView.error(
-            message: message,
+          FavoritesError(:final failure) => MessageView.failure(
+            failure: failure,
             onRetry: () => context.read<FavoritesCubit>().load(),
           ),
-          FavoritesLoaded(:final items) when items.isEmpty => const StateView(
+          FavoritesLoaded(:final items) when items.isEmpty => const MessageView(
             icon: Icons.favorite_border,
             title: 'Nenhum favorito ainda',
             message:

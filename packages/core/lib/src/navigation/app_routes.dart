@@ -1,4 +1,4 @@
-import '../domain/resource_type.dart';
+import '../types/resource_type.dart';
 
 /// Route paths shared between feature packages, so no package hardcodes
 /// another package's URLs.

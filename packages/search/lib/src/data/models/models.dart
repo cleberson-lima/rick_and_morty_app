@@ -1,5 +1,4 @@
-export 'character_model.dart';
-export 'episode_model.dart';
-export 'location_model.dart';
-export 'model.dart';
-export 'page_model.dart';
+export 'character.dart';
+export 'episode.dart';
+export 'json.dart';
+export 'location.dart';

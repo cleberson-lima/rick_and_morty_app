@@ -1,4 +1,4 @@
-import 'package:search/src/domain/entities/character.dart';
+import 'package:search/src/data/models/models.dart';
 
 const rick = Character(
   id: 1,

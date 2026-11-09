@@ -1,55 +1,27 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:search/src/data/models/models.dart';
-import 'package:search/src/domain/entities/character.dart';
 
 import '../helpers.dart';
-
-/// Model with no `fromJson` registered in [Model.fromJson].
-class _Unregistered extends Model<int> {
-  @override
-  int toEntity() => 0;
-}
 
 Json _first(String fixtureName) =>
     (fixture(fixtureName)['results']! as List<Object?>).first! as Json;
 
 void main() {
-  group('Model.fromJson', () {
-    test('builds the model of the requested type', () {
-      expect(
-        Model.fromJson<CharacterModel>(_first('characters_page.json')),
-        isA<CharacterModel>(),
-      );
-      expect(
-        Model.fromJson<EpisodeModel>(_first('episodes_page.json')),
-        isA<EpisodeModel>(),
-      );
-      expect(
-        Model.fromJson<LocationModel>(_first('locations_page.json')),
-        isA<LocationModel>(),
-      );
-    });
+  test('Character reads the API JSON', () {
+    final character = Character.fromJson(_first('characters_page.json'));
 
-    test('an unregistered type is an error, not a silent null', () {
-      expect(() => Model.fromJson<_Unregistered>({}), throwsArgumentError);
-    });
+    expect(character.id, 1);
+    expect(character.name, 'Rick Sanchez');
+    expect(character.status, CharacterStatus.alive);
+    expect(character.originName, 'Earth (C-137)');
+    expect(character.originId, 1, reason: 'from origin.url');
+    expect(character.locationId, 3, reason: 'from location.url');
+    expect(character.imageUrl, endsWith('/1.jpeg'));
+    expect(character.episodeCount, greaterThan(0));
   });
 
-  test('CharacterModel reads the API JSON and maps to the entity', () {
-    final model = CharacterModel.fromJson(_first('characters_page.json'));
-    final entity = model.toEntity();
-
-    expect(entity.id, 1);
-    expect(entity.name, 'Rick Sanchez');
-    expect(entity.status, CharacterStatus.alive);
-    expect(entity.originName, 'Earth (C-137)');
-    expect(entity.originId, 1);
-    expect(entity.locationId, 3);
-    expect(entity.episodeCount, greaterThan(0));
-  });
-
-  test('CharacterModel tolerates unknown origin and missing optionals', () {
-    final entity = CharacterModel.fromJson({
+  test('Character tolerates unknown origin and missing optionals', () {
+    final character = Character.fromJson({
       'id': 2,
       'name': 'X',
       'status': 'whatever',
@@ -58,55 +30,44 @@ void main() {
       'origin': {'name': 'unknown', 'url': ''},
       'location': {'name': 'unknown'},
       'image': 'https://x.test/2.jpeg',
-    }).toEntity();
-
-    expect(entity.status, CharacterStatus.unknown);
-    expect(entity.type, '');
-    expect(entity.originId, isNull);
-    expect(entity.locationId, isNull);
-    expect(entity.episodeCount, 0);
-  });
-
-  test('EpisodeModel reads air_date and the cast size', () {
-    final entity = EpisodeModel.fromJson(
-      _first('episodes_page.json'),
-    ).toEntity();
-
-    expect(entity.code, 'S01E01');
-    expect(entity.airDate, isNotEmpty);
-    expect(entity.characterCount, greaterThan(0));
-  });
-
-  test('LocationModel defaults type, dimension and residents', () {
-    final entity = LocationModel.fromJson({
-      'id': 9,
-      'name': 'Nowhere',
-    }).toEntity();
-
-    expect((entity.type, entity.dimension, entity.residentCount), ('', '', 0));
-  });
-
-  test('PageModel parses info and every result with Model.fromJson', () {
-    final page = PageModel<CharacterModel>.fromJson(
-      fixture('characters_page.json'),
-    );
-
-    expect(page.count, 107);
-    expect(page.nextPage, 2);
-    expect(page.results, isNotEmpty);
-    expect(page.results.first.name, 'Rick Sanchez');
-  });
-
-  test('PageModel on the last page has no next page', () {
-    final page = PageModel<LocationModel>.fromJson({
-      'info': {'count': 1, 'next': null},
-      'results': [
-        {'id': 1, 'name': 'Earth'},
-      ],
     });
 
-    expect(page.nextPage, isNull);
-    expect(page.results.single.name, 'Earth');
+    expect(character.status, CharacterStatus.unknown);
+    expect(character.type, '');
+    expect(character.originId, isNull);
+    expect(character.locationId, isNull);
+    expect(character.episodeCount, 0);
+  });
+
+  test('CharacterStatus parses the API value, ignoring case', () {
+    expect(CharacterStatus.parse('Alive'), CharacterStatus.alive);
+    expect(CharacterStatus.parse('dead'), CharacterStatus.dead);
+    expect(CharacterStatus.parse('unknown'), CharacterStatus.unknown);
+    expect(CharacterStatus.parse(null), CharacterStatus.unknown);
+  });
+
+  test('Episode reads the code, air_date and the cast size', () {
+    final episode = Episode.fromJson(_first('episodes_page.json'));
+
+    expect(episode.code, 'S01E01');
+    expect(episode.airDate, isNotEmpty);
+    expect(episode.characterCount, greaterThan(0));
+  });
+
+  test('Location defaults type, dimension and residents', () {
+    final location = Location.fromJson({'id': 9, 'name': 'Nowhere'});
+
+    expect(
+      (location.type, location.dimension, location.residentCount),
+      ('', '', 0),
+    );
+  });
+
+  test('models compare by value', () {
+    expect(
+      Location.fromJson({'id': 9, 'name': 'Nowhere'}),
+      const Location(id: 9, name: 'Nowhere'),
+    );
   });
 
   test('idFromResourceUrl reads the trailing id', () {

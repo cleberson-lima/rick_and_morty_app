@@ -5,16 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart'
     hide ModularWatchExtension;
 
-import 'data/datasources/search_remote_data_source.dart';
-import 'data/repositories/search_repository_impl.dart';
-import 'domain/entities/character.dart';
-import 'domain/entities/episode.dart';
-import 'domain/entities/location.dart';
-import 'domain/repositories/search_repository.dart';
-import 'domain/usecases/details_usecases.dart';
-import 'domain/usecases/search_usecases.dart';
+import 'data/models/models.dart';
+import 'data/search_api.dart';
 import 'presentation/bloc/details_cubit.dart';
-import 'presentation/bloc/more_items_cubit.dart';
+import 'presentation/bloc/related_items_cubit.dart';
 import 'presentation/bloc/search_bloc.dart';
 import 'presentation/pages/details_page.dart';
 import 'presentation/pages/search_page.dart';
@@ -27,34 +21,24 @@ class SearchModule extends Module {
   @override
   void binds(Injector i) {
     i
-      ..addLazySingleton<SearchRemoteDataSource>(SearchRemoteDataSourceImpl.new)
-      ..addLazySingleton<SearchRepository>(SearchRepositoryImpl.new)
-      ..addLazySingleton<SearchCharactersUseCase>(SearchCharactersUseCase.new)
-      ..addLazySingleton<SearchEpisodesUseCase>(SearchEpisodesUseCase.new)
-      ..addLazySingleton<SearchLocationsUseCase>(SearchLocationsUseCase.new)
-      ..addLazySingleton<GetCharacterUseCase>(GetCharacterUseCase.new)
-      ..addLazySingleton<GetEpisodeUseCase>(GetEpisodeUseCase.new)
-      ..addLazySingleton<GetLocationUseCase>(GetLocationUseCase.new)
+      ..addLazySingleton<SearchApi>(SearchApi.new)
       // Factories: each screen gets a fresh instance; BlocProvider closes it.
       ..add<CharacterSearchBloc>(CharacterSearchBloc.new)
       ..add<EpisodeSearchBloc>(EpisodeSearchBloc.new)
       ..add<LocationSearchBloc>(LocationSearchBloc.new)
       ..add<DetailsCubit>(DetailsCubit.new)
-      // "Mais ..." sections get their own data source: it cancels the
-      // previous search of the same type, and must not cancel the home page.
-      ..add<MoreCharactersCubit>(
-        () => MoreCharactersCubit(SearchCharactersUseCase(_isolated(i))),
+      // "Mais ..." sections get their own SearchApi: it cancels the previous
+      // search of the same type, and must not cancel the home page's.
+      ..add<RelatedCharactersCubit>(
+        () => RelatedCharactersCubit(SearchApi(i.get<Dio>())),
       )
-      ..add<MoreEpisodesCubit>(
-        () => MoreEpisodesCubit(SearchEpisodesUseCase(_isolated(i))),
+      ..add<RelatedEpisodesCubit>(
+        () => RelatedEpisodesCubit(SearchApi(i.get<Dio>())),
       )
-      ..add<MoreLocationsCubit>(
-        () => MoreLocationsCubit(SearchLocationsUseCase(_isolated(i))),
+      ..add<RelatedLocationsCubit>(
+        () => RelatedLocationsCubit(SearchApi(i.get<Dio>())),
       );
   }
-
-  static SearchRepository _isolated(Injector i) =>
-      SearchRepositoryImpl(SearchRemoteDataSourceImpl(i.get<Dio>()));
 
   @override
   void routes(RouteManager r) {
@@ -109,7 +93,7 @@ class _DetailsRoute extends StatelessWidget {
     if (type == null || id == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: const StateView(
+        body: const MessageView(
           icon: Icons.link_off,
           title: 'Link inválido',
           message: 'Não foi possível abrir este item.',
@@ -122,14 +106,14 @@ class _DetailsRoute extends StatelessWidget {
           create: (_) => Modular.get<DetailsCubit>()..load(type, id),
         ),
         switch (type) {
-          ResourceType.character => BlocProvider<MoreItemsCubit<Character>>(
-            create: (_) => Modular.get<MoreCharactersCubit>()..load(1),
+          ResourceType.character => BlocProvider<RelatedItemsCubit<Character>>(
+            create: (_) => Modular.get<RelatedCharactersCubit>()..load(1),
           ),
-          ResourceType.episode => BlocProvider<MoreItemsCubit<Episode>>(
-            create: (_) => Modular.get<MoreEpisodesCubit>()..load(1),
+          ResourceType.episode => BlocProvider<RelatedItemsCubit<Episode>>(
+            create: (_) => Modular.get<RelatedEpisodesCubit>()..load(1),
           ),
-          ResourceType.location => BlocProvider<MoreItemsCubit<Location>>(
-            create: (_) => Modular.get<MoreLocationsCubit>()..load(1),
+          ResourceType.location => BlocProvider<RelatedItemsCubit<Location>>(
+            create: (_) => Modular.get<RelatedLocationsCubit>()..load(1),
           ),
         },
       ],

@@ -1,38 +1,28 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:core/domain.dart';
+import 'package:core/types.dart';
 import 'package:favorites/favorites.dart';
-import 'package:favorites/src/domain/usecases/favorites_usecases.dart';
+import 'package:favorites/src/data/favorites_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'favorites_data_test.dart' show pilot, rick;
+import 'favorites_storage_test.dart' show pilot, rick;
 
-class _MockGet extends Mock implements GetFavoritesUseCase {}
-
-class _MockAdd extends Mock implements AddFavoriteUseCase {}
-
-class _MockRemove extends Mock implements RemoveFavoriteUseCase {}
+class _MockStorage extends Mock implements FavoritesStorage {}
 
 void main() {
-  late _MockGet getFavorites;
-  late _MockAdd addFavorite;
-  late _MockRemove removeFavorite;
+  late _MockStorage storage;
 
   setUpAll(() => registerFallbackValue(rick));
 
-  setUp(() {
-    getFavorites = _MockGet();
-    addFavorite = _MockAdd();
-    removeFavorite = _MockRemove();
-  });
+  setUp(() => storage = _MockStorage());
 
-  FavoritesCubit build() =>
-      FavoritesCubit(getFavorites, addFavorite, removeFavorite);
+  FavoritesCubit build() => FavoritesCubit(storage);
 
   blocTest<FavoritesCubit, FavoritesState>(
     'load emits the stored items',
-    setUp: () =>
-        when(() => getFavorites()).thenAnswer((_) async => const Right([rick])),
+    setUp: () => when(
+      () => storage.getAll(),
+    ).thenAnswer((_) async => const Success([rick])),
     build: build,
     act: (cubit) => cubit.load(),
     expect: () => const [
@@ -44,21 +34,21 @@ void main() {
   blocTest<FavoritesCubit, FavoritesState>(
     'load failure emits error',
     setUp: () => when(
-      () => getFavorites(),
-    ).thenAnswer((_) async => const Left(Failure.cache())),
+      () => storage.getAll(),
+    ).thenAnswer((_) async => const Failed(Failure.cache())),
     build: build,
     act: (cubit) => cubit.load(),
     expect: () => [
       const FavoritesState.loading(),
-      FavoritesState.error(const Failure.cache().message),
+      const FavoritesState.error(Failure.cache()),
     ],
   );
 
   blocTest<FavoritesCubit, FavoritesState>(
     'toggle adds an item that is not a favorite',
     setUp: () => when(
-      () => addFavorite(pilot),
-    ).thenAnswer((_) async => const Right([pilot, rick])),
+      () => storage.add(pilot),
+    ).thenAnswer((_) async => const Success([pilot, rick])),
     build: build,
     seed: () => const FavoritesState.loaded(items: [rick]),
     act: (cubit) => cubit.toggle(pilot),
@@ -70,8 +60,8 @@ void main() {
   blocTest<FavoritesCubit, FavoritesState>(
     'toggle removes an item that is already a favorite',
     setUp: () => when(
-      () => removeFavorite(ResourceType.character, 1),
-    ).thenAnswer((_) async => const Right([])),
+      () => storage.remove(ResourceType.character, 1),
+    ).thenAnswer((_) async => const Success([])),
     build: build,
     seed: () => const FavoritesState.loaded(items: [rick]),
     act: (cubit) => cubit.toggle(rick),
@@ -81,15 +71,15 @@ void main() {
   blocTest<FavoritesCubit, FavoritesState>(
     'a failed write keeps the list and reports the error',
     setUp: () => when(
-      () => addFavorite(any()),
-    ).thenAnswer((_) async => const Left(Failure.cache())),
+      () => storage.add(any()),
+    ).thenAnswer((_) async => const Failed(Failure.cache())),
     build: build,
     seed: () => const FavoritesState.loaded(items: [rick]),
     act: (cubit) => cubit.add(pilot),
     expect: () => [
-      FavoritesState.loaded(
-        items: const [rick],
-        errorMessage: const Failure.cache().message,
+      const FavoritesState.loaded(
+        items: [rick],
+        actionFailure: Failure.cache(),
       ),
     ],
   );

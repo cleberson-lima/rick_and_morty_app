@@ -1,11 +1,9 @@
-import 'package:core/domain.dart';
+import 'package:core/types.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/entities/character.dart';
-import '../../domain/entities/episode.dart';
-import '../../domain/entities/location.dart';
-import '../../domain/usecases/details_usecases.dart';
+import '../../data/models/models.dart';
+import '../../data/search_api.dart';
 
 part 'details_cubit.freezed.dart';
 part 'details_state.dart';
@@ -13,32 +11,35 @@ part 'details_state.dart';
 /// Loads one resource by (type, id), so the details route works the same from
 /// search results, favorites or a deep link.
 class DetailsCubit extends Cubit<DetailsState> {
-  DetailsCubit(this._getCharacter, this._getEpisode, this._getLocation)
-    : super(const DetailsState.loading());
+  DetailsCubit(this._api) : super(const DetailsState.loading());
 
-  final GetCharacterUseCase _getCharacter;
-  final GetEpisodeUseCase _getEpisode;
-  final GetLocationUseCase _getLocation;
+  final SearchApi _api;
 
   Future<void> load(ResourceType type, int id) async {
     emit(const DetailsState.loading());
-    final result = switch (type) {
-      ResourceType.character => (await _getCharacter(
-        id,
-      )).map(DetailsState.character),
-      ResourceType.episode => (await _getEpisode(id)).map(DetailsState.episode),
-      ResourceType.location => (await _getLocation(
-        id,
-      )).map(DetailsState.location),
-    };
-    if (isClosed) return;
-    emit(
-      result.fold(
-        (failure) => failure is NotFoundFailure
-            ? const DetailsState.notFound()
-            : DetailsState.error(failure.message),
-        (state) => state,
+    final loaded = switch (type) {
+      ResourceType.character => _toState(
+        await _api.getCharacter(id),
+        DetailsState.character,
       ),
-    );
+      ResourceType.episode => _toState(
+        await _api.getEpisode(id),
+        DetailsState.episode,
+      ),
+      ResourceType.location => _toState(
+        await _api.getLocation(id),
+        DetailsState.location,
+      ),
+    };
+    if (!isClosed) emit(loaded);
   }
+
+  static DetailsState _toState<T>(
+    Result<T> result,
+    DetailsState Function(T data) onSuccess,
+  ) => switch (result) {
+    Success(:final data) => onSuccess(data),
+    Failed(failure: NotFoundFailure()) => const DetailsState.notFound(),
+    Failed(:final failure) => DetailsState.error(failure),
+  };
 }

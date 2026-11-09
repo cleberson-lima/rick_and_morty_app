@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:search/src/domain/entities/character.dart';
-import 'package:search/src/domain/entities/episode.dart';
-import 'package:search/src/domain/entities/location.dart';
+import 'package:search/src/data/models/models.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
 import 'package:search/src/presentation/pages/search_page.dart';
 import 'package:search/src/presentation/widgets/home_hero.dart';
@@ -222,9 +220,9 @@ void main() {
   });
 
   testWidgets('a failed section offers a retry', (tester) async {
-    when(
-      () => episodes.state,
-    ).thenReturn(const SearchState.error(query: '', message: 'Sem conexão'));
+    when(() => episodes.state).thenReturn(
+      const SearchState.error(query: '', failure: Failure.network()),
+    );
     await pump(tester);
     clearInteractions(episodes);
 
