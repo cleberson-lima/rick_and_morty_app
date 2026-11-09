@@ -1,5 +1,5 @@
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:core/domain.dart';
+import 'package:core/types.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -38,7 +38,7 @@ class SearchBloc<T> extends Bloc<SearchEvent, SearchState<T>> {
 
   static const defaultDebounce = Duration(milliseconds: 400);
 
-  final FetchPage<T> _search;
+  final SearchFunction<T> _search;
   int _generation = 0;
 
   Future<void> _runSearch(

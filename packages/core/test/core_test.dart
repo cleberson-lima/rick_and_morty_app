@@ -128,12 +128,14 @@ void main() {
     });
   });
 
-  testWidgets('StateView.error shows the message and retries', (tester) async {
+  testWidgets('MessageView.error shows the message and retries', (
+    tester,
+  ) async {
     var retried = false;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: StateView.error(
+          body: MessageView.error(
             message: 'Sem conexão',
             onRetry: () => retried = true,
           ),
@@ -182,14 +184,14 @@ void main() {
     });
   });
 
-  testWidgets('StateView.failure shows the failure copy and retries', (
+  testWidgets('MessageView.failure shows the failure copy and retries', (
     tester,
   ) async {
     var retried = false;
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: StateView.failure(
+          body: MessageView.failure(
             failure: const Failure.network(),
             onRetry: () => retried = true,
           ),
@@ -204,12 +206,14 @@ void main() {
     expect(retried, isTrue);
   });
 
-  testWidgets('StateView.failure without onRetry shows no button', (
+  testWidgets('MessageView.failure without onRetry shows no button', (
     tester,
   ) async {
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(body: StateView.failure(failure: const Failure.cache())),
+        home: Scaffold(
+          body: MessageView.failure(failure: const Failure.cache()),
+        ),
       ),
     );
 

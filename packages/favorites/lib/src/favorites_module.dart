@@ -7,7 +7,7 @@ import 'presentation/pages/favorites_page.dart';
 
 /// Favorites storage and the app-wide [FavoritesCubit]. Imported by the app
 /// root, which provides the cubit above the router.
-class FavoritesDataModule extends Module {
+class FavoritesBindingsModule extends Module {
   @override
   List<Module> get imports => [CoreModule()];
 
@@ -20,7 +20,7 @@ class FavoritesDataModule extends Module {
 }
 
 /// Routes of the favorites feature, mounted at [AppRoutes.favorites].
-class FavoritesModule extends Module {
+class FavoritesRoutesModule extends Module {
   @override
   void routes(RouteManager r) {
     r.child(

@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'more_items_cubit.dart';
+part of 'related_items_cubit.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -13,42 +13,42 @@ part of 'more_items_cubit.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$MoreItemsState<T> {
+mixin _$RelatedItemsState<T> {
 
  int get page;
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MoreItemsStateCopyWith<T, MoreItemsState<T>> get copyWith => _$MoreItemsStateCopyWithImpl<T, MoreItemsState<T>>(this as MoreItemsState<T>, _$identity);
+$RelatedItemsStateCopyWith<T, RelatedItemsState<T>> get copyWith => _$RelatedItemsStateCopyWithImpl<T, RelatedItemsState<T>>(this as RelatedItemsState<T>, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  final _this = this as MoreItemsState<T>;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MoreItemsState<T>&&(identical(other.page, _this.page) || other.page == _this.page));
+  final _this = this as RelatedItemsState<T>;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RelatedItemsState<T>&&(identical(other.page, _this.page) || other.page == _this.page));
 }
 
 
 @override
 int get hashCode {
-  final _this = this as MoreItemsState<T>;
+  final _this = this as RelatedItemsState<T>;
   return Object.hash(runtimeType,_this.page);
 }
 
 @override
 String toString() {
-  final _this = this as MoreItemsState<T>;
-  return 'MoreItemsState<$T>(page: ${_this.page})';
+  final _this = this as RelatedItemsState<T>;
+  return 'RelatedItemsState<$T>(page: ${_this.page})';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MoreItemsStateCopyWith<T,$Res>  {
-  factory $MoreItemsStateCopyWith(MoreItemsState<T> value, $Res Function(MoreItemsState<T>) _then) = _$MoreItemsStateCopyWithImpl;
+abstract mixin class $RelatedItemsStateCopyWith<T,$Res>  {
+  factory $RelatedItemsStateCopyWith(RelatedItemsState<T> value, $Res Function(RelatedItemsState<T>) _then) = _$RelatedItemsStateCopyWithImpl;
 @useResult
 $Res call({
  int page
@@ -59,14 +59,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$MoreItemsStateCopyWithImpl<T,$Res>
-    implements $MoreItemsStateCopyWith<T, $Res> {
-  _$MoreItemsStateCopyWithImpl(this._self, this._then);
+class _$RelatedItemsStateCopyWithImpl<T,$Res>
+    implements $RelatedItemsStateCopyWith<T, $Res> {
+  _$RelatedItemsStateCopyWithImpl(this._self, this._then);
 
-  final MoreItemsState<T> _self;
-  final $Res Function(MoreItemsState<T>) _then;
+  final RelatedItemsState<T> _self;
+  final $Res Function(RelatedItemsState<T>) _then;
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? page = null,}) {
   return _then(_self.copyWith(
@@ -78,8 +78,8 @@ as int,
 }
 
 
-/// Adds pattern-matching-related methods to [MoreItemsState].
-extension MoreItemsStatePatterns<T> on MoreItemsState<T> {
+/// Adds pattern-matching-related methods to [RelatedItemsState].
+extension RelatedItemsStatePatterns<T> on RelatedItemsState<T> {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -92,12 +92,12 @@ extension MoreItemsStatePatterns<T> on MoreItemsState<T> {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MoreItemsLoading<T> value)?  loading,TResult Function( MoreItemsSuccess<T> value)?  success,TResult Function( MoreItemsError<T> value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( RelatedItemsLoading<T> value)?  loading,TResult Function( RelatedItemsSuccess<T> value)?  success,TResult Function( RelatedItemsError<T> value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case MoreItemsLoading() when loading != null:
-return loading(_that);case MoreItemsSuccess() when success != null:
-return success(_that);case MoreItemsError() when error != null:
+case RelatedItemsLoading() when loading != null:
+return loading(_that);case RelatedItemsSuccess() when success != null:
+return success(_that);case RelatedItemsError() when error != null:
 return error(_that);case _:
   return orElse();
 
@@ -116,12 +116,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MoreItemsLoading<T> value)  loading,required TResult Function( MoreItemsSuccess<T> value)  success,required TResult Function( MoreItemsError<T> value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( RelatedItemsLoading<T> value)  loading,required TResult Function( RelatedItemsSuccess<T> value)  success,required TResult Function( RelatedItemsError<T> value)  error,}){
 final _that = this;
 switch (_that) {
-case MoreItemsLoading():
-return loading(_that);case MoreItemsSuccess():
-return success(_that);case MoreItemsError():
+case RelatedItemsLoading():
+return loading(_that);case RelatedItemsSuccess():
+return success(_that);case RelatedItemsError():
 return error(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -136,12 +136,12 @@ return error(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MoreItemsLoading<T> value)?  loading,TResult? Function( MoreItemsSuccess<T> value)?  success,TResult? Function( MoreItemsError<T> value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( RelatedItemsLoading<T> value)?  loading,TResult? Function( RelatedItemsSuccess<T> value)?  success,TResult? Function( RelatedItemsError<T> value)?  error,}){
 final _that = this;
 switch (_that) {
-case MoreItemsLoading() when loading != null:
-return loading(_that);case MoreItemsSuccess() when success != null:
-return success(_that);case MoreItemsError() when error != null:
+case RelatedItemsLoading() when loading != null:
+return loading(_that);case RelatedItemsSuccess() when success != null:
+return success(_that);case RelatedItemsError() when error != null:
 return error(_that);case _:
   return null;
 
@@ -161,9 +161,9 @@ return error(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int page)?  loading,TResult Function( List<T> items,  int page,  int totalPages)?  success,TResult Function( Failure failure,  int page)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case MoreItemsLoading() when loading != null:
-return loading(_that.page);case MoreItemsSuccess() when success != null:
-return success(_that.items,_that.page,_that.totalPages);case MoreItemsError() when error != null:
+case RelatedItemsLoading() when loading != null:
+return loading(_that.page);case RelatedItemsSuccess() when success != null:
+return success(_that.items,_that.page,_that.totalPages);case RelatedItemsError() when error != null:
 return error(_that.failure,_that.page);case _:
   return orElse();
 
@@ -184,9 +184,9 @@ return error(_that.failure,_that.page);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int page)  loading,required TResult Function( List<T> items,  int page,  int totalPages)  success,required TResult Function( Failure failure,  int page)  error,}) {final _that = this;
 switch (_that) {
-case MoreItemsLoading():
-return loading(_that.page);case MoreItemsSuccess():
-return success(_that.items,_that.page,_that.totalPages);case MoreItemsError():
+case RelatedItemsLoading():
+return loading(_that.page);case RelatedItemsSuccess():
+return success(_that.items,_that.page,_that.totalPages);case RelatedItemsError():
 return error(_that.failure,_that.page);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -203,9 +203,9 @@ return error(_that.failure,_that.page);}
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int page)?  loading,TResult? Function( List<T> items,  int page,  int totalPages)?  success,TResult? Function( Failure failure,  int page)?  error,}) {final _that = this;
 switch (_that) {
-case MoreItemsLoading() when loading != null:
-return loading(_that.page);case MoreItemsSuccess() when success != null:
-return success(_that.items,_that.page,_that.totalPages);case MoreItemsError() when error != null:
+case RelatedItemsLoading() when loading != null:
+return loading(_that.page);case RelatedItemsSuccess() when success != null:
+return success(_that.items,_that.page,_that.totalPages);case RelatedItemsError() when error != null:
 return error(_that.failure,_that.page);case _:
   return null;
 
@@ -217,23 +217,23 @@ return error(_that.failure,_that.page);case _:
 /// @nodoc
 
 
-class MoreItemsLoading<T> implements MoreItemsState<T> {
-  const MoreItemsLoading({required this.page});
+class RelatedItemsLoading<T> implements RelatedItemsState<T> {
+  const RelatedItemsLoading({required this.page});
   
 
 @override final  int page;
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MoreItemsLoadingCopyWith<T, MoreItemsLoading<T>> get copyWith => _$MoreItemsLoadingCopyWithImpl<T, MoreItemsLoading<T>>(this, _$identity);
+$RelatedItemsLoadingCopyWith<T, RelatedItemsLoading<T>> get copyWith => _$RelatedItemsLoadingCopyWithImpl<T, RelatedItemsLoading<T>>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is MoreItemsLoading<T>&&(identical(other.page, page) || other.page == page));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is RelatedItemsLoading<T>&&(identical(other.page, page) || other.page == page));
 }
 
 
@@ -244,15 +244,15 @@ int get hashCode {
 
 @override
 String toString() {
-    return 'MoreItemsState<$T>.loading(page: $page)';
+    return 'RelatedItemsState<$T>.loading(page: $page)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MoreItemsLoadingCopyWith<T,$Res> implements $MoreItemsStateCopyWith<T, $Res> {
-  factory $MoreItemsLoadingCopyWith(MoreItemsLoading<T> value, $Res Function(MoreItemsLoading<T>) _then) = _$MoreItemsLoadingCopyWithImpl;
+abstract mixin class $RelatedItemsLoadingCopyWith<T,$Res> implements $RelatedItemsStateCopyWith<T, $Res> {
+  factory $RelatedItemsLoadingCopyWith(RelatedItemsLoading<T> value, $Res Function(RelatedItemsLoading<T>) _then) = _$RelatedItemsLoadingCopyWithImpl;
 @override @useResult
 $Res call({
  int page
@@ -263,17 +263,17 @@ $Res call({
 
 }
 /// @nodoc
-class _$MoreItemsLoadingCopyWithImpl<T,$Res>
-    implements $MoreItemsLoadingCopyWith<T, $Res> {
-  _$MoreItemsLoadingCopyWithImpl(this._self, this._then);
+class _$RelatedItemsLoadingCopyWithImpl<T,$Res>
+    implements $RelatedItemsLoadingCopyWith<T, $Res> {
+  _$RelatedItemsLoadingCopyWithImpl(this._self, this._then);
 
-  final MoreItemsLoading<T> _self;
-  final $Res Function(MoreItemsLoading<T>) _then;
+  final RelatedItemsLoading<T> _self;
+  final $Res Function(RelatedItemsLoading<T>) _then;
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? page = null,}) {
-  return _then(MoreItemsLoading<T>(
+  return _then(RelatedItemsLoading<T>(
 page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,
   ));
@@ -285,8 +285,8 @@ as int,
 /// @nodoc
 
 
-class MoreItemsSuccess<T> implements MoreItemsState<T> {
-  const MoreItemsSuccess({required  List<T> items, required this.page, required this.totalPages}): _items = items;
+class RelatedItemsSuccess<T> implements RelatedItemsState<T> {
+  const RelatedItemsSuccess({required  List<T> items, required this.page, required this.totalPages}): _items = items;
   
 
  final  List<T> _items;
@@ -299,17 +299,17 @@ class MoreItemsSuccess<T> implements MoreItemsState<T> {
 @override final  int page;
  final  int totalPages;
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MoreItemsSuccessCopyWith<T, MoreItemsSuccess<T>> get copyWith => _$MoreItemsSuccessCopyWithImpl<T, MoreItemsSuccess<T>>(this, _$identity);
+$RelatedItemsSuccessCopyWith<T, RelatedItemsSuccess<T>> get copyWith => _$RelatedItemsSuccessCopyWithImpl<T, RelatedItemsSuccess<T>>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is MoreItemsSuccess<T>&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.page, page) || other.page == page)&&(identical(other.totalPages, totalPages) || other.totalPages == totalPages));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is RelatedItemsSuccess<T>&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.page, page) || other.page == page)&&(identical(other.totalPages, totalPages) || other.totalPages == totalPages));
 }
 
 
@@ -320,15 +320,15 @@ int get hashCode {
 
 @override
 String toString() {
-    return 'MoreItemsState<$T>.success(items: $items, page: $page, totalPages: $totalPages)';
+    return 'RelatedItemsState<$T>.success(items: $items, page: $page, totalPages: $totalPages)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MoreItemsSuccessCopyWith<T,$Res> implements $MoreItemsStateCopyWith<T, $Res> {
-  factory $MoreItemsSuccessCopyWith(MoreItemsSuccess<T> value, $Res Function(MoreItemsSuccess<T>) _then) = _$MoreItemsSuccessCopyWithImpl;
+abstract mixin class $RelatedItemsSuccessCopyWith<T,$Res> implements $RelatedItemsStateCopyWith<T, $Res> {
+  factory $RelatedItemsSuccessCopyWith(RelatedItemsSuccess<T> value, $Res Function(RelatedItemsSuccess<T>) _then) = _$RelatedItemsSuccessCopyWithImpl;
 @override @useResult
 $Res call({
  List<T> items, int page, int totalPages
@@ -339,17 +339,17 @@ $Res call({
 
 }
 /// @nodoc
-class _$MoreItemsSuccessCopyWithImpl<T,$Res>
-    implements $MoreItemsSuccessCopyWith<T, $Res> {
-  _$MoreItemsSuccessCopyWithImpl(this._self, this._then);
+class _$RelatedItemsSuccessCopyWithImpl<T,$Res>
+    implements $RelatedItemsSuccessCopyWith<T, $Res> {
+  _$RelatedItemsSuccessCopyWithImpl(this._self, this._then);
 
-  final MoreItemsSuccess<T> _self;
-  final $Res Function(MoreItemsSuccess<T>) _then;
+  final RelatedItemsSuccess<T> _self;
+  final $Res Function(RelatedItemsSuccess<T>) _then;
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? page = null,Object? totalPages = null,}) {
-  return _then(MoreItemsSuccess<T>(
+  return _then(RelatedItemsSuccess<T>(
 items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<T>,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,totalPages: null == totalPages ? _self.totalPages : totalPages // ignore: cast_nullable_to_non_nullable
@@ -363,24 +363,24 @@ as int,
 /// @nodoc
 
 
-class MoreItemsError<T> implements MoreItemsState<T> {
-  const MoreItemsError({required this.failure, required this.page});
+class RelatedItemsError<T> implements RelatedItemsState<T> {
+  const RelatedItemsError({required this.failure, required this.page});
   
 
  final  Failure failure;
 @override final  int page;
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$MoreItemsErrorCopyWith<T, MoreItemsError<T>> get copyWith => _$MoreItemsErrorCopyWithImpl<T, MoreItemsError<T>>(this, _$identity);
+$RelatedItemsErrorCopyWith<T, RelatedItemsError<T>> get copyWith => _$RelatedItemsErrorCopyWithImpl<T, RelatedItemsError<T>>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is MoreItemsError<T>&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.page, page) || other.page == page));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is RelatedItemsError<T>&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.page, page) || other.page == page));
 }
 
 
@@ -391,15 +391,15 @@ int get hashCode {
 
 @override
 String toString() {
-    return 'MoreItemsState<$T>.error(failure: $failure, page: $page)';
+    return 'RelatedItemsState<$T>.error(failure: $failure, page: $page)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $MoreItemsErrorCopyWith<T,$Res> implements $MoreItemsStateCopyWith<T, $Res> {
-  factory $MoreItemsErrorCopyWith(MoreItemsError<T> value, $Res Function(MoreItemsError<T>) _then) = _$MoreItemsErrorCopyWithImpl;
+abstract mixin class $RelatedItemsErrorCopyWith<T,$Res> implements $RelatedItemsStateCopyWith<T, $Res> {
+  factory $RelatedItemsErrorCopyWith(RelatedItemsError<T> value, $Res Function(RelatedItemsError<T>) _then) = _$RelatedItemsErrorCopyWithImpl;
 @override @useResult
 $Res call({
  Failure failure, int page
@@ -410,24 +410,24 @@ $FailureCopyWith<$Res> get failure;
 
 }
 /// @nodoc
-class _$MoreItemsErrorCopyWithImpl<T,$Res>
-    implements $MoreItemsErrorCopyWith<T, $Res> {
-  _$MoreItemsErrorCopyWithImpl(this._self, this._then);
+class _$RelatedItemsErrorCopyWithImpl<T,$Res>
+    implements $RelatedItemsErrorCopyWith<T, $Res> {
+  _$RelatedItemsErrorCopyWithImpl(this._self, this._then);
 
-  final MoreItemsError<T> _self;
-  final $Res Function(MoreItemsError<T>) _then;
+  final RelatedItemsError<T> _self;
+  final $Res Function(RelatedItemsError<T>) _then;
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? failure = null,Object? page = null,}) {
-  return _then(MoreItemsError<T>(
+  return _then(RelatedItemsError<T>(
 failure: null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as Failure,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
 
-/// Create a copy of MoreItemsState
+/// Create a copy of RelatedItemsState
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

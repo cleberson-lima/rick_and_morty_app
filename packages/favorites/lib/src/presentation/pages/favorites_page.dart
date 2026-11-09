@@ -21,11 +21,11 @@ class FavoritesPage extends StatelessWidget {
       body: BlocBuilder<FavoritesCubit, FavoritesState>(
         builder: (context, state) => switch (state) {
           FavoritesLoading() => const LoadingSkeleton(),
-          FavoritesError(:final failure) => StateView.failure(
+          FavoritesError(:final failure) => MessageView.failure(
             failure: failure,
             onRetry: () => context.read<FavoritesCubit>().load(),
           ),
-          FavoritesLoaded(:final items) when items.isEmpty => const StateView(
+          FavoritesLoaded(:final items) when items.isEmpty => const MessageView(
             icon: Icons.favorite_border,
             title: 'Nenhum favorito ainda',
             message:

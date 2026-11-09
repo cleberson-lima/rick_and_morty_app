@@ -8,7 +8,7 @@ import 'package:flutter_modular/flutter_modular.dart'
 import 'data/models/models.dart';
 import 'data/search_api.dart';
 import 'presentation/bloc/details_cubit.dart';
-import 'presentation/bloc/more_items_cubit.dart';
+import 'presentation/bloc/related_items_cubit.dart';
 import 'presentation/bloc/search_bloc.dart';
 import 'presentation/pages/details_page.dart';
 import 'presentation/pages/search_page.dart';
@@ -29,12 +29,14 @@ class SearchModule extends Module {
       ..add<DetailsCubit>(DetailsCubit.new)
       // "Mais ..." sections get their own SearchApi: it cancels the previous
       // search of the same type, and must not cancel the home page's.
-      ..add<MoreCharactersCubit>(
-        () => MoreCharactersCubit(SearchApi(i.get<Dio>())),
+      ..add<RelatedCharactersCubit>(
+        () => RelatedCharactersCubit(SearchApi(i.get<Dio>())),
       )
-      ..add<MoreEpisodesCubit>(() => MoreEpisodesCubit(SearchApi(i.get<Dio>())))
-      ..add<MoreLocationsCubit>(
-        () => MoreLocationsCubit(SearchApi(i.get<Dio>())),
+      ..add<RelatedEpisodesCubit>(
+        () => RelatedEpisodesCubit(SearchApi(i.get<Dio>())),
+      )
+      ..add<RelatedLocationsCubit>(
+        () => RelatedLocationsCubit(SearchApi(i.get<Dio>())),
       );
   }
 
@@ -91,7 +93,7 @@ class _DetailsRoute extends StatelessWidget {
     if (type == null || id == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: const StateView(
+        body: const MessageView(
           icon: Icons.link_off,
           title: 'Link inválido',
           message: 'Não foi possível abrir este item.',
@@ -104,14 +106,14 @@ class _DetailsRoute extends StatelessWidget {
           create: (_) => Modular.get<DetailsCubit>()..load(type, id),
         ),
         switch (type) {
-          ResourceType.character => BlocProvider<MoreItemsCubit<Character>>(
-            create: (_) => Modular.get<MoreCharactersCubit>()..load(1),
+          ResourceType.character => BlocProvider<RelatedItemsCubit<Character>>(
+            create: (_) => Modular.get<RelatedCharactersCubit>()..load(1),
           ),
-          ResourceType.episode => BlocProvider<MoreItemsCubit<Episode>>(
-            create: (_) => Modular.get<MoreEpisodesCubit>()..load(1),
+          ResourceType.episode => BlocProvider<RelatedItemsCubit<Episode>>(
+            create: (_) => Modular.get<RelatedEpisodesCubit>()..load(1),
           ),
-          ResourceType.location => BlocProvider<MoreItemsCubit<Location>>(
-            create: (_) => Modular.get<MoreLocationsCubit>()..load(1),
+          ResourceType.location => BlocProvider<RelatedItemsCubit<Location>>(
+            create: (_) => Modular.get<RelatedLocationsCubit>()..load(1),
           ),
         },
       ],

@@ -7,21 +7,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:search/src/data/models/models.dart';
 import 'package:search/src/presentation/bloc/details_cubit.dart';
-import 'package:search/src/presentation/bloc/more_items_cubit.dart';
+import 'package:search/src/presentation/bloc/related_items_cubit.dart';
 import 'package:search/src/presentation/pages/details_page.dart';
 
 import '../test_data.dart';
 
 class _DetailsCubit extends MockCubit<DetailsState> implements DetailsCubit {}
 
-class _MoreCharacters extends MockCubit<MoreItemsState<Character>>
-    implements MoreItemsCubit<Character> {}
+class _RelatedCharacters extends MockCubit<RelatedItemsState<Character>>
+    implements RelatedItemsCubit<Character> {}
 
-class _MoreEpisodes extends MockCubit<MoreItemsState<Episode>>
-    implements MoreItemsCubit<Episode> {}
+class _RelatedEpisodes extends MockCubit<RelatedItemsState<Episode>>
+    implements RelatedItemsCubit<Episode> {}
 
-class _MoreLocations extends MockCubit<MoreItemsState<Location>>
-    implements MoreItemsCubit<Location> {}
+class _RelatedLocations extends MockCubit<RelatedItemsState<Location>>
+    implements RelatedItemsCubit<Location> {}
 
 class _FavoritesCubit extends MockCubit<FavoritesState>
     implements FavoritesCubit {}
@@ -44,9 +44,9 @@ const _earth = Location(
 
 void main() {
   late _DetailsCubit details;
-  late _MoreCharacters moreCharacters;
-  late _MoreEpisodes moreEpisodes;
-  late _MoreLocations moreLocations;
+  late _RelatedCharacters moreCharacters;
+  late _RelatedEpisodes moreEpisodes;
+  late _RelatedLocations moreLocations;
   late _FavoritesCubit favorites;
 
   setUpAll(
@@ -57,22 +57,22 @@ void main() {
 
   setUp(() {
     details = _DetailsCubit();
-    moreCharacters = _MoreCharacters();
-    moreEpisodes = _MoreEpisodes();
-    moreLocations = _MoreLocations();
+    moreCharacters = _RelatedCharacters();
+    moreEpisodes = _RelatedEpisodes();
+    moreLocations = _RelatedLocations();
     favorites = _FavoritesCubit();
     when(
       () => favorites.state,
     ).thenReturn(const FavoritesState.loaded(items: []));
     when(() => favorites.toggle(any())).thenAnswer((_) async {});
     when(() => moreCharacters.state).thenReturn(
-      const MoreItemsState.success(items: [morty], page: 1, totalPages: 42),
+      const RelatedItemsState.success(items: [morty], page: 1, totalPages: 42),
     );
     when(() => moreEpisodes.state).thenReturn(
-      const MoreItemsState.success(items: [_pilot], page: 1, totalPages: 3),
+      const RelatedItemsState.success(items: [_pilot], page: 1, totalPages: 3),
     );
     when(() => moreLocations.state).thenReturn(
-      const MoreItemsState.success(items: [_earth], page: 1, totalPages: 7),
+      const RelatedItemsState.success(items: [_earth], page: 1, totalPages: 7),
     );
     when(() => moreCharacters.load(any())).thenAnswer((_) async {});
   });
@@ -94,9 +94,11 @@ void main() {
         providers: [
           BlocProvider<DetailsCubit>.value(value: details),
           BlocProvider<FavoritesCubit>.value(value: favorites),
-          BlocProvider<MoreItemsCubit<Character>>.value(value: moreCharacters),
-          BlocProvider<MoreItemsCubit<Episode>>.value(value: moreEpisodes),
-          BlocProvider<MoreItemsCubit<Location>>.value(value: moreLocations),
+          BlocProvider<RelatedItemsCubit<Character>>.value(
+            value: moreCharacters,
+          ),
+          BlocProvider<RelatedItemsCubit<Episode>>.value(value: moreEpisodes),
+          BlocProvider<RelatedItemsCubit<Location>>.value(value: moreLocations),
         ],
         child: MaterialApp(
           theme: AppTheme.dark(useGoogleFonts: false),
@@ -225,7 +227,7 @@ void main() {
 
   testWidgets('a failed "Mais" page offers a retry', (tester) async {
     when(() => moreEpisodes.state).thenReturn(
-      const MoreItemsState.error(failure: Failure.network(), page: 2),
+      const RelatedItemsState.error(failure: Failure.network(), page: 2),
     );
     when(() => moreEpisodes.retry()).thenAnswer((_) async {});
     await pump(tester, const DetailsState.episode(_pilot));

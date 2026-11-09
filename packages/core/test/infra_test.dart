@@ -15,12 +15,12 @@ void main() {
     expect(dio.interceptors.whereType<LogInterceptor>(), isNotEmpty);
   });
 
-  test('PageResult.hasNext follows nextPage', () {
+  test('PaginatedList.hasNext follows nextPage', () {
     expect(
-      const PageResult(items: [1], totalCount: 2, nextPage: 2).hasNext,
+      const PaginatedList(items: [1], totalCount: 2, nextPage: 2).hasNext,
       isTrue,
     );
-    expect(const PageResult(items: [1], totalCount: 1).hasNext, isFalse);
+    expect(const PaginatedList(items: [1], totalCount: 1).hasNext, isFalse);
   });
 
   test('CoreModule exports SharedPreferences, Dio and ThemeCubit', () async {

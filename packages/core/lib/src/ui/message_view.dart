@@ -4,8 +4,8 @@ import '../error/failure.dart';
 import 'failure_presentation.dart';
 
 /// Centered illustration + message used for empty, not-found and error states.
-class StateView extends StatelessWidget {
-  const StateView({
+class MessageView extends StatelessWidget {
+  const MessageView({
     required this.icon,
     required this.title,
     this.message,
@@ -14,7 +14,7 @@ class StateView extends StatelessWidget {
     super.key,
   });
 
-  const StateView.error({
+  const MessageView.error({
     required String message,
     VoidCallback? onRetry,
     Key? key,
@@ -28,15 +28,18 @@ class StateView extends StatelessWidget {
        );
 
   /// Error state whose title, icon and message come from [failure].
-  StateView.failure({required Failure failure, VoidCallback? onRetry, Key? key})
-    : this(
-        key: key,
-        icon: failure.icon,
-        title: failure.title,
-        message: failure.message,
-        actionLabel: onRetry == null ? null : 'Tentar novamente',
-        onAction: onRetry,
-      );
+  MessageView.failure({
+    required Failure failure,
+    VoidCallback? onRetry,
+    Key? key,
+  }) : this(
+         key: key,
+         icon: failure.icon,
+         title: failure.title,
+         message: failure.message,
+         actionLabel: onRetry == null ? null : 'Tentar novamente',
+         onAction: onRetry,
+       );
 
   final IconData icon;
   final String title;

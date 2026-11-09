@@ -1,4 +1,4 @@
-import 'package:core/domain.dart';
+import 'package:core/types.dart';
 import 'package:favorites/src/data/favorites_storage.dart';
 import 'package:favorites/src/data/models/favorite_item.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -4,7 +4,7 @@ import '../error/failure.dart';
 
 /// User-facing copy and icon for each [Failure].
 ///
-/// `Failure` lives in the domain and carries no text; screens keep the
+/// `Failure` (in `types.dart`) carries no text; screens keep the
 /// `Failure` in their state and translate it here, so every case can get its
 /// own title and icon (and, later, localized strings).
 extension FailurePresentation on Failure {

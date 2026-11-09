@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:core/domain.dart';
+import 'package:core/types.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
 
 /// Stand-in for a `SearchApi.searchX` method, so the test can stub it.
 abstract class _Search {
-  Future<Result<PageResult<String>>> call(String query, {int page = 1});
+  Future<Result<PaginatedList<String>>> call(String query, {int page = 1});
 }
 
 class _MockSearch extends Mock implements _Search {}
@@ -17,8 +17,8 @@ const _debounce = Duration(milliseconds: 50);
 // Generous slack: a busy CI machine may fire the debounce timer late.
 const _afterDebounce = Duration(milliseconds: 500);
 
-PageResult<String> _page(List<String> items, {int? next, int total = 0}) =>
-    PageResult(items: items, totalCount: total, nextPage: next);
+PaginatedList<String> _page(List<String> items, {int? next, int total = 0}) =>
+    PaginatedList(items: items, totalCount: total, nextPage: next);
 
 void main() {
   late _MockSearch search;
@@ -132,7 +132,7 @@ void main() {
       // Deterministic: the "slow" response is released only after the newer
       // search has finished, so no real-time race decides the outcome.
       act: (bloc) async {
-        final slow = Completer<Result<PageResult<String>>>();
+        final slow = Completer<Result<PaginatedList<String>>>();
         when(() => search('slow')).thenAnswer((_) => slow.future);
 
         bloc.add(const SearchSubmitted('slow'));
@@ -187,7 +187,7 @@ void main() {
       seed: () => firstPage,
       // The page stays in flight until all three requests were dispatched.
       act: (bloc) async {
-        final page = Completer<Result<PageResult<String>>>();
+        final page = Completer<Result<PaginatedList<String>>>();
         when(() => search('rick', page: 2)).thenAnswer((_) => page.future);
         bloc
           ..add(const SearchNextPageRequested())

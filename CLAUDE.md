@@ -17,7 +17,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 
 ## Estrutura
 - raiz do repositório — o app Flutter (`lib/`, `android/`, `ios/`): `main.dart`, `AppModule`, `AppWidget`
-- `packages/core` — Dio client, `Result`, `Failure`, `ResourceType`, `PageResult`, tema, `ThemeCubit`, widgets em `lib/src/ui`
+- `packages/core` — Dio client, `Result`, `Failure`, `ResourceType`, `PaginatedList`, tema, `ThemeCubit`, widgets em `lib/src/ui`
 - `packages/favorites` — favoritos persistidos (shared_preferences)
 - `packages/search` — busca de personagens, episódios e locais + tela de detalhe
 
@@ -27,7 +27,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - `data/search_api.dart` (`SearchApi`) e `data/favorites_storage.dart` (`FavoritesStorage`) fazem o acesso; a model nova entra passando o `X.fromJson` para `_search`/`_getById`
 - API e storage retornam `Result<T>` (`Success(data)` / `Failed(failure)`, do `core`) e nunca lançam exceção; trate com `switch`, não com `try/catch`
 - 404 da API vira `NotFoundFailure` → estado `notFound` (não é erro genérico)
-- `Failure` não tem texto: os estados guardam o `Failure` e a UI usa `FailurePresentation` (`title`, `message`, `icon`) / `StateView.failure` do `core`
+- `Failure` não tem texto: os estados guardam o `Failure` e a UI usa `FailurePresentation` (`title`, `message`, `icon`) / `MessageView.failure` do `core`
 - Estados de tela são sealed classes do freezed: loading, success, empty, notFound, error
 - Cubit para carregar dados; Bloc só no `SearchBloc` (debounce/`restartable`/`droppable` pelos transformers de evento)
 - O state fica em `x_state.dart` como `part of 'x_cubit.dart'` (eventos do Bloc idem); os imports ficam só na cubit e quem usa o state importa a cubit

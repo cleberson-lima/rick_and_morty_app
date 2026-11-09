@@ -13,13 +13,13 @@ class _FavoritesCubit extends MockCubit<FavoritesState>
     implements FavoritesCubit {}
 
 void main() {
-  test('FavoritesDataModule wires an app-wide FavoritesCubit', () async {
+  test('FavoritesBindingsModule wires an app-wide FavoritesCubit', () async {
     SharedPreferences.setMockInitialValues({});
     await CoreModule.initialize();
 
     final injector = AutoInjector();
     CoreModule().exportedBinds(injector);
-    FavoritesDataModule().exportedBinds(injector);
+    FavoritesBindingsModule().exportedBinds(injector);
     injector.commit();
 
     final cubit = injector.get<FavoritesCubit>();

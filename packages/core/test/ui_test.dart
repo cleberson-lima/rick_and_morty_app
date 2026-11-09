@@ -59,10 +59,10 @@ void main() {
     expect(find.text('Vivo'), findsOneWidget);
   });
 
-  testWidgets('StateView without action shows no button', (tester) async {
+  testWidgets('MessageView without action shows no button', (tester) async {
     await tester.pumpWidget(
       _app(
-        const StateView(
+        const MessageView(
           icon: Icons.inbox,
           title: 'Nada por aqui',
           message: 'Sem resultados',

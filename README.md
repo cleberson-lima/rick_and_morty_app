@@ -93,7 +93,7 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 | core | 90,9% |
 | favorites | 91,7% |
 | search | 91,6% |
-| **Total** | **91,4%** (1203/1316) |
+| **Total** | **91,4%** (1205/1318) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
@@ -109,7 +109,7 @@ A raiz do repositório é um projeto Flutter padrão (o app). As features ficam 
 lib/                 # app: main.dart, AppModule (rotas), AppWidget (tema, cubits globais)
 android/  ios/       # projetos nativos
 packages/
-  core/              # Dio, Result, Failure, ResourceType, PageResult, tema, design system, AppRoutes
+  core/              # Dio, Result, Failure, ResourceType, PaginatedList, tema, design system, AppRoutes
   favorites/         # favoritos (shared_preferences) + FavoritesCubit global
   search/            # busca + detalhes (Rick and Morty API)
 tool/                # scripts de desenvolvimento (relatório de cobertura)
@@ -144,7 +144,7 @@ Camadas dentro de cada feature (exemplo do `search`): a tela lê o estado do Blo
 flowchart LR
     subgraph presentation["presentation"]
         direction LR
-        page["SearchPage<br/>DetailsPage"] --> bloc["SearchBloc#lt;T#gt; · DetailsCubit · MoreItemsCubit<br/><i>estados sealed (freezed)</i>"]
+        page["SearchPage<br/>DetailsPage"] --> bloc["SearchBloc#lt;T#gt; · DetailsCubit · RelatedItemsCubit<br/><i>estados sealed (freezed)</i>"]
     end
     subgraph data["data"]
         direction LR
@@ -162,7 +162,7 @@ flowchart LR
 
 1. `SearchPage` envia `SearchQueryChanged` ao Bloc da aba visível.
 2. O `SearchBloc<T>` aplica `debounce` (400 ms) + `restartable` (só a última busca importa).
-3. O `SearchApi` cancela o `CancelToken` anterior do mesmo tipo, faz a requisição e devolve `Result<PageResult<T>>`, com a `DioException` já convertida em `Failure`.
+3. O `SearchApi` cancela o `CancelToken` anterior do mesmo tipo, faz a requisição e devolve `Result<PaginatedList<T>>`, com a `DioException` já convertida em `Failure`.
 4. O Bloc descarta respostas antigas (contador de geração) e emite `loading` → `success` / `empty` / `notFound` / `error`.
 
 Um único `SearchBloc<T>` genérico atende as três abas: cada aba recebe o método do `SearchApi` do seu tipo (`searchCharacters`, `searchEpisodes`, `searchLocations`).
@@ -195,7 +195,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Situação atual | Direção |
 | --- | --- | --- | --- |
-| 1 | ~~Mensagens de UI no `Failure`~~ **(resolvido)** | Os estados guardam o `Failure` e a extensão `FailurePresentation` (`core/lib/src/ui`) gera título, mensagem e ícone de cada caso; `StateView.failure` monta a tela de erro. O `Failure` do domínio não tem mais texto. | Levar os textos da `FailurePresentation` para ARB junto com o item 8. |
+| 1 | ~~Mensagens de UI no `Failure`~~ **(resolvido)** | Os estados guardam o `Failure` e a extensão `FailurePresentation` (`core/lib/src/ui`) gera título, mensagem e ícone de cada caso; `MessageView.failure` monta a tela de erro. O `Failure` do domínio não tem mais texto. | Levar os textos da `FailurePresentation` para ARB junto com o item 8. |
 | 2 | ~~`Model.fromJson<T>` com `switch (T)`~~ **(resolvido)** | O `SearchApi` recebe o `fromJson` de cada model como função, verificado em tempo de compilação. O `Model<E>` não existe mais. | — |
 | 3 | `_guard` sem log | No `SearchApi`, qualquer exceção inesperada (ex.: `TypeError` por mudança no JSON da API) vira `Failure.unexpected()` sem registro. | Logar em debug e integrar um serviço de crash report. |
 | 4 | `search` depende de `favorites` | Necessário por causa do botão de favorito nos cards e nos detalhes. | `search` receber um builder do botão ou uma interface definida em `core`. |

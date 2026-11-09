@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'page_result.dart';
+part of 'paginated_list.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -13,43 +13,43 @@ part of 'page_result.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$PageResult<T> {
+mixin _$PaginatedList<T> {
 
  List<T> get items; int get totalCount;/// Number of the next page, or `null` when this is the last one.
  int? get nextPage;
-/// Create a copy of PageResult
+/// Create a copy of PaginatedList
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$PageResultCopyWith<T, PageResult<T>> get copyWith => _$PageResultCopyWithImpl<T, PageResult<T>>(this as PageResult<T>, _$identity);
+$PaginatedListCopyWith<T, PaginatedList<T>> get copyWith => _$PaginatedListCopyWithImpl<T, PaginatedList<T>>(this as PaginatedList<T>, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  final _this = this as PageResult<T>;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PageResult<T>&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.totalCount, _this.totalCount) || other.totalCount == _this.totalCount)&&(identical(other.nextPage, _this.nextPage) || other.nextPage == _this.nextPage));
+  final _this = this as PaginatedList<T>;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaginatedList<T>&&const DeepCollectionEquality().equals(other.items, _this.items)&&(identical(other.totalCount, _this.totalCount) || other.totalCount == _this.totalCount)&&(identical(other.nextPage, _this.nextPage) || other.nextPage == _this.nextPage));
 }
 
 
 @override
 int get hashCode {
-  final _this = this as PageResult<T>;
+  final _this = this as PaginatedList<T>;
   return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.items),_this.totalCount,_this.nextPage);
 }
 
 @override
 String toString() {
-  final _this = this as PageResult<T>;
-  return 'PageResult<$T>(items: ${_this.items}, totalCount: ${_this.totalCount}, nextPage: ${_this.nextPage})';
+  final _this = this as PaginatedList<T>;
+  return 'PaginatedList<$T>(items: ${_this.items}, totalCount: ${_this.totalCount}, nextPage: ${_this.nextPage})';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $PageResultCopyWith<T,$Res>  {
-  factory $PageResultCopyWith(PageResult<T> value, $Res Function(PageResult<T>) _then) = _$PageResultCopyWithImpl;
+abstract mixin class $PaginatedListCopyWith<T,$Res>  {
+  factory $PaginatedListCopyWith(PaginatedList<T> value, $Res Function(PaginatedList<T>) _then) = _$PaginatedListCopyWithImpl;
 @useResult
 $Res call({
  List<T> items, int totalCount, int? nextPage
@@ -60,17 +60,17 @@ $Res call({
 
 }
 /// @nodoc
-class _$PageResultCopyWithImpl<T,$Res>
-    implements $PageResultCopyWith<T, $Res> {
-  _$PageResultCopyWithImpl(this._self, this._then);
+class _$PaginatedListCopyWithImpl<T,$Res>
+    implements $PaginatedListCopyWith<T, $Res> {
+  _$PaginatedListCopyWithImpl(this._self, this._then);
 
-  final PageResult<T> _self;
-  final $Res Function(PageResult<T>) _then;
+  final PaginatedList<T> _self;
+  final $Res Function(PaginatedList<T>) _then;
 
-/// Create a copy of PageResult
+/// Create a copy of PaginatedList
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? totalCount = null,Object? nextPage = freezed,}) {
-  return _then(PageResult(
+  return _then(PaginatedList(
 items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<T>,totalCount: null == totalCount ? _self.totalCount : totalCount // ignore: cast_nullable_to_non_nullable
 as int,nextPage: freezed == nextPage ? _self.nextPage : nextPage // ignore: cast_nullable_to_non_nullable
@@ -81,8 +81,8 @@ as int?,
 }
 
 
-/// Adds pattern-matching-related methods to [PageResult].
-extension PageResultPatterns<T> on PageResult<T> {
+/// Adds pattern-matching-related methods to [PaginatedList].
+extension PaginatedListPatterns<T> on PaginatedList<T> {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -95,10 +95,10 @@ extension PageResultPatterns<T> on PageResult<T> {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PageResult<T> value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PaginatedList<T> value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _PageResult() when $default != null:
+case _PaginatedList() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -117,10 +117,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PageResult<T> value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PaginatedList<T> value)  $default,){
 final _that = this;
 switch (_that) {
-case _PageResult():
+case _PaginatedList():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -138,10 +138,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PageResult<T> value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PaginatedList<T> value)?  $default,){
 final _that = this;
 switch (_that) {
-case _PageResult() when $default != null:
+case _PaginatedList() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -161,7 +161,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<T> items,  int totalCount,  int? nextPage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _PageResult() when $default != null:
+case _PaginatedList() when $default != null:
 return $default(_that.items,_that.totalCount,_that.nextPage);case _:
   return orElse();
 
@@ -182,7 +182,7 @@ return $default(_that.items,_that.totalCount,_that.nextPage);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<T> items,  int totalCount,  int? nextPage)  $default,) {final _that = this;
 switch (_that) {
-case _PageResult():
+case _PaginatedList():
 return $default(_that.items,_that.totalCount,_that.nextPage);case _:
   throw StateError('Unexpected subclass');
 
@@ -202,7 +202,7 @@ return $default(_that.items,_that.totalCount,_that.nextPage);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<T> items,  int totalCount,  int? nextPage)?  $default,) {final _that = this;
 switch (_that) {
-case _PageResult() when $default != null:
+case _PaginatedList() when $default != null:
 return $default(_that.items,_that.totalCount,_that.nextPage);case _:
   return null;
 
@@ -214,8 +214,8 @@ return $default(_that.items,_that.totalCount,_that.nextPage);case _:
 /// @nodoc
 
 
-class _PageResult<T> extends PageResult<T> {
-  const _PageResult({required  List<T> items, required this.totalCount, this.nextPage}): _items = items,super._();
+class _PaginatedList<T> extends PaginatedList<T> {
+  const _PaginatedList({required  List<T> items, required this.totalCount, this.nextPage}): _items = items,super._();
   
 
  final  List<T> _items;
@@ -229,17 +229,17 @@ class _PageResult<T> extends PageResult<T> {
 /// Number of the next page, or `null` when this is the last one.
 @override final  int? nextPage;
 
-/// Create a copy of PageResult
+/// Create a copy of PaginatedList
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$PageResultCopyWith<T, _PageResult<T>> get copyWith => __$PageResultCopyWithImpl<T, _PageResult<T>>(this, _$identity);
+_$PaginatedListCopyWith<T, _PaginatedList<T>> get copyWith => __$PaginatedListCopyWithImpl<T, _PaginatedList<T>>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PageResult<T>&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.nextPage, nextPage) || other.nextPage == nextPage));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaginatedList<T>&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.nextPage, nextPage) || other.nextPage == nextPage));
 }
 
 
@@ -250,15 +250,15 @@ int get hashCode {
 
 @override
 String toString() {
-    return 'PageResult<$T>(items: $items, totalCount: $totalCount, nextPage: $nextPage)';
+    return 'PaginatedList<$T>(items: $items, totalCount: $totalCount, nextPage: $nextPage)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$PageResultCopyWith<T,$Res> implements $PageResultCopyWith<T, $Res> {
-  factory _$PageResultCopyWith(_PageResult<T> value, $Res Function(_PageResult<T>) _then) = __$PageResultCopyWithImpl;
+abstract mixin class _$PaginatedListCopyWith<T,$Res> implements $PaginatedListCopyWith<T, $Res> {
+  factory _$PaginatedListCopyWith(_PaginatedList<T> value, $Res Function(_PaginatedList<T>) _then) = __$PaginatedListCopyWithImpl;
 @override @useResult
 $Res call({
  List<T> items, int totalCount, int? nextPage
@@ -269,17 +269,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$PageResultCopyWithImpl<T,$Res>
-    implements _$PageResultCopyWith<T, $Res> {
-  __$PageResultCopyWithImpl(this._self, this._then);
+class __$PaginatedListCopyWithImpl<T,$Res>
+    implements _$PaginatedListCopyWith<T, $Res> {
+  __$PaginatedListCopyWithImpl(this._self, this._then);
 
-  final _PageResult<T> _self;
-  final $Res Function(_PageResult<T>) _then;
+  final _PaginatedList<T> _self;
+  final $Res Function(_PaginatedList<T>) _then;
 
-/// Create a copy of PageResult
+/// Create a copy of PaginatedList
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? totalCount = null,Object? nextPage = freezed,}) {
-  return _then(_PageResult<T>(
+  return _then(_PaginatedList<T>(
 items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<T>,totalCount: null == totalCount ? _self.totalCount : totalCount // ignore: cast_nullable_to_non_nullable
 as int,nextPage: freezed == nextPage ? _self.nextPage : nextPage // ignore: cast_nullable_to_non_nullable

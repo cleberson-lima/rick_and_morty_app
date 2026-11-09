@@ -2,12 +2,12 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/more_items_cubit.dart';
+import '../bloc/related_items_cubit.dart';
 
 /// "Mais personagens / episódios / localizações": a grid of one API page with
 /// numbered pagination below it.
-class MoreSection<T> extends StatelessWidget {
-  const MoreSection({
+class RelatedItemsSection<T> extends StatelessWidget {
+  const RelatedItemsSection({
     required this.title,
     required this.icon,
     required this.itemBuilder,
@@ -43,19 +43,19 @@ class MoreSection<T> extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          BlocBuilder<MoreItemsCubit<T>, MoreItemsState<T>>(
+          BlocBuilder<RelatedItemsCubit<T>, RelatedItemsState<T>>(
             builder: (context, state) {
-              final cubit = context.read<MoreItemsCubit<T>>();
+              final cubit = context.read<RelatedItemsCubit<T>>();
               return switch (state) {
-                MoreItemsLoading() => const SizedBox(
+                RelatedItemsLoading() => const SizedBox(
                   height: 160,
                   child: Center(child: CircularProgressIndicator()),
                 ),
-                MoreItemsError(:final failure) => StateView.failure(
+                RelatedItemsError(:final failure) => MessageView.failure(
                   failure: failure,
                   onRetry: cubit.retry,
                 ),
-                MoreItemsSuccess(
+                RelatedItemsSuccess(
                   :final items,
                   :final page,
                   :final totalPages,

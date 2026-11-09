@@ -24,11 +24,11 @@ class SearchResultsView<T> extends StatelessWidget {
         final bloc = context.read<SearchBloc<T>>();
         return switch (state) {
           SearchInitial() || SearchLoading() => const LoadingSkeleton(),
-          SearchError(:final query, :final failure) => StateView.failure(
+          SearchError(:final query, :final failure) => MessageView.failure(
             failure: failure,
             onRetry: () => bloc.add(SearchSubmitted(query)),
           ),
-          SearchNotFound(:final query) => StateView(
+          SearchNotFound(:final query) => MessageView(
             icon: Icons.search_off,
             title: 'Nenhum resultado',
             message: query.isEmpty
@@ -36,7 +36,7 @@ class SearchResultsView<T> extends StatelessWidget {
                 : 'Não existe ${type.label.toLowerCase()} com o nome "$query". '
                       'Confira a grafia ou tente outro termo.',
           ),
-          SearchEmpty() => const StateView(
+          SearchEmpty() => const MessageView(
             icon: Icons.inbox_outlined,
             title: 'Nada por aqui',
             message: 'A busca não retornou resultados.',

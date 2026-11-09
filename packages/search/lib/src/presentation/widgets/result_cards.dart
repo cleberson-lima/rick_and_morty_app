@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../data/models/models.dart';
 
-/// Entity → favorite snapshot. Lives in presentation: the domain of `search`
+/// Model → favorite snapshot. Lives in presentation: the models of `search`
 /// doesn't know about favorites.
 extension CharacterFavoriteX on Character {
   FavoriteItem toFavorite() => FavoriteItem(

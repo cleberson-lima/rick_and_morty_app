@@ -4,8 +4,8 @@ import 'package:dio/dio.dart';
 import 'models/models.dart';
 
 /// One page of a search, as the Blocs and Cubits consume it.
-typedef FetchPage<T> =
-    Future<Result<PageResult<T>>> Function(String query, {int page});
+typedef SearchFunction<T> =
+    Future<Result<PaginatedList<T>>> Function(String query, {int page});
 
 /// Client of `https://rickandmortyapi.com/api`.
 ///
@@ -22,17 +22,17 @@ class SearchApi {
   final Dio _dio;
   final Map<ResourceType, CancelToken> _tokens = {};
 
-  Future<Result<PageResult<Character>>> searchCharacters(
+  Future<Result<PaginatedList<Character>>> searchCharacters(
     String query, {
     int page = 1,
   }) => _search(ResourceType.character, query, page, Character.fromJson);
 
-  Future<Result<PageResult<Episode>>> searchEpisodes(
+  Future<Result<PaginatedList<Episode>>> searchEpisodes(
     String query, {
     int page = 1,
   }) => _search(ResourceType.episode, query, page, Episode.fromJson);
 
-  Future<Result<PageResult<Location>>> searchLocations(
+  Future<Result<PaginatedList<Location>>> searchLocations(
     String query, {
     int page = 1,
   }) => _search(ResourceType.location, query, page, Location.fromJson);
@@ -47,7 +47,7 @@ class SearchApi {
       _getById(ResourceType.location, id, Location.fromJson);
 
   /// Parses `{ "info": { "count", "next" }, "results": [...] }`.
-  Future<Result<PageResult<T>>> _search<T>(
+  Future<Result<PaginatedList<T>>> _search<T>(
     ResourceType type,
     String query,
     int page,
@@ -64,7 +64,7 @@ class SearchApi {
     );
     final json = response.data!;
     final info = json['info']! as Json;
-    return PageResult<T>(
+    return PaginatedList<T>(
       items: [
         for (final item in json['results']! as List<Object?>)
           fromJson(item! as Json),

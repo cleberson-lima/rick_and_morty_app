@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'failure.freezed.dart';
 
-/// Domain-level error. API and storage calls return `Result<T>` and never
+/// Error of an API or storage call. Those calls return `Result<T>` and never
 /// throw, so presentation can map each case to a dedicated screen state.
 ///
 /// It carries no user-facing text: the presentation layer turns it into

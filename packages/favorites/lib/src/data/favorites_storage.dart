@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:core/domain.dart';
+import 'package:core/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'models/favorite_item.dart';

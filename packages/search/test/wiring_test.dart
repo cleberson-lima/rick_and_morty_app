@@ -4,7 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart' show Module;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:search/search.dart';
 import 'package:search/src/presentation/bloc/details_cubit.dart';
-import 'package:search/src/presentation/bloc/more_items_cubit.dart';
+import 'package:search/src/presentation/bloc/related_items_cubit.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,11 +28,17 @@ void main() {
     expect(injector.get<LocationSearchBloc>(), isA<SearchBloc<Location>>());
     expect(injector.get<DetailsCubit>(), isA<DetailsCubit>());
     expect(
-      injector.get<MoreCharactersCubit>(),
-      isA<MoreItemsCubit<Character>>(),
+      injector.get<RelatedCharactersCubit>(),
+      isA<RelatedItemsCubit<Character>>(),
     );
-    expect(injector.get<MoreEpisodesCubit>(), isA<MoreItemsCubit<Episode>>());
-    expect(injector.get<MoreLocationsCubit>(), isA<MoreItemsCubit<Location>>());
+    expect(
+      injector.get<RelatedEpisodesCubit>(),
+      isA<RelatedItemsCubit<Episode>>(),
+    );
+    expect(
+      injector.get<RelatedLocationsCubit>(),
+      isA<RelatedItemsCubit<Location>>(),
+    );
 
     await Future.wait([first.close(), second.close()]);
   });
