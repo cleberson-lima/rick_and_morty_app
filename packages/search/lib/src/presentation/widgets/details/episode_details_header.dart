@@ -37,8 +37,7 @@ class EpisodeDetailsHeader extends StatelessWidget {
         const SizedBox(height: 12),
         DetailsAttribute(
           icon: PhosphorIconsRegular.users,
-          text:
-              '${episode.characterCount} personagens participaram deste episódio',
+          text: context.l10n.charactersInEpisode(episode.characterCount),
         ),
       ],
     );

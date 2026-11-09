@@ -18,7 +18,7 @@ class HomeFooter extends StatelessWidget {
             onPressed: onBackToTop,
             iconAlignment: IconAlignment.end,
             icon: const Icon(PhosphorIconsRegular.arrowUp, size: 16),
-            label: const Text('Voltar ao topo'),
+            label: Text(context.l10n.backToTop),
           ),
         ],
       ),

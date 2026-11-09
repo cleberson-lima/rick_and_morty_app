@@ -23,11 +23,13 @@ const _earth = Location(
   residentCount: 27,
 );
 
+final _l10n = lookupAppLocalizations(const Locale('pt'));
+
 void main() {
   late FakeFavorites favorites;
 
   setUp(() {
-    favorites = FakeFavorites(favorites: [rick.toFavorite()]);
+    favorites = FakeFavorites(favorites: [rick.toFavorite(_l10n)]);
   });
 
   /// Renders [cards] in the same grid the app uses, at a given width, so an
@@ -116,9 +118,19 @@ void main() {
   }
 
   test('speciesLabel translates known species and keeps the rest', () {
-    expect(speciesLabel('Human'), 'Humano');
-    expect(speciesLabel('Alien'), 'Alienígena');
-    expect(speciesLabel('unknown'), 'Desconhecido');
-    expect(speciesLabel('Cronenberg'), 'Cronenberg');
+    expect(_l10n.speciesLabel('Human'), 'Humano');
+    expect(_l10n.speciesLabel('Alien'), 'Alienígena');
+    expect(_l10n.speciesLabel('unknown'), 'Desconhecido');
+    expect(_l10n.speciesLabel('Cronenberg'), 'Cronenberg');
+  });
+
+  test('statusLabel names every status', () {
+    expect(_l10n.statusLabel(CharacterStatus.alive), 'Vivo');
+    expect(_l10n.statusLabel(CharacterStatus.dead), 'Morto');
+    expect(_l10n.statusLabel(CharacterStatus.unknown), 'Desconhecido');
+  });
+
+  test('a character snapshot names its species and status', () {
+    expect(rick.toFavorite(_l10n).subtitle, 'Humano · Vivo');
   });
 }

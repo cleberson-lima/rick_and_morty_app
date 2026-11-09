@@ -34,7 +34,7 @@ class SearchResultsPanel extends StatelessWidget {
           child: Row(
             children: [
               IconButton(
-                tooltip: 'Voltar ao início',
+                tooltip: context.l10n.backToHome,
                 icon: const Icon(PhosphorIconsRegular.caretLeft),
                 onPressed: onBack,
               ),

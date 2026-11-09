@@ -45,7 +45,7 @@ class HomeOverview extends StatelessWidget {
         ),
         SliverToBoxAdapter(
           child: HomeSection<Character>(
-            title: 'Personagens',
+            title: context.l10n.homeSectionCharacters,
             tileHeight: CardSizes.characterHeight,
             maxTileWidth: CardSizes.characterMaxWidth,
             onSeeAll: () => onSeeAll(ResourceType.character),
@@ -57,7 +57,7 @@ class HomeOverview extends StatelessWidget {
         ),
         SliverToBoxAdapter(
           child: HomeSection<Episode>(
-            title: 'Episódios',
+            title: context.l10n.homeSectionEpisodes,
             tileHeight: CardSizes.episodeHeight,
             maxTileWidth: CardSizes.episodeMaxWidth,
             onSeeAll: () => onSeeAll(ResourceType.episode),
@@ -69,7 +69,7 @@ class HomeOverview extends StatelessWidget {
         ),
         SliverToBoxAdapter(
           child: HomeSection<Location>(
-            title: 'Localizações',
+            title: context.l10n.homeSectionLocations,
             tileHeight: CardSizes.locationHeight,
             maxTileWidth: CardSizes.locationMaxWidth,
             onSeeAll: () => onSeeAll(ResourceType.location),

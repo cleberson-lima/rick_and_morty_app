@@ -9,6 +9,9 @@ environment:
   flutter: ">=3.41.0"
 
 dependencies:
+  flutter_localizations:
+    sdk: flutter
+  intl: any
   cached_network_image: ^4.0.6
   dio: ^5.11.1
   flutter:
@@ -28,6 +31,7 @@ dev_dependencies:
   mocktail: ^1.0.5
 
 flutter:
+  generate: true
   assets:
     - assets/fonts/INTER_LICENSE
   fonts:

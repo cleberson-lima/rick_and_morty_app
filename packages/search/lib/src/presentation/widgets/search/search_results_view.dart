@@ -22,6 +22,8 @@ class SearchResultsView<T> extends StatelessWidget {
     return BlocBuilder<SearchBloc<T>, SearchState<T>>(
       builder: (context, state) {
         final bloc = context.read<SearchBloc<T>>();
+        final l10n = context.l10n;
+        final typeName = l10n.resourceLabel(type).toLowerCase();
         return switch (state) {
           SearchInitial() || SearchLoading() => const LoadingSkeleton(),
           SearchError(:final query, :final failure) => MessageView.failure(
@@ -30,16 +32,15 @@ class SearchResultsView<T> extends StatelessWidget {
           ),
           SearchNotFound(:final query) => MessageView(
             icon: Icons.search_off,
-            title: 'Nenhum resultado',
+            title: l10n.noResultsTitle,
             message: query.isEmpty
-                ? 'Não encontramos nenhum ${type.label.toLowerCase()}.'
-                : 'Não existe ${type.label.toLowerCase()} com o nome "$query". '
-                      'Confira a grafia ou tente outro termo.',
+                ? l10n.noResultsOfType(typeName)
+                : l10n.noResultsForQuery(typeName, query),
           ),
-          SearchEmpty() => const MessageView(
+          SearchEmpty() => MessageView(
             icon: Icons.inbox_outlined,
-            title: 'Nada por aqui',
-            message: 'A busca não retornou resultados.',
+            title: l10n.emptyTitle,
+            message: l10n.emptyMessage,
           ),
           SearchSuccess(:final items) => ResponsiveResultsView(
             tileHeight: switch (type) {
@@ -82,18 +83,18 @@ class _PaginationFooter extends StatelessWidget {
     } else if (state.loadMoreFailure case final failure?) {
       child = Column(
         children: [
-          Text(failure.message, textAlign: TextAlign.center),
+          Text(failure.message(context.l10n), textAlign: TextAlign.center),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Tentar novamente'),
+            label: Text(context.l10n.retry),
           ),
         ],
       );
     } else if (state.nextPage == null) {
       child = Text(
-        '${state.totalCount} resultado${state.totalCount == 1 ? '' : 's'}',
+        context.l10n.resultCount(state.totalCount),
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         ),

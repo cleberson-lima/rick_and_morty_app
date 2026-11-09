@@ -42,10 +42,10 @@ class DetailsPage extends StatelessWidget {
             ),
             DetailsNotFound() => DetailsMessageLayout(
               topBar: topBar,
-              child: const MessageView(
+              child: MessageView(
                 icon: Icons.search_off,
-                title: 'Não encontrado',
-                message: 'Este item não existe ou foi removido da API.',
+                title: context.l10n.notFoundTitle,
+                message: context.l10n.notFoundMessage,
               ),
             ),
             DetailsError(:final failure) => DetailsMessageLayout(
@@ -59,7 +59,7 @@ class DetailsPage extends StatelessWidget {
                 onOpenDetails: onOpenDetails,
               ),
               related: RelatedItemsSection<Character>(
-                title: 'Mais personagens',
+                title: context.l10n.moreCharacters,
                 icon: PhosphorIconsRegular.smiley,
                 tileHeight: CardSizes.characterHeight,
                 maxTileWidth: CardSizes.characterMaxWidth,
@@ -74,7 +74,7 @@ class DetailsPage extends StatelessWidget {
               topBar: topBar,
               header: EpisodeDetailsHeader(episode: episode),
               related: RelatedItemsSection<Episode>(
-                title: 'Mais episódios',
+                title: context.l10n.moreEpisodes,
                 icon: PhosphorIconsRegular.monitorPlay,
                 tileHeight: CardSizes.episodeHeight,
                 maxTileWidth: CardSizes.episodeMaxWidth,
@@ -89,7 +89,7 @@ class DetailsPage extends StatelessWidget {
               topBar: topBar,
               header: LocationDetailsHeader(location: location),
               related: RelatedItemsSection<Location>(
-                title: 'Mais localizações',
+                title: context.l10n.moreLocations,
                 icon: PhosphorIconsRegular.planet,
                 tileHeight: CardSizes.locationHeight,
                 maxTileWidth: CardSizes.locationMaxWidth,

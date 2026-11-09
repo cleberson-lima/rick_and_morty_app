@@ -14,7 +14,7 @@ class FavoritesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favoritos'),
+        title: Text(context.l10n.favoritesTitle),
         actions: const [ThemeToggleButton()],
       ),
       body: BlocBuilder<FavoritesCubit, FavoritesState>(
@@ -24,11 +24,10 @@ class FavoritesPage extends StatelessWidget {
             failure: failure,
             onRetry: () => context.read<FavoritesCubit>().load(),
           ),
-          FavoritesLoaded(:final items) when items.isEmpty => const MessageView(
+          FavoritesLoaded(:final items) when items.isEmpty => MessageView(
             icon: Icons.favorite_border,
-            title: 'Nenhum favorito ainda',
-            message:
-                'Toque no coração de um personagem, episódio ou local para salvá-lo aqui.',
+            title: context.l10n.favoritesEmptyTitle,
+            message: context.l10n.favoritesEmptyMessage,
           ),
           FavoritesLoaded(:final items) => ResponsiveResultsView(
             itemCount: items.length,
@@ -53,7 +52,7 @@ class _FavoriteTile extends StatelessWidget {
       key: ValueKey('${item.type.name}-${item.id}'),
       title: item.name,
       subtitle: item.subtitle,
-      caption: item.type.label,
+      caption: context.l10n.resourceLabel(item.type),
       imageUrl: item.imageUrl,
       fallbackIcon: switch (item.type) {
         ResourceType.character => Icons.person_outline,
@@ -62,7 +61,7 @@ class _FavoriteTile extends StatelessWidget {
       },
       onTap: onOpen == null ? null : () => onOpen!(item),
       trailing: IconButton(
-        tooltip: 'Remover dos favoritos',
+        tooltip: context.l10n.removeFromFavorites,
         icon: const Icon(Icons.delete_outline),
         onPressed: () =>
             context.read<FavoritesCubit>().remove(item.type, item.id),

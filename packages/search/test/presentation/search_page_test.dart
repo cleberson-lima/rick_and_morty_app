@@ -111,7 +111,10 @@ void main() {
     await pump(tester, onOpenFavorites: () => favoritesOpened = true);
 
     expect(find.textContaining('lugar.', findRichText: true), findsOneWidget);
-    expect(find.text(HomeHero.lightTagline), findsOneWidget);
+    expect(
+      find.text('Wubba Lubba Dub Dub! Cuidado com os olhos.'),
+      findsOneWidget,
+    );
     expect(find.text('Personagens'), findsWidgets);
     expect(find.text('Episódios'), findsWidgets);
     expect(find.text('Localizações'), findsWidgets);

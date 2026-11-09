@@ -72,6 +72,15 @@ void main() {
     expect(find.text('Lista de favoritos'), findsOneWidget);
   });
 
+  testWidgets('runs in Portuguese, Material strings included', (tester) async {
+    await pumpApp(tester);
+
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.locale, const Locale('pt'));
+    final context = tester.element(find.text('Lista de favoritos'));
+    expect(MaterialLocalizations.of(context).backButtonTooltip, 'Voltar');
+  });
+
   testWidgets('restores the saved theme', (tester) async {
     await pumpApp(tester, stored: {ThemeCubit.storageKey: 'dark'});
 

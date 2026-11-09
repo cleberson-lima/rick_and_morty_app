@@ -1,13 +1,9 @@
-/// The three kinds of resource the Rick and Morty API exposes.
+/// The three kinds of resource the Rick and Morty API exposes. Their names
+/// on screen come from `AppLocalizations.resourceLabel`.
 enum ResourceType {
-  character('Personagem', 'Personagens'),
-  episode('Episódio', 'Episódios'),
-  location('Local', 'Locais');
-
-  const ResourceType(this.label, this.pluralLabel);
-
-  final String label;
-  final String pluralLabel;
+  character,
+  episode,
+  location;
 
   static ResourceType? tryParse(String? value) {
     for (final type in values) {

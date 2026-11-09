@@ -149,6 +149,7 @@ void main() {
   });
 
   group('FailurePresentation', () {
+    final l10n = lookupAppLocalizations(const Locale('pt'));
     const failures = [
       Failure.notFound(),
       Failure.network(),
@@ -162,24 +163,30 @@ void main() {
 
     test('every failure has a title and a user-facing message', () {
       for (final failure in failures) {
-        expect(failure.title, isNotEmpty);
-        expect(failure.message, isNotEmpty);
+        expect(failure.title(l10n), isNotEmpty);
+        expect(failure.message(l10n), isNotEmpty);
       }
     });
 
     test('the server message includes the status code when known', () {
-      expect(const Failure.server(statusCode: 500).message, contains('500'));
-      expect(const Failure.server().message, isNot(contains('(')));
+      expect(
+        const Failure.server(statusCode: 500).message(l10n),
+        'O servidor respondeu com erro (500). Tente novamente.',
+      );
+      expect(
+        const Failure.server().message(l10n),
+        'O servidor respondeu com erro. Tente novamente.',
+      );
     });
 
     test('network and rate-limit failures get their own title and icon', () {
-      expect(const Failure.network().title, 'Sem conexão');
+      expect(const Failure.network().title(l10n), 'Sem conexão');
       expect(const Failure.network().icon, Icons.wifi_off);
-      expect(const Failure.tooManyRequests().title, 'Muitas requisições');
+      expect(const Failure.tooManyRequests().title(l10n), 'Muitas requisições');
       expect(const Failure.tooManyRequests().icon, Icons.hourglass_empty);
       expect(const Failure.notFound().icon, Icons.search_off);
       expect(const Failure.cache().icon, Icons.sd_card_alert_outlined);
-      expect(const Failure.unexpected().title, 'Ops! Algo deu errado');
+      expect(const Failure.unexpected().title(l10n), 'Ops! Algo deu errado');
       expect(const Failure.unexpected().icon, Icons.cloud_off_outlined);
     });
   });
@@ -200,7 +207,12 @@ void main() {
     );
 
     expect(find.text('Sem conexão'), findsOneWidget);
-    expect(find.text(const Failure.network().message), findsOneWidget);
+    expect(
+      find.text(
+        'Sem conexão com a internet. Verifique sua rede e tente novamente.',
+      ),
+      findsOneWidget,
+    );
     expect(find.byIcon(Icons.wifi_off), findsOneWidget);
     await tester.tap(find.text('Tentar novamente'));
     expect(retried, isTrue);
@@ -210,10 +222,8 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: MessageView.failure(failure: const Failure.cache()),
-        ),
+      const MaterialApp(
+        home: Scaffold(body: MessageView.failure(failure: Failure.cache())),
       ),
     );
 

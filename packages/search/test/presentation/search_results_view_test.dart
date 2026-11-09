@@ -104,7 +104,13 @@ void main() {
       ),
     );
 
-    expect(find.text(const Failure.tooManyRequests().message), findsOneWidget);
+    expect(
+      find.text(
+        'Muitas requisições em pouco tempo. '
+        'Aguarde alguns segundos e tente novamente.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a failed page offers an explicit retry', (tester) async {

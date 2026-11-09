@@ -2,6 +2,8 @@
 library;
 
 export 'src/di/core_dependencies.dart';
+export 'src/l10n/generated/app_localizations.dart';
+export 'src/l10n/l10n.dart';
 export 'src/navigation/app_routes.dart';
 export 'src/network/dio_factory.dart';
 export 'src/network/failure_mapper.dart';
