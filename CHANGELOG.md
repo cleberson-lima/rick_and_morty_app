@@ -13,6 +13,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- O app Android não inclui mais o Firebase (plugin `google-services`, `firebase-analytics` e `google-services.json`), que não era usado. A distribuição do APK pelo Firebase App Distribution continua igual.
 - Todos os textos de tela foram para um arquivo de tradução (`app_pt.arb`, gerado com `flutter gen-l10n`). O app continua em português, e os textos do próprio Material (como o tooltip de voltar) também passam a sair em português.
 - O `flutter_modular` foi substituído por `go_router` nas rotas e por `BlocProvider` direto na criação das dependências, sem container de DI. As rotas e os links (`/details/:type/:id`) são os mesmos; os cubits globais de tema e favoritos passam a ser criados e fechados do mesmo jeito.
 - Os testes do app (raiz) entram no `melos run test` e na cobertura.
