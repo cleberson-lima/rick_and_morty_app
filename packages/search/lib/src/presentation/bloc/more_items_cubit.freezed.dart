@@ -159,12 +159,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int page)?  loading,TResult Function( List<T> items,  int page,  int totalPages)?  success,TResult Function( String message,  int page)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int page)?  loading,TResult Function( List<T> items,  int page,  int totalPages)?  success,TResult Function( Failure failure,  int page)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MoreItemsLoading() when loading != null:
 return loading(_that.page);case MoreItemsSuccess() when success != null:
 return success(_that.items,_that.page,_that.totalPages);case MoreItemsError() when error != null:
-return error(_that.message,_that.page);case _:
+return error(_that.failure,_that.page);case _:
   return orElse();
 
 }
@@ -182,12 +182,12 @@ return error(_that.message,_that.page);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int page)  loading,required TResult Function( List<T> items,  int page,  int totalPages)  success,required TResult Function( String message,  int page)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int page)  loading,required TResult Function( List<T> items,  int page,  int totalPages)  success,required TResult Function( Failure failure,  int page)  error,}) {final _that = this;
 switch (_that) {
 case MoreItemsLoading():
 return loading(_that.page);case MoreItemsSuccess():
 return success(_that.items,_that.page,_that.totalPages);case MoreItemsError():
-return error(_that.message,_that.page);}
+return error(_that.failure,_that.page);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -201,12 +201,12 @@ return error(_that.message,_that.page);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int page)?  loading,TResult? Function( List<T> items,  int page,  int totalPages)?  success,TResult? Function( String message,  int page)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int page)?  loading,TResult? Function( List<T> items,  int page,  int totalPages)?  success,TResult? Function( Failure failure,  int page)?  error,}) {final _that = this;
 switch (_that) {
 case MoreItemsLoading() when loading != null:
 return loading(_that.page);case MoreItemsSuccess() when success != null:
 return success(_that.items,_that.page,_that.totalPages);case MoreItemsError() when error != null:
-return error(_that.message,_that.page);case _:
+return error(_that.failure,_that.page);case _:
   return null;
 
 }
@@ -364,10 +364,10 @@ as int,
 
 
 class MoreItemsError<T> implements MoreItemsState<T> {
-  const MoreItemsError({required this.message, required this.page});
+  const MoreItemsError({required this.failure, required this.page});
   
 
- final  String message;
+ final  Failure failure;
 @override final  int page;
 
 /// Create a copy of MoreItemsState
@@ -380,18 +380,18 @@ $MoreItemsErrorCopyWith<T, MoreItemsError<T>> get copyWith => _$MoreItemsErrorCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is MoreItemsError<T>&&(identical(other.message, message) || other.message == message)&&(identical(other.page, page) || other.page == page));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is MoreItemsError<T>&&(identical(other.failure, failure) || other.failure == failure)&&(identical(other.page, page) || other.page == page));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,message,page);
+    return Object.hash(runtimeType,failure,page);
 }
 
 @override
 String toString() {
-    return 'MoreItemsState<$T>.error(message: $message, page: $page)';
+    return 'MoreItemsState<$T>.error(failure: $failure, page: $page)';
 }
 
 
@@ -402,11 +402,11 @@ abstract mixin class $MoreItemsErrorCopyWith<T,$Res> implements $MoreItemsStateC
   factory $MoreItemsErrorCopyWith(MoreItemsError<T> value, $Res Function(MoreItemsError<T>) _then) = _$MoreItemsErrorCopyWithImpl;
 @override @useResult
 $Res call({
- String message, int page
+ Failure failure, int page
 });
 
 
-
+$FailureCopyWith<$Res> get failure;
 
 }
 /// @nodoc
@@ -419,15 +419,24 @@ class _$MoreItemsErrorCopyWithImpl<T,$Res>
 
 /// Create a copy of MoreItemsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? message = null,Object? page = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? failure = null,Object? page = null,}) {
   return _then(MoreItemsError<T>(
-message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
+failure: null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
 
-
+/// Create a copy of MoreItemsState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res> get failure {
+  
+  return $FailureCopyWith<$Res>(_self.failure, (value) {
+    return _then(_self.copyWith(failure: value));
+  });
+}
 }
 
 // dart format on

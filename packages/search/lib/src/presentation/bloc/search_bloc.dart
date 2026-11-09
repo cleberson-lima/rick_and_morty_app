@@ -67,7 +67,7 @@ class SearchBloc<T> extends Bloc<SearchEvent, SearchState<T>> {
           case NotFoundFailure():
             emit(SearchState<T>.notFound(query: query));
           default:
-            emit(SearchState<T>.error(query: query, message: failure.message));
+            emit(SearchState<T>.error(query: query, failure: failure));
         }
       },
       (page) => emit(
@@ -91,24 +91,19 @@ class SearchBloc<T> extends Bloc<SearchEvent, SearchState<T>> {
     if (current is! SearchSuccess<T> ||
         current.nextPage == null ||
         current.isLoadingMore ||
-        (current.loadMoreError != null && !event.retry)) {
+        (current.loadMoreFailure != null && !event.retry)) {
       return;
     }
 
     final generation = _generation;
-    emit(current.copyWith(isLoadingMore: true, loadMoreError: null));
+    emit(current.copyWith(isLoadingMore: true, loadMoreFailure: null));
     final result = await _search(current.query, page: current.nextPage!);
     if (generation != _generation) return;
 
     result.fold(
       (failure) {
         if (failure is CancelledFailure) return;
-        emit(
-          current.copyWith(
-            isLoadingMore: false,
-            loadMoreError: failure.message,
-          ),
-        );
+        emit(current.copyWith(isLoadingMore: false, loadMoreFailure: failure));
       },
       (page) => emit(
         current.copyWith(

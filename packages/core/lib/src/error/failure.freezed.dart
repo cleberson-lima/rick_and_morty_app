@@ -205,8 +205,8 @@ return unexpected();case _:
 /// @nodoc
 
 
-class NotFoundFailure extends Failure {
-  const NotFoundFailure(): super._();
+class NotFoundFailure implements Failure {
+  const NotFoundFailure();
   
 
 
@@ -237,8 +237,8 @@ String toString() {
 /// @nodoc
 
 
-class NetworkFailure extends Failure {
-  const NetworkFailure(): super._();
+class NetworkFailure implements Failure {
+  const NetworkFailure();
   
 
 
@@ -269,8 +269,8 @@ String toString() {
 /// @nodoc
 
 
-class TooManyRequestsFailure extends Failure {
-  const TooManyRequestsFailure(): super._();
+class TooManyRequestsFailure implements Failure {
+  const TooManyRequestsFailure();
   
 
 
@@ -301,8 +301,8 @@ String toString() {
 /// @nodoc
 
 
-class ServerFailure extends Failure {
-  const ServerFailure({this.statusCode}): super._();
+class ServerFailure implements Failure {
+  const ServerFailure({this.statusCode});
   
 
  final  int? statusCode;
@@ -369,8 +369,8 @@ as int?,
 /// @nodoc
 
 
-class CancelledFailure extends Failure {
-  const CancelledFailure(): super._();
+class CancelledFailure implements Failure {
+  const CancelledFailure();
   
 
 
@@ -401,8 +401,8 @@ String toString() {
 /// @nodoc
 
 
-class CacheFailure extends Failure {
-  const CacheFailure(): super._();
+class CacheFailure implements Failure {
+  const CacheFailure();
   
 
 
@@ -433,8 +433,8 @@ String toString() {
 /// @nodoc
 
 
-class UnexpectedFailure extends Failure {
-  const UnexpectedFailure(): super._();
+class UnexpectedFailure implements Failure {
+  const UnexpectedFailure();
   
 
 

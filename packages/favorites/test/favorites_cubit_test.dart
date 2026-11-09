@@ -50,7 +50,7 @@ void main() {
     act: (cubit) => cubit.load(),
     expect: () => [
       const FavoritesState.loading(),
-      FavoritesState.error(const Failure.cache().message),
+      const FavoritesState.error(Failure.cache()),
     ],
   );
 
@@ -87,9 +87,9 @@ void main() {
     seed: () => const FavoritesState.loaded(items: [rick]),
     act: (cubit) => cubit.add(pilot),
     expect: () => [
-      FavoritesState.loaded(
-        items: const [rick],
-        errorMessage: const Failure.cache().message,
+      const FavoritesState.loaded(
+        items: [rick],
+        actionFailure: Failure.cache(),
       ),
     ],
   );

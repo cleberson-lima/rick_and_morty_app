@@ -32,7 +32,7 @@ class MoreItemsCubit<T> extends Cubit<MoreItemsState<T>> {
     result.fold(
       (failure) {
         if (failure is CancelledFailure) return;
-        emit(MoreItemsState<T>.error(message: failure.message, page: page));
+        emit(MoreItemsState<T>.error(failure: failure, page: page));
       },
       (result) => emit(
         MoreItemsState<T>.success(

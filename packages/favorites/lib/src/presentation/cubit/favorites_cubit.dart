@@ -23,7 +23,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
     final result = await _getFavorites();
     emit(
       result.fold(
-        (failure) => FavoritesState.error(failure.message),
+        FavoritesState.error,
         (items) => FavoritesState.loaded(items: items),
       ),
     );
@@ -45,10 +45,8 @@ class FavoritesCubit extends Cubit<FavoritesState> {
     final result = await action();
     emit(
       result.fold(
-        (failure) => FavoritesState.loaded(
-          items: previous,
-          errorMessage: failure.message,
-        ),
+        (failure) =>
+            FavoritesState.loaded(items: previous, actionFailure: failure),
         (items) => FavoritesState.loaded(items: items),
       ),
     );

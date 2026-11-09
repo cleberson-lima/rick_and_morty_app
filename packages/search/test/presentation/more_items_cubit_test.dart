@@ -64,10 +64,7 @@ void main() {
     },
     expect: () => [
       const MoreItemsState<String>.loading(page: 3),
-      MoreItemsState<String>.error(
-        message: const Failure.network().message,
-        page: 3,
-      ),
+      const MoreItemsState<String>.error(failure: Failure.network(), page: 3),
       const MoreItemsState<String>.loading(page: 3),
       const MoreItemsState<String>.success(
         items: ['c'],

@@ -80,7 +80,7 @@ void main() {
 
   testWidgets('error state retries loading', (tester) async {
     when(() => cubit.load()).thenAnswer((_) async {});
-    await pump(tester, const FavoritesState.error('falhou'));
+    await pump(tester, const FavoritesState.error(Failure.cache()));
 
     await tester.tap(find.text('Tentar novamente'));
 

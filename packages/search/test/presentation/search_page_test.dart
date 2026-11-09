@@ -222,9 +222,9 @@ void main() {
   });
 
   testWidgets('a failed section offers a retry', (tester) async {
-    when(
-      () => episodes.state,
-    ).thenReturn(const SearchState.error(query: '', message: 'Sem conexão'));
+    when(() => episodes.state).thenReturn(
+      const SearchState.error(query: '', failure: Failure.network()),
+    );
     await pump(tester);
     clearInteractions(episodes);
 

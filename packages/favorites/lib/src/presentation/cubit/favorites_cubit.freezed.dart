@@ -123,12 +123,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<FavoriteItem> items,  String? errorMessage)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( List<FavoriteItem> items,  Failure? actionFailure)?  loaded,TResult Function( Failure failure)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case FavoritesLoading() when loading != null:
 return loading();case FavoritesLoaded() when loaded != null:
-return loaded(_that.items,_that.errorMessage);case FavoritesError() when error != null:
-return error(_that.message);case _:
+return loaded(_that.items,_that.actionFailure);case FavoritesError() when error != null:
+return error(_that.failure);case _:
   return orElse();
 
 }
@@ -146,12 +146,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<FavoriteItem> items,  String? errorMessage)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( List<FavoriteItem> items,  Failure? actionFailure)  loaded,required TResult Function( Failure failure)  error,}) {final _that = this;
 switch (_that) {
 case FavoritesLoading():
 return loading();case FavoritesLoaded():
-return loaded(_that.items,_that.errorMessage);case FavoritesError():
-return error(_that.message);}
+return loaded(_that.items,_that.actionFailure);case FavoritesError():
+return error(_that.failure);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -165,12 +165,12 @@ return error(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<FavoriteItem> items,  String? errorMessage)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( List<FavoriteItem> items,  Failure? actionFailure)?  loaded,TResult? Function( Failure failure)?  error,}) {final _that = this;
 switch (_that) {
 case FavoritesLoading() when loading != null:
 return loading();case FavoritesLoaded() when loaded != null:
-return loaded(_that.items,_that.errorMessage);case FavoritesError() when error != null:
-return error(_that.message);case _:
+return loaded(_that.items,_that.actionFailure);case FavoritesError() when error != null:
+return error(_that.failure);case _:
   return null;
 
 }
@@ -214,7 +214,7 @@ String toString() {
 
 
 class FavoritesLoaded extends FavoritesState {
-  const FavoritesLoaded({required  List<FavoriteItem> items, this.errorMessage}): _items = items,super._();
+  const FavoritesLoaded({required  List<FavoriteItem> items, this.actionFailure}): _items = items,super._();
   
 
  final  List<FavoriteItem> _items;
@@ -224,7 +224,7 @@ class FavoritesLoaded extends FavoritesState {
   return EqualUnmodifiableListView(_items);
 }
 
- final  String? errorMessage;
+ final  Failure? actionFailure;
 
 /// Create a copy of FavoritesState
 /// with the given fields replaced by the non-null parameter values.
@@ -236,18 +236,18 @@ $FavoritesLoadedCopyWith<FavoritesLoaded> get copyWith => _$FavoritesLoadedCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoritesLoaded&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoritesLoaded&&const DeepCollectionEquality().equals(other.items, _items)&&(identical(other.actionFailure, actionFailure) || other.actionFailure == actionFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),errorMessage);
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),actionFailure);
 }
 
 @override
 String toString() {
-    return 'FavoritesState.loaded(items: $items, errorMessage: $errorMessage)';
+    return 'FavoritesState.loaded(items: $items, actionFailure: $actionFailure)';
 }
 
 
@@ -258,11 +258,11 @@ abstract mixin class $FavoritesLoadedCopyWith<$Res> implements $FavoritesStateCo
   factory $FavoritesLoadedCopyWith(FavoritesLoaded value, $Res Function(FavoritesLoaded) _then) = _$FavoritesLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<FavoriteItem> items, String? errorMessage
+ List<FavoriteItem> items, Failure? actionFailure
 });
 
 
-
+$FailureCopyWith<$Res>? get actionFailure;
 
 }
 /// @nodoc
@@ -275,25 +275,37 @@ class _$FavoritesLoadedCopyWithImpl<$Res>
 
 /// Create a copy of FavoritesState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? items = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? items = null,Object? actionFailure = freezed,}) {
   return _then(FavoritesLoaded(
 items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<FavoriteItem>,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as List<FavoriteItem>,actionFailure: freezed == actionFailure ? _self.actionFailure : actionFailure // ignore: cast_nullable_to_non_nullable
+as Failure?,
   ));
 }
 
+/// Create a copy of FavoritesState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res>? get actionFailure {
+    if (_self.actionFailure == null) {
+    return null;
+  }
 
+  return $FailureCopyWith<$Res>(_self.actionFailure!, (value) {
+    return _then(_self.copyWith(actionFailure: value));
+  });
+}
 }
 
 /// @nodoc
 
 
 class FavoritesError extends FavoritesState {
-  const FavoritesError(this.message): super._();
+  const FavoritesError(this.failure): super._();
   
 
- final  String message;
+ final  Failure failure;
 
 /// Create a copy of FavoritesState
 /// with the given fields replaced by the non-null parameter values.
@@ -305,18 +317,18 @@ $FavoritesErrorCopyWith<FavoritesError> get copyWith => _$FavoritesErrorCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoritesError&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoritesError&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,message);
+    return Object.hash(runtimeType,failure);
 }
 
 @override
 String toString() {
-    return 'FavoritesState.error(message: $message)';
+    return 'FavoritesState.error(failure: $failure)';
 }
 
 
@@ -327,11 +339,11 @@ abstract mixin class $FavoritesErrorCopyWith<$Res> implements $FavoritesStateCop
   factory $FavoritesErrorCopyWith(FavoritesError value, $Res Function(FavoritesError) _then) = _$FavoritesErrorCopyWithImpl;
 @useResult
 $Res call({
- String message
+ Failure failure
 });
 
 
-
+$FailureCopyWith<$Res> get failure;
 
 }
 /// @nodoc
@@ -344,14 +356,23 @@ class _$FavoritesErrorCopyWithImpl<$Res>
 
 /// Create a copy of FavoritesState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? failure = null,}) {
   return _then(FavoritesError(
-null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+as Failure,
   ));
 }
 
-
+/// Create a copy of FavoritesState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$FailureCopyWith<$Res> get failure {
+  
+  return $FailureCopyWith<$Res>(_self.failure, (value) {
+    return _then(_self.copyWith(failure: value));
+  });
+}
 }
 
 // dart format on

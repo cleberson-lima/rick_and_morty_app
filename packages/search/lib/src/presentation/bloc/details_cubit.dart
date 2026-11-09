@@ -36,7 +36,7 @@ class DetailsCubit extends Cubit<DetailsState> {
       result.fold(
         (failure) => failure is NotFoundFailure
             ? const DetailsState.notFound()
-            : DetailsState.error(failure.message),
+            : DetailsState.error(failure),
         (state) => state,
       ),
     );

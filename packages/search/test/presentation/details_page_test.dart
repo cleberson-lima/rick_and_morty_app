@@ -226,9 +226,9 @@ void main() {
   });
 
   testWidgets('a failed "Mais" page offers a retry', (tester) async {
-    when(
-      () => moreEpisodes.state,
-    ).thenReturn(const MoreItemsState.error(message: 'Sem conexão', page: 2));
+    when(() => moreEpisodes.state).thenReturn(
+      const MoreItemsState.error(failure: Failure.network(), page: 2),
+    );
     when(() => moreEpisodes.retry()).thenAnswer((_) async {});
     await pump(tester, const DetailsState.episode(_pilot));
 
@@ -247,7 +247,7 @@ void main() {
     var retried = false;
     await pump(
       tester,
-      const DetailsState.error('Sem conexão'),
+      const DetailsState.error(Failure.network()),
       onRetry: () => retried = true,
     );
 

@@ -24,8 +24,8 @@ class SearchResultsView<T> extends StatelessWidget {
         final bloc = context.read<SearchBloc<T>>();
         return switch (state) {
           SearchInitial() || SearchLoading() => const LoadingSkeleton(),
-          SearchError(:final query, :final message) => StateView.error(
-            message: message,
+          SearchError(:final query, :final failure) => StateView.failure(
+            failure: failure,
             onRetry: () => bloc.add(SearchSubmitted(query)),
           ),
           SearchNotFound(:final query) => StateView(
@@ -79,10 +79,10 @@ class _PaginationFooter extends StatelessWidget {
     final Widget child;
     if (state.isLoadingMore) {
       child = const CircularProgressIndicator();
-    } else if (state.loadMoreError != null) {
+    } else if (state.loadMoreFailure case final failure?) {
       child = Column(
         children: [
-          Text(state.loadMoreError!, textAlign: TextAlign.center),
+          Text(failure.message, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: onRetry,

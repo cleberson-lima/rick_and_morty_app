@@ -90,10 +90,10 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 
 | Pacote | Linhas cobertas |
 | --- | --- |
-| core | 89,9% |
-| favorites | 93,2% |
-| search | 91,7% |
-| **Total** | **91,3%** (1256/1375) |
+| core | 90,5% |
+| favorites | 93,8% |
+| search | 92,0% |
+| **Total** | **91,8%** (1303/1420) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
@@ -201,7 +201,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Situação atual | Direção |
 | --- | --- | --- | --- |
-| 1 | Mensagens de UI no `Failure` | `Failure.message` tem texto em pt-BR e vive em `core` (domínio). Os estados (`SearchError`, `MoreItemsError`, `DetailsState.error`) guardam só a `String`, então a UI não reage ao tipo de falha (ex.: "tentar de novo" só para erro de rede). | Guardar o `Failure` no estado e traduzir na `presentation`, o que também prepara a l10n. |
+| 1 | ~~Mensagens de UI no `Failure`~~ **(resolvido)** | Os estados guardam o `Failure` e a extensão `FailurePresentation` (`core/lib/src/ui`) gera título, mensagem e ícone de cada caso; `StateView.failure` monta a tela de erro. O `Failure` do domínio não tem mais texto. | Levar os textos da `FailurePresentation` para ARB junto com o item 8. |
 | 2 | `Model.fromJson<T>` com `switch (T)` | Checagem em runtime: esquecer de registrar uma model só aparece em execução (`ArgumentError`). | Passar o parser como função (`PageModel.fromJson(json, CharacterModel.fromJson)`), com segurança em tempo de compilação. |
 | 3 | `_guard` sem log | Em `SearchRepositoryImpl`, qualquer exceção inesperada (ex.: `TypeError` por mudança no JSON da API) vira `Failure.unexpected()` sem registro. | Logar em debug e integrar um serviço de crash report. |
 | 4 | `search` depende de `favorites` | Necessário por causa do botão de favorito nos cards e nos detalhes. | `search` receber um builder do botão ou uma interface definida em `core`. |
@@ -213,7 +213,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Direção |
 | --- | --- | --- |
-| 8 | Textos fixos em pt-BR, sem `flutter_localizations`/ARB | Extrair os textos para ARB (depende do item 1). |
+| 8 | Textos fixos em pt-BR, sem `flutter_localizations`/ARB | Extrair os textos para ARB; as mensagens de erro já estão concentradas na `FailurePresentation`. |
 | 9 | Fonte Inter baixada pelo Google Fonts em runtime: no primeiro uso offline ou com rede lenta, aparece a fonte de fallback | Empacotar a Inter como asset do `core`, como já é feito com os ícones Phosphor. |
 | 10 | Sem cache dos dados da API, só das imagens. Sem rede, só os favoritos aparecem (eles guardam um snapshot) | Cache local das respostas (ex.: última busca e detalhes já abertos). |
 
@@ -233,7 +233,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 ### Prioridades
 
-1. Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).
+1. ~~Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).~~ Feito.
 2. Parser por função em `Model`/`PageModel` (item 2).
 3. Logging no `_guard` (item 3).
 4. Empacotar a fonte Inter e restringir a API key do Firebase (itens 9 e 13).
