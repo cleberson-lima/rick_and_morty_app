@@ -214,7 +214,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Direção |
 | --- | --- | --- |
-| 11 | ~~Actions fixadas por tag~~ **(resolvido)** | As Actions estão fixadas pelo SHA do commit (com a versão em comentário) e o `firebase-tools` em `14.27.0`. O Dependabot (`.github/dependabot.yml`) abre um PR semanal quando sai uma versão nova. |
+| 11 | ~~Actions fixadas por tag~~ **(resolvido)** | As Actions estão fixadas pelo SHA do commit (com a versão em comentário) e o `firebase-tools` em `14.27.0`. O Dependabot (`.github/dependabot.yml`) abre um único PR por semana com todas as actions que tiverem versão nova. |
 | 12 | ~~Release a partir de qualquer tag `v*`~~ **(resolvido no workflow)** | O `release.yml` falha antes do build se o commit da tag não estiver na `main`. | Falta, no GitHub, um ruleset de tags `v*` (Settings → Rules → Rulesets → New tag ruleset) restringindo quem pode criá-las e apagá-las. |
 
 ### Firebase

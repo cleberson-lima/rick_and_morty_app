@@ -1,5 +1,6 @@
-# Keeps the GitHub Actions pinned by commit SHA up to date: Dependabot opens a
-# pull request with the new SHA (and the version in the comment) once a week.
+# Keeps the GitHub Actions pinned by commit SHA up to date: once a week,
+# Dependabot opens a single pull request with every action that has a new
+# release (the new SHA and the version in the comment).
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -8,3 +9,14 @@ updates:
       interval: weekly
     commit-message:
       prefix: ci
+    groups:
+      # One PR for all actions, majors included: each one is still listed in
+      # the PR description, and setup-java, auth and action-gh-release only run
+      # on a v* tag, so read their release notes before merging a major bump.
+      github-actions:
+        patterns:
+          - '*'
+        update-types:
+          - major
+          - minor
+          - patch
