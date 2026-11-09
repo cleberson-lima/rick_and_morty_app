@@ -185,7 +185,8 @@ Um único `SearchBloc<T>` genérico atende as três abas: cada aba recebe o mét
 ## Convenções
 
 - Commits em [Conventional Commits](https://www.conventionalcommits.org/) (inglês)
-- GitFlow simplificado: `main` (releases), `develop` (integração), `feature/*`, `fix/*`, `release/*`
+- Uma branch só, a `main`: cada tarefa sai em uma `feature/*` ou `fix/*` criada a partir dela e volta por PR, com o CI (`ci.yml`) passando
+- Release: tag `v*` em um commit da `main` (`release.yml`)
 
 ## Limitações conhecidas e próximos passos
 

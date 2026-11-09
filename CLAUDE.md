@@ -38,7 +38,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - Widgets reutilizáveis ficam em `packages/core/lib/src/ui`
 - Use `const` sempre que possível; listas com `.builder`/slivers
 - freezed 3+/4: classes `abstract class X with _$X` ou `sealed class X with _$X`
-- Commits em Conventional Commits (inglês); uma branch `feature/*` por tarefa
+- Commits em Conventional Commits (inglês); uma branch `feature/*` (ou `fix/*`) por tarefa, criada a partir da `main` e mesclada nela por PR. Não há `develop`
 - Arquivos gerados (`*.g.dart`, `*.freezed.dart`) são versionados
 
 ## Comandos
