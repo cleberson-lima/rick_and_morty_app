@@ -12,6 +12,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- As páginas de busca e de detalhes foram divididas em widgets menores, em arquivos próprios por tela (`cards/`, `home/`, `search/`, `details/`); o `AppLogo` passou para o `core`. O app não muda.
 - O `google_fonts` saiu das dependências, junto com o parâmetro `useGoogleFonts` de `AppTheme.light()`/`AppTheme.dark()`.
 - Arquitetura simplificada: as features passam a ter só `data` e `presentation`. Saíram as entidades, os use cases e os contratos de repositório; as telas e os Blocs/Cubits usam as models (`Character`, `Episode`, `Location`, `FavoriteItem`) direto.
 - O acesso aos dados fica em uma classe por fonte: `SearchApi` (Rick and Morty API) e `FavoritesStorage` (`shared_preferences`). O formato salvo dos favoritos não mudou.

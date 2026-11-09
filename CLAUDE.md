@@ -34,7 +34,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 
 ## Regras
 - Todo código novo vem com teste (unit para data e Bloc/Cubit, widget para telas)
-- Widgets reutilizáveis ficam em `packages/core/lib/src/ui`
+- Widgets reutilizáveis ficam em `packages/core/lib/src/ui`; os de uma feature ficam em `presentation/widgets/<tela>/` (`cards`, `home`, `search`, `details`), um widget público por arquivo, e as páginas só os montam
 - Use `const` sempre que possível; listas com `.builder`/slivers
 - freezed 3+/4: classes `abstract class X with _$X` ou `sealed class X with _$X`
 - Commits em Conventional Commits (inglês); uma branch `feature/*` (ou `fix/*`) por tarefa, criada a partir da `main` e mesclada nela por PR. Não há `develop`

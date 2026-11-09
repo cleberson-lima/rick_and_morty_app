@@ -7,8 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:search/src/data/models/models.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
-import 'package:search/src/presentation/widgets/result_cards.dart';
-import 'package:search/src/presentation/widgets/search_results_view.dart';
+import 'package:search/src/presentation/widgets/cards/cards.dart';
+import 'package:search/src/presentation/widgets/search/search_results_view.dart';
 
 class _EpisodeBloc extends MockBloc<SearchEvent, SearchState<Episode>>
     implements SearchBloc<Episode> {}

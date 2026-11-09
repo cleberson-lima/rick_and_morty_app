@@ -86,10 +86,10 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 
 | Pacote | Linhas cobertas |
 | --- | --- |
-| core | 91,3% |
+| core | 91,2% |
 | favorites | 91,7% |
 | search | 91,6% |
-| **Total** | **91,5%** (1211/1323) |
+| **Total** | **91,5%** (1211/1324) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
@@ -153,6 +153,7 @@ flowchart LR
 - **`SearchApi` e `FavoritesStorage`**: falam com a API e com o `shared_preferences` e nunca lançam exceção. Devolvem um `Result<T>` do `core`: `Success(data)` ou `Failed(failure)`, tratados com `switch`.
 - `Failure` é uma sealed class (freezed): `notFound`, `network`, `tooManyRequests`, `server`, `cancelled`, `cache`, `unexpected`. O 404 da busca vira o estado **não encontrado**, não um erro genérico. O texto mostrado ao usuário fica na `FailurePresentation`, na UI.
 - Estados de tela são sealed classes do freezed, tratados com `switch` exaustivo.
+- Widgets de tela ficam em `presentation/widgets`, uma pasta por tela: `cards/` (cards de resultado e helpers), `home/`, `search/` e `details/`. As páginas só montam esses widgets e ligam os Blocs/Cubits; widgets genéricos (sem dependência de feature) ficam em `core/lib/src/ui`.
 
 ### Fluxo de uma busca
 
@@ -198,7 +199,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 | 4 | `search` depende de `favorites` | Necessário por causa do botão de favorito nos cards e nos detalhes. | `search` receber um builder do botão ou uma interface definida em `core`. |
 | 5 | Dois mecanismos de DI/ciclo de vida | O Modular entrega as instâncias e o `BlocProvider` as fecha, o que exige o `hide ModularWatchExtension`. `ThemeCubit` usa `BlocProvider.value` e `FavoritesCubit` usa `create`. O `flutter_modular` 6.x é uma versão antiga, um risco de manutenção a longo prazo. | Padronizar o ciclo de vida dos cubits globais e reavaliar o Modular quando a 7.x estabilizar. |
 | 6 | ~~Repositório "isolado" criado à mão~~ **(resolvido)** | Cada cubit de "Mais ..." recebe um `SearchApi` próprio (`SearchApi(i.get<Dio>())`), sem o `_isolated(i)`. | — |
-| 7 | Arquivos grandes | `details_page.dart` (463 linhas), `search_page.dart` (395) e `result_cards.dart` (269) concentram muitos widgets privados. | Quebrar em widgets menores, em arquivos próprios. |
+| 7 | ~~Arquivos grandes~~ **(resolvido)** | `details_page.dart` (463 → 108 linhas), `search_page.dart` (395 → 142) e `result_cards.dart` (269, removido) viraram widgets em arquivos próprios, agrupados por tela em `presentation/widgets/{cards,details,home,search}`. | — |
 
 ### Produto
 
@@ -228,7 +229,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 2. ~~Parser por função em `Model`/`PageModel` (item 2).~~ Feito.
 3. ~~Logging no `_guard` (item 3).~~ Feito.
 4. ~~Empacotar a fonte Inter (item 9).~~ Feito. Falta restringir a API key do Firebase (item 13), no Google Cloud Console.
-5. Quebrar `details_page` e `search_page` em widgets menores (item 7).
+5. ~~Quebrar `details_page` e `search_page` em widgets menores (item 7).~~ Feito.
 
 ## Próximas versões
 

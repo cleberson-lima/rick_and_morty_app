@@ -4,10 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/models/models.dart';
 import '../bloc/search_bloc.dart';
-import '../widgets/home_hero.dart';
-import '../widgets/home_section.dart';
-import '../widgets/result_cards.dart';
-import '../widgets/search_results_view.dart';
+import '../widgets/home/home_hero.dart';
+import '../widgets/home/home_overview.dart';
+import '../widgets/open_details.dart';
+import '../widgets/search/filter_chips.dart';
+import '../widgets/search/search_field.dart';
+import '../widgets/search/search_results_panel.dart';
 
 /// Home page from the prototype ("Tela 01 - Página Inicial").
 ///
@@ -24,7 +26,7 @@ class SearchPage extends StatefulWidget {
     super.key,
   });
 
-  final void Function(ResourceType type, int id)? onOpenDetails;
+  final OpenDetails? onOpenDetails;
   final VoidCallback? onOpenFavorites;
   final Widget? heroImage;
 
@@ -97,14 +99,14 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final searchField = _SearchField(
+    final searchField = SearchField(
       key: _searchFieldKey,
       controller: _query,
       onChanged: _onQueryChanged,
       onSubmitted: (value) => _blocFor(_filter).add(SearchSubmitted(value)),
       onClear: _backToOverview,
     );
-    final filters = _FilterChips(selected: _filter, onSelected: _showType);
+    final filters = FilterChips(selected: _filter, onSelected: _showType);
 
     return PopScope(
       canPop: !_inResults,
@@ -115,14 +117,14 @@ class _SearchPageState extends State<SearchPage> {
         body: SafeArea(
           bottom: false,
           child: _inResults
-              ? _Results(
+              ? SearchResultsPanel(
                   searchField: searchField,
                   filters: filters,
                   filter: _filter,
                   onBack: _backToOverview,
                   onOpen: _open,
                 )
-              : _Overview(
+              : HomeOverview(
                   scroll: _scroll,
                   hero: HomeHero(
                     onOpenFavorites: widget.onOpenFavorites,
@@ -134,259 +136,6 @@ class _SearchPageState extends State<SearchPage> {
                   onOpen: _open,
                 ),
         ),
-      ),
-    );
-  }
-}
-
-class _Overview extends StatelessWidget {
-  const _Overview({
-    required this.scroll,
-    required this.hero,
-    required this.searchField,
-    required this.filters,
-    required this.onSeeAll,
-    required this.onOpen,
-  });
-
-  final ScrollController scroll;
-  final Widget hero;
-  final Widget searchField;
-  final Widget filters;
-  final ValueChanged<ResourceType> onSeeAll;
-  final void Function(ResourceType type, int id) onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      controller: scroll,
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      slivers: [
-        SliverToBoxAdapter(child: hero),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [searchField, const SizedBox(height: 12), filters],
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: HomeSection<Character>(
-            title: 'Personagens',
-            tileHeight: CardSizes.characterHeight,
-            maxTileWidth: CardSizes.characterMaxWidth,
-            onSeeAll: () => onSeeAll(ResourceType.character),
-            itemBuilder: (_, character) => CharacterCard(
-              character: character,
-              onTap: () => onOpen(ResourceType.character, character.id),
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: HomeSection<Episode>(
-            title: 'Episódios',
-            tileHeight: CardSizes.episodeHeight,
-            maxTileWidth: CardSizes.episodeMaxWidth,
-            onSeeAll: () => onSeeAll(ResourceType.episode),
-            itemBuilder: (_, episode) => EpisodeCard(
-              episode: episode,
-              onTap: () => onOpen(ResourceType.episode, episode.id),
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: HomeSection<Location>(
-            title: 'Localizações',
-            tileHeight: CardSizes.locationHeight,
-            maxTileWidth: CardSizes.locationMaxWidth,
-            onSeeAll: () => onSeeAll(ResourceType.location),
-            itemBuilder: (_, location) => LocationCard(
-              location: location,
-              onTap: () => onOpen(ResourceType.location, location.id),
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: _Footer(
-            onBackToTop: () => scroll.animateTo(
-              0,
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOut,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _Results extends StatelessWidget {
-  const _Results({
-    required this.searchField,
-    required this.filters,
-    required this.filter,
-    required this.onBack,
-    required this.onOpen,
-  });
-
-  final Widget searchField;
-  final Widget filters;
-  final ResourceType filter;
-  final VoidCallback onBack;
-  final void Function(ResourceType type, int id) onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 8, 16, 0),
-          child: Row(
-            children: [
-              IconButton(
-                tooltip: 'Voltar ao início',
-                icon: const Icon(PhosphorIconsRegular.caretLeft),
-                onPressed: onBack,
-              ),
-              Expanded(child: searchField),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          child: filters,
-        ),
-        Expanded(
-          child: switch (filter) {
-            ResourceType.character => SearchResultsView<Character>(
-              key: const ValueKey(ResourceType.character),
-              type: ResourceType.character,
-              itemBuilder: (_, character) => CharacterCard(
-                character: character,
-                onTap: () => onOpen(ResourceType.character, character.id),
-              ),
-            ),
-            ResourceType.episode => SearchResultsView<Episode>(
-              key: const ValueKey(ResourceType.episode),
-              type: ResourceType.episode,
-              itemBuilder: (_, episode) => EpisodeCard(
-                episode: episode,
-                onTap: () => onOpen(ResourceType.episode, episode.id),
-              ),
-            ),
-            ResourceType.location => SearchResultsView<Location>(
-              key: const ValueKey(ResourceType.location),
-              type: ResourceType.location,
-              itemBuilder: (_, location) => LocationCard(
-                location: location,
-                onTap: () => onOpen(ResourceType.location, location.id),
-              ),
-            ),
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _SearchField extends StatelessWidget {
-  const _SearchField({
-    required this.controller,
-    required this.onChanged,
-    required this.onSubmitted,
-    required this.onClear,
-    super.key,
-  });
-
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-  final ValueChanged<String> onSubmitted;
-  final VoidCallback onClear;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      onChanged: onChanged,
-      onSubmitted: onSubmitted,
-      textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-        hintText: 'Personagem, episódio, localização...',
-        suffixIcon: controller.text.isEmpty
-            ? const Icon(PhosphorIconsRegular.magnifyingGlass)
-            : IconButton(
-                tooltip: 'Limpar',
-                icon: const Icon(Icons.close),
-                onPressed: onClear,
-              ),
-      ),
-    );
-  }
-}
-
-/// "Filtrar por:" Personagens / Localizações / Episódios.
-class _FilterChips extends StatelessWidget {
-  const _FilterChips({required this.selected, required this.onSelected});
-
-  final ResourceType selected;
-  final ValueChanged<ResourceType> onSelected;
-
-  static const _options = [
-    (ResourceType.character, PhosphorIconsRegular.smiley),
-    (ResourceType.location, PhosphorIconsRegular.planet),
-    (ResourceType.episode, PhosphorIconsRegular.monitorPlay),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          Text('Filtrar por:', style: theme.textTheme.labelMedium),
-          for (final (type, icon) in _options) ...[
-            const SizedBox(width: 8),
-            Semantics(
-              selected: type == selected,
-              button: true,
-              child: PillButton(
-                key: ValueKey('filter-${type.name}'),
-                label: type.pluralLabel,
-                icon: icon,
-                filled: type == selected,
-                onPressed: () => onSelected(type),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _Footer extends StatelessWidget {
-  const _Footer({required this.onBackToTop});
-
-  final VoidCallback onBackToTop;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 32, 8, 24),
-      child: Row(
-        children: [
-          const Expanded(child: AppLogo()),
-          TextButton.icon(
-            onPressed: onBackToTop,
-            iconAlignment: IconAlignment.end,
-            icon: const Icon(PhosphorIconsRegular.arrowUp, size: 16),
-            label: const Text('Voltar ao topo'),
-          ),
-        ],
       ),
     );
   }

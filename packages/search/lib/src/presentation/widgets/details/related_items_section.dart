@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/related_items_cubit.dart';
+import '../../bloc/related_items_cubit.dart';
 
 /// "Mais personagens / episódios / localizações": a grid of one API page with
 /// numbered pagination below it.

@@ -2,8 +2,8 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/search_bloc.dart';
-import 'result_cards.dart';
+import '../../bloc/search_bloc.dart';
+import '../cards/cards.dart';
 
 /// Renders every [SearchState] of one tab: skeleton, results with infinite
 /// scroll, empty, not found and error with retry.

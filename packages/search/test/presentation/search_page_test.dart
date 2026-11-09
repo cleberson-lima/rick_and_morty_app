@@ -8,7 +8,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:search/src/data/models/models.dart';
 import 'package:search/src/presentation/bloc/search_bloc.dart';
 import 'package:search/src/presentation/pages/search_page.dart';
-import 'package:search/src/presentation/widgets/home_hero.dart';
+import 'package:search/src/presentation/widgets/home/home_hero.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../test_data.dart';
