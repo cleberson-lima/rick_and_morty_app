@@ -86,10 +86,10 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 
 | Pacote | Linhas cobertas |
 | --- | --- |
-| core | 91,2% |
+| core | 90,8% |
 | favorites | 91,7% |
 | search | 91,6% |
-| **Total** | **91,5%** (1211/1324) |
+| **Total** | **91,3%** (1223/1339) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
@@ -105,7 +105,7 @@ A raiz do repositório é um projeto Flutter padrão (o app). As features ficam 
 lib/                 # app: main.dart, AppModule (rotas), AppWidget (tema, cubits globais)
 android/  ios/       # projetos nativos
 packages/
-  core/              # Dio, Result, Failure, ResourceType, PaginatedList, tema, design system, AppRoutes
+  core/              # Dio, Result, Failure, ResourceType, PaginatedList, FavoriteItem, tema, design system, AppRoutes
   favorites/         # favoritos (shared_preferences) + FavoritesCubit global
   search/            # busca + detalhes (Rick and Morty API)
 tool/                # scripts de desenvolvimento (relatório de cobertura)
@@ -120,19 +120,20 @@ flowchart TD
     app["<b>app</b> (raiz)<br/>main.dart · AppModule · AppWidget"]
     search["<b>search</b><br/>busca + detalhes"]
     favorites["<b>favorites</b><br/>favoritos + FavoritesCubit"]
-    core["<b>core</b><br/>Dio · Result · Failure · tema · widgets · AppRoutes"]
+    core["<b>core</b><br/>Dio · Result · Failure · FavoriteItem · tema · widgets · AppRoutes"]
     api[("Rick and Morty API")]
     prefs[("shared_preferences")]
 
     app --> search
     app --> favorites
     app --> core
-    search --> favorites
     search --> core
     favorites --> core
     search -. HTTP via Dio .-> api
     favorites -. JSON local .-> prefs
 ```
+
+O `search` e o `favorites` não dependem um do outro. O `search` põe um `FavoriteSlot` (do `core`) onde vai o coração, e o app, na raiz, envolve as telas num `FavoriteButtonProvider` (do `favorites`), que desenha o `FavoriteButton` em cada slot.
 
 Camadas dentro de cada feature (exemplo do `search`): a tela lê o estado do Bloc/Cubit, que chama o `SearchApi` e recebe as models prontas.
 
@@ -196,7 +197,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 | 1 | ~~Mensagens de UI no `Failure`~~ **(resolvido)** | Os estados guardam o `Failure` e a extensão `FailurePresentation` (`core/lib/src/ui`) gera título, mensagem e ícone de cada caso; `MessageView.failure` monta a tela de erro. O `Failure` do domínio não tem mais texto. | Levar os textos da `FailurePresentation` para ARB junto com o item 8. |
 | 2 | ~~`Model.fromJson<T>` com `switch (T)`~~ **(resolvido)** | O `SearchApi` recebe o `fromJson` de cada model como função, verificado em tempo de compilação. O `Model<E>` não existe mais. | — |
 | 3 | ~~`_guard` sem log~~ **(resolvido)** | O `Result.guard` (usado pelo `SearchApi` e pelo `FavoritesStorage`) envia ao `Result.reportError` toda exceção que vira `Failure.unexpected()` ou `Failure.cache()`; por padrão ela vai para o log do `dart:developer`. Falhas esperadas (rede, status HTTP, cancelamento) não são registradas. | Apontar o `Result.reportError` para um serviço de crash report (ex.: Crashlytics) quando o Firebase entrar no Dart (item 14). |
-| 4 | `search` depende de `favorites` | Necessário por causa do botão de favorito nos cards e nos detalhes. | `search` receber um builder do botão ou uma interface definida em `core`. |
+| 4 | ~~`search` depende de `favorites`~~ **(resolvido)** | O `FavoriteItem` está no `core`, e o `search` coloca um `FavoriteSlot` onde vai o coração. O app envolve tudo num `FavoriteButtonProvider` (do `favorites`), que transforma cada slot no `FavoriteButton`. O `search` não importa mais o `favorites`. | — |
 | 5 | Dois mecanismos de DI/ciclo de vida | O Modular entrega as instâncias e o `BlocProvider` as fecha, o que exige o `hide ModularWatchExtension`. `ThemeCubit` usa `BlocProvider.value` e `FavoritesCubit` usa `create`. O `flutter_modular` 6.x é uma versão antiga, um risco de manutenção a longo prazo. | Padronizar o ciclo de vida dos cubits globais e reavaliar o Modular quando a 7.x estabilizar. |
 | 6 | ~~Repositório "isolado" criado à mão~~ **(resolvido)** | Cada cubit de "Mais ..." recebe um `SearchApi` próprio (`SearchApi(i.get<Dio>())`), sem o `_isolated(i)`. | — |
 | 7 | ~~Arquivos grandes~~ **(resolvido)** | `details_page.dart` (463 → 108 linhas), `search_page.dart` (395 → 142) e `result_cards.dart` (269, removido) viraram widgets em arquivos próprios, agrupados por tela em `presentation/widgets/{cards,details,home,search}`. | — |

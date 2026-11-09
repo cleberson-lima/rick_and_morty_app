@@ -16,7 +16,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 
 ## Estrutura
 - raiz do repositório — o app Flutter (`lib/`, `android/`, `ios/`): `main.dart`, `AppModule`, `AppWidget`
-- `packages/core` — Dio client, `Result`, `Failure`, `ResourceType`, `PaginatedList`, tema, `ThemeCubit`, widgets em `lib/src/ui`
+- `packages/core` — Dio client, `Result`, `Failure`, `ResourceType`, `PaginatedList`, `FavoriteItem`, tema, `ThemeCubit`, widgets em `lib/src/ui`
 - `packages/favorites` — favoritos persistidos (shared_preferences)
 - `packages/search` — busca de personagens, episódios e locais + tela de detalhe
 
@@ -30,6 +30,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - Estados de tela são sealed classes do freezed: loading, success, empty, notFound, error
 - Cubit para carregar dados; Bloc só no `SearchBloc` (debounce/`restartable`/`droppable` pelos transformers de evento)
 - O state fica em `x_state.dart` como `part of 'x_cubit.dart'` (eventos do Bloc idem); os imports ficam só na cubit e quem usa o state importa a cubit
+- Features não dependem umas das outras (só do `core`). O coração de favorito entra como `FavoriteSlot(item: ...)`; o app liga o `FavoriteButtonProvider` do `favorites` na raiz. Nos testes do `search`, use `FakeFavorites().wrap(...)` (test/helpers.dart)
 - Cancelamento: o `SearchApi` cancela o `CancelToken` anterior do mesmo tipo a cada busca; o Bloc descarta resultados antigos. Telas que não podem se cancelar usam instâncias separadas do `SearchApi`
 
 ## Regras

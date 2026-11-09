@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../data/favorites_storage.dart';
-import '../../data/models/favorite_item.dart';
 
 part 'favorites_cubit.freezed.dart';
 part 'favorites_state.dart';

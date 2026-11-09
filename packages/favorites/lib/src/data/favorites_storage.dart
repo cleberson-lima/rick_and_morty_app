@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:core/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'models/favorite_item.dart';
-
 /// Favorites saved on the device as one JSON array under [storageKey].
 ///
 /// Never throws: every call returns a `Result` with the updated list, or

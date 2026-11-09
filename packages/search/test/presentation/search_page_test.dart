@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +10,7 @@ import 'package:search/src/presentation/pages/search_page.dart';
 import 'package:search/src/presentation/widgets/home/home_hero.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../helpers.dart';
 import '../test_data.dart';
 
 class _CharacterBloc extends MockBloc<SearchEvent, SearchState<Character>>
@@ -21,9 +21,6 @@ class _EpisodeBloc extends MockBloc<SearchEvent, SearchState<Episode>>
 
 class _LocationBloc extends MockBloc<SearchEvent, SearchState<Location>>
     implements SearchBloc<Location> {}
-
-class _FavoritesCubit extends MockCubit<FavoritesState>
-    implements FavoritesCubit {}
 
 const _pilot = Episode(
   id: 1,
@@ -45,7 +42,7 @@ void main() {
   late _CharacterBloc characters;
   late _EpisodeBloc episodes;
   late _LocationBloc locations;
-  late _FavoritesCubit favorites;
+  late FakeFavorites favorites;
   late ThemeCubit theme;
 
   setUpAll(() => registerFallbackValue(const SearchSubmitted('')));
@@ -56,7 +53,7 @@ void main() {
     characters = _CharacterBloc();
     episodes = _EpisodeBloc();
     locations = _LocationBloc();
-    favorites = _FavoritesCubit();
+    favorites = FakeFavorites();
     when(() => characters.state).thenReturn(
       const SearchState.success(query: '', items: [rick, morty], totalCount: 2),
     );
@@ -66,9 +63,6 @@ void main() {
     when(() => locations.state).thenReturn(
       const SearchState.success(query: '', items: [_earth], totalCount: 1),
     );
-    when(
-      () => favorites.state,
-    ).thenReturn(const FavoritesState.loaded(items: []));
   });
 
   Future<void> pump(
@@ -84,16 +78,17 @@ void main() {
       MultiBlocProvider(
         providers: [
           BlocProvider<ThemeCubit>.value(value: theme),
-          BlocProvider<FavoritesCubit>.value(value: favorites),
           BlocProvider<SearchBloc<Character>>.value(value: characters),
           BlocProvider<SearchBloc<Episode>>.value(value: episodes),
           BlocProvider<SearchBloc<Location>>.value(value: locations),
         ],
-        child: MaterialApp(
-          theme: AppTheme.light(),
-          home: SearchPage(
-            onOpenDetails: onOpen,
-            onOpenFavorites: onOpenFavorites,
+        child: favorites.wrap(
+          MaterialApp(
+            theme: AppTheme.light(),
+            home: SearchPage(
+              onOpenDetails: onOpen,
+              onOpenFavorites: onOpenFavorites,
+            ),
           ),
         ),
       ),

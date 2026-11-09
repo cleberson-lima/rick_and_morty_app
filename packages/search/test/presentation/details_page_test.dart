@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +10,7 @@ import 'package:search/src/presentation/bloc/related_items_cubit.dart';
 import 'package:search/src/presentation/pages/details_page.dart';
 import 'package:search/src/presentation/widgets/open_details.dart';
 
+import '../helpers.dart';
 import '../test_data.dart';
 
 class _DetailsCubit extends MockCubit<DetailsState> implements DetailsCubit {}
@@ -23,9 +23,6 @@ class _RelatedEpisodes extends MockCubit<RelatedItemsState<Episode>>
 
 class _RelatedLocations extends MockCubit<RelatedItemsState<Location>>
     implements RelatedItemsCubit<Location> {}
-
-class _FavoritesCubit extends MockCubit<FavoritesState>
-    implements FavoritesCubit {}
 
 const _pilot = Episode(
   id: 1,
@@ -48,24 +45,14 @@ void main() {
   late _RelatedCharacters moreCharacters;
   late _RelatedEpisodes moreEpisodes;
   late _RelatedLocations moreLocations;
-  late _FavoritesCubit favorites;
-
-  setUpAll(
-    () => registerFallbackValue(
-      const FavoriteItem(type: ResourceType.character, id: 0, name: ''),
-    ),
-  );
+  late FakeFavorites favorites;
 
   setUp(() {
     details = _DetailsCubit();
     moreCharacters = _RelatedCharacters();
     moreEpisodes = _RelatedEpisodes();
     moreLocations = _RelatedLocations();
-    favorites = _FavoritesCubit();
-    when(
-      () => favorites.state,
-    ).thenReturn(const FavoritesState.loaded(items: []));
-    when(() => favorites.toggle(any())).thenAnswer((_) async {});
+    favorites = FakeFavorites();
     when(() => moreCharacters.state).thenReturn(
       const RelatedItemsState.success(items: [morty], page: 1, totalPages: 42),
     );
@@ -94,19 +81,20 @@ void main() {
       MultiBlocProvider(
         providers: [
           BlocProvider<DetailsCubit>.value(value: details),
-          BlocProvider<FavoritesCubit>.value(value: favorites),
           BlocProvider<RelatedItemsCubit<Character>>.value(
             value: moreCharacters,
           ),
           BlocProvider<RelatedItemsCubit<Episode>>.value(value: moreEpisodes),
           BlocProvider<RelatedItemsCubit<Location>>.value(value: moreLocations),
         ],
-        child: MaterialApp(
-          theme: AppTheme.dark(),
-          home: DetailsPage(
-            onRetry: onRetry ?? () {},
-            onOpenDetails: onOpen,
-            onOpenFavorites: onOpenFavorites,
+        child: favorites.wrap(
+          MaterialApp(
+            theme: AppTheme.dark(),
+            home: DetailsPage(
+              onRetry: onRetry ?? () {},
+              onOpenDetails: onOpen,
+              onOpenFavorites: onOpenFavorites,
+            ),
           ),
         ),
       ),
@@ -156,9 +144,7 @@ void main() {
 
     // Heart next to the name favorites the character.
     await tester.tap(find.byTooltip('Adicionar aos favoritos').first);
-    final item =
-        verify(() => favorites.toggle(captureAny())).captured.single
-            as FavoriteItem;
+    final item = favorites.tapped.single;
     expect((item.type, item.id), (ResourceType.character, 1));
 
     // "Saiba mais" on the last-location card opens location 3.

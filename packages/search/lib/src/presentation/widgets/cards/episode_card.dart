@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/models.dart';
@@ -42,7 +41,7 @@ class EpisodeCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(child: DetailsChipButton(onPressed: onTap)),
-                  FavoriteButton(item: episode.toFavorite(), compact: true),
+                  FavoriteSlot(item: episode.toFavorite(), compact: true),
                 ],
               ),
             ],

@@ -15,6 +15,7 @@ export 'src/ui/app_network_image.dart';
 export 'src/ui/bottom_safe_area.dart';
 export 'src/ui/details_chip_button.dart';
 export 'src/ui/failure_presentation.dart';
+export 'src/ui/favorite_slot.dart';
 export 'src/ui/loading_skeleton.dart';
 export 'src/ui/message_view.dart';
 export 'src/ui/page_selector.dart';

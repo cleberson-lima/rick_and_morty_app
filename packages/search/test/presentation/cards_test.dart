@@ -1,17 +1,11 @@
-import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:search/src/data/models/models.dart';
 import 'package:search/src/presentation/widgets/cards/cards.dart';
 
+import '../helpers.dart';
 import '../test_data.dart';
-
-class _FavoritesCubit extends MockCubit<FavoritesState>
-    implements FavoritesCubit {}
 
 const _pilot = Episode(
   id: 1,
@@ -30,13 +24,10 @@ const _earth = Location(
 );
 
 void main() {
-  late _FavoritesCubit favorites;
+  late FakeFavorites favorites;
 
   setUp(() {
-    favorites = _FavoritesCubit();
-    when(
-      () => favorites.state,
-    ).thenReturn(FavoritesState.loaded(items: [rick.toFavorite()]));
+    favorites = FakeFavorites(favorites: [rick.toFavorite()]);
   });
 
   /// Renders [cards] in the same grid the app uses, at a given width, so an
@@ -52,9 +43,8 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
-      BlocProvider<FavoritesCubit>.value(
-        value: favorites,
-        child: MaterialApp(
+      favorites.wrap(
+        MaterialApp(
           theme: AppTheme.dark(),
           home: Scaffold(
             body: ResponsiveResultsView(

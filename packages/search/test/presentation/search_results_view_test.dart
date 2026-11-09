@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,11 +9,10 @@ import 'package:search/src/presentation/bloc/search_bloc.dart';
 import 'package:search/src/presentation/widgets/cards/cards.dart';
 import 'package:search/src/presentation/widgets/search/search_results_view.dart';
 
+import '../helpers.dart';
+
 class _EpisodeBloc extends MockBloc<SearchEvent, SearchState<Episode>>
     implements SearchBloc<Episode> {}
-
-class _FavoritesCubit extends MockCubit<FavoritesState>
-    implements FavoritesCubit {}
 
 const _pilot = Episode(
   id: 1,
@@ -26,26 +24,20 @@ const _pilot = Episode(
 
 void main() {
   late _EpisodeBloc bloc;
-  late _FavoritesCubit favorites;
+  late FakeFavorites favorites;
 
   setUpAll(() => registerFallbackValue(const SearchSubmitted('')));
 
   setUp(() {
     bloc = _EpisodeBloc();
-    favorites = _FavoritesCubit();
-    when(
-      () => favorites.state,
-    ).thenReturn(const FavoritesState.loaded(items: []));
+    favorites = FakeFavorites();
   });
 
   Future<void> pump(WidgetTester tester, SearchState<Episode> state) async {
     when(() => bloc.state).thenReturn(state);
     await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: [
-          BlocProvider<SearchBloc<Episode>>.value(value: bloc),
-          BlocProvider<FavoritesCubit>.value(value: favorites),
-        ],
+      BlocProvider<SearchBloc<Episode>>.value(
+        value: bloc,
         child: MaterialApp(
           theme: AppTheme.light(),
           home: Scaffold(
@@ -169,9 +161,8 @@ void main() {
         residentCount: 101,
       );
       await tester.pumpWidget(
-        BlocProvider<FavoritesCubit>.value(
-          value: favorites,
-          child: const MaterialApp(
+        favorites.wrap(
+          const MaterialApp(
             home: Scaffold(body: LocationCard(location: location)),
           ),
         ),

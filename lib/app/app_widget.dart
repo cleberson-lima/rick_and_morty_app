@@ -26,9 +26,12 @@ class AppWidget extends StatelessWidget {
           darkTheme: AppTheme.dark(),
           themeMode: themeMode,
           routerConfig: Modular.routerConfig,
-          builder: (context, child) => BottomSafeArea(
-            child: FavoritesErrorListener(
-              child: child ?? const SizedBox.shrink(),
+          // Features show a FavoriteSlot; here it becomes the real button.
+          builder: (context, child) => FavoriteButtonProvider(
+            child: BottomSafeArea(
+              child: FavoritesErrorListener(
+                child: child ?? const SizedBox.shrink(),
+              ),
             ),
           ),
         ),
