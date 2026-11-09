@@ -3,15 +3,14 @@
 ## Stack
 Flutter 3.41+, Dart 3.8+, Melos 8 (pub workspaces), flutter_modular, dio,
 freezed 4 (freezed_annotation 3) + json_serializable, mocktail, flutter_bloc + bloc_concurrency + bloc_test,
-shared_preferences, cached_network_image, google_fonts.
+shared_preferences, cached_network_image. Fonte Inter empacotada em `packages/core/assets/fonts` (sem `google_fonts`).
 
 Versões fixadas de propósito (não atualizar sem testar):
 - `flutter_modular: ^6.4.1` — a 7.x é outra API e seu `context.read/watch` conflita com o flutter_bloc.
   Em arquivos que importam os dois, use `import 'package:flutter_modular/flutter_modular.dart' hide ModularWatchExtension;`
-- `google_fonts: 8.0.0` (versão exata no `core`) — a 9.x usa `material_ui`, com `TextTheme` incompatível com o do SDK.
 
 ## Testes
-- Widget tests usam `AppTheme.light(useGoogleFonts: false)` (sem rede).
+- Widget tests usam `AppTheme.light()`; a Inter não é carregada nos testes (usa a fonte de teste), a não ser via `FontLoader`.
 - O `LoadingSkeleton` anima para sempre: não use `pumpAndSettle` com ele na tela; faça `pump` em passos.
 - Fixtures reais da API em `packages/search/test/fixtures/`; `FakeAdapter` (test/helpers.dart) exercita o Dio de verdade.
 

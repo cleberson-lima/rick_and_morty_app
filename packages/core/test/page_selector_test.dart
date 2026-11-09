@@ -20,7 +20,7 @@ void main() {
     int? selected;
     Future<void> pump(int current) => tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.light(useGoogleFonts: false),
+        theme: AppTheme.light(),
         home: Scaffold(
           body: PageSelector(
             currentPage: current,

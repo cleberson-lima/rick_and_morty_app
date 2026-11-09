@@ -47,7 +47,7 @@ void main() {
           BlocProvider<FavoritesCubit>.value(value: favorites),
         ],
         child: MaterialApp(
-          theme: AppTheme.light(useGoogleFonts: false),
+          theme: AppTheme.light(),
           home: Scaffold(
             body: SearchResultsView<Episode>(
               type: ResourceType.episode,

@@ -42,7 +42,7 @@ void main() {
           BlocProvider<FavoritesCubit>.value(value: cubit),
         ],
         child: MaterialApp(
-          theme: AppTheme.light(useGoogleFonts: false),
+          theme: AppTheme.light(),
           home: home ?? FavoritesPage(onOpen: onOpen),
         ),
       ),

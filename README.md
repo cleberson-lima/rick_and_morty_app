@@ -16,7 +16,7 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 - Estados de **carregamento** (skeleton), **erro** com retry, **vazio** e **não encontrado** (a API responde 404 quando nada casa com a busca)
 - **Detalhes** de cada item no layout do protótipo (personagem com cards de origem e última localização; episódio; local), com seção **"Mais ..."** e **paginação numerada**; acessíveis da busca, dos favoritos ou por deep link (`/details/:type/:id`)
 - **Favoritos** persistidos localmente: salvar, listar, remover; o coração fica sincronizado em todas as telas
-- Tema **claro/escuro** persistido, Google Fonts, cache de imagens em disco
+- Tema **claro/escuro** persistido, fonte Inter empacotada no app (funciona offline), cache de imagens em disco
 - **Responsivo**: lista em celular, grade de 2 a 4 colunas em tablet/paisagem; detalhes lado a lado em telas largas
 
 ## Telas
@@ -90,10 +90,10 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 
 | Pacote | Linhas cobertas |
 | --- | --- |
-| core | 91,0% |
+| core | 91,3% |
 | favorites | 91,7% |
 | search | 91,6% |
-| **Total** | **91,5%** (1210/1323) |
+| **Total** | **91,5%** (1211/1323) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
@@ -172,7 +172,7 @@ Um único `SearchBloc<T>` genérico atende as três abas: cada aba recebe o mét
 | Decisão | Motivo |
 | --- | --- |
 | `flutter_modular` **6.4** (não 7.x) | A 7.x é uma reescrita marcada como "work in progress" e define `context.read/watch` que conflitam com o flutter_bloc. A 6.x é estável e é a API conhecida (`Module`, `binds`, `routes`). |
-| `google_fonts` **8.x** (não 9.x) | A 9.x usa o pacote `material_ui`, cujo `TextTheme` é um tipo diferente do `TextTheme` do SDK (`package:flutter/material.dart`). |
+| Fonte Inter empacotada (não `google_fonts`) | Os TTFs estáticos (pesos 400, 500, 700 e 800, licença SIL OFL) ficam em `packages/core/assets/fonts`: sem requisição nem troca de fonte no primeiro uso offline ou com rede lenta. A licença aparece na página de licenças do app (`AppTheme.registerFontLicenses`). |
 | `flutter_bloc` + estados `sealed` | Cubits para carregar dados; Bloc só na busca, onde os transformers de evento dão debounce, `restartable` e `droppable` sem `Timer` à mão. |
 | Sem camada `domain` | O app só exibe dados da API: entidades, use cases e contratos de repositório duplicavam as models e repassavam chamadas sem nenhuma regra. |
 | `Result<T>` próprio (não `dartz`) | `Success`/`Failed` dizem o que cada caso é, ao contrário de `Left`/`Right`, e o `switch` do Dart trata os dois sem `fold`. |
@@ -209,7 +209,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 | # | Ponto | Direção |
 | --- | --- | --- |
 | 8 | Textos fixos em pt-BR, sem `flutter_localizations`/ARB | Extrair os textos para ARB; as mensagens de erro já estão concentradas na `FailurePresentation`. |
-| 9 | Fonte Inter baixada pelo Google Fonts em runtime: no primeiro uso offline ou com rede lenta, aparece a fonte de fallback | Empacotar a Inter como asset do `core`, como já é feito com os ícones Phosphor. |
+| 9 | ~~Fonte Inter baixada pelo Google Fonts em runtime~~ **(resolvido)** | A Inter 4.1 está empacotada no `core` (pesos 400, 500, 700 e 800) e o `google_fonts` saiu das dependências. |
 | 10 | Sem cache dos dados da API, só das imagens. Sem rede, só os favoritos aparecem (eles guardam um snapshot) | Cache local das respostas (ex.: última busca e detalhes já abertos). |
 
 ### CI e release
@@ -231,7 +231,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 1. ~~Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).~~ Feito.
 2. ~~Parser por função em `Model`/`PageModel` (item 2).~~ Feito.
 3. ~~Logging no `_guard` (item 3).~~ Feito.
-4. Empacotar a fonte Inter e restringir a API key do Firebase (itens 9 e 13).
+4. ~~Empacotar a fonte Inter (item 9).~~ Feito. Falta restringir a API key do Firebase (item 13), no Google Cloud Console.
 5. Quebrar `details_page` e `search_page` em widgets menores (item 7).
 
 ## Próximas versões

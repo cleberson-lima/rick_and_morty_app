@@ -7,6 +7,7 @@ import 'app/app_widget.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppTheme.registerFontLicenses();
   await CoreModule.initialize();
   runApp(ModularApp(module: AppModule(), child: const AppWidget()));
 }
