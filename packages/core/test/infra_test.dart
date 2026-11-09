@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,10 +28,17 @@ void main() {
     () async {
       SharedPreferences.setMockInitialValues({'theme_mode': 'dark'});
 
-      final core = await CoreDependencies.load();
+      final temp = await Directory.systemTemp.createTemp('core_test');
+      addTearDown(() => temp.delete(recursive: true));
+
+      final core = await CoreDependencies.load(cacheRoot: () async => temp);
 
       expect(core.preferences.getString('theme_mode'), 'dark');
       expect(core.dio.options.baseUrl, ApiConfig.baseUrl);
+      final cache = core.dio.interceptors
+          .whereType<OfflineCacheInterceptor>()
+          .single;
+      expect(cache.directory.path, '${temp.path}/api');
     },
   );
 

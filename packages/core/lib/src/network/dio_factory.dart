@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import 'offline_cache_interceptor.dart';
 import 'rate_limit_retry_interceptor.dart';
 
 abstract final class ApiConfig {
@@ -8,7 +11,9 @@ abstract final class ApiConfig {
   static const timeout = Duration(seconds: 15);
 }
 
-Dio createDio({String baseUrl = ApiConfig.baseUrl}) {
+/// API client: base URL, timeouts, retry on 429 and, when [cacheDirectory]
+/// is given, the offline fallback of [OfflineCacheInterceptor].
+Dio createDio({String baseUrl = ApiConfig.baseUrl, Directory? cacheDirectory}) {
   final dio = Dio(
     BaseOptions(
       baseUrl: baseUrl,
@@ -18,6 +23,9 @@ Dio createDio({String baseUrl = ApiConfig.baseUrl}) {
     ),
   );
   dio.interceptors.add(RateLimitRetryInterceptor(dio));
+  if (cacheDirectory != null) {
+    dio.interceptors.add(OfflineCacheInterceptor(cacheDirectory));
+  }
   if (kDebugMode) {
     dio.interceptors.add(
       LogInterceptor(

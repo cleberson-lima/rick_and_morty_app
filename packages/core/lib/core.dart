@@ -7,6 +7,7 @@ export 'src/l10n/l10n.dart';
 export 'src/navigation/app_routes.dart';
 export 'src/network/dio_factory.dart';
 export 'src/network/failure_mapper.dart';
+export 'src/network/offline_cache_interceptor.dart';
 export 'src/network/rate_limit_retry_interceptor.dart';
 export 'src/theme/app_theme.dart';
 export 'src/theme/theme_cubit.dart';
