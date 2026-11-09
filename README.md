@@ -213,8 +213,8 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Direção |
 | --- | --- | --- |
-| 11 | Actions fixadas por tag (`@v4`, `@v2`) e `npx firebase-tools@14` na release | Fixar as Actions por SHA do commit e o `firebase-tools` em uma versão exata. |
-| 12 | O `release.yml` roda para qualquer tag `v*`, mesmo fora da `main` | Proteger a criação de tags `v*` e checar no workflow que o commit da tag está na `main`. |
+| 11 | ~~Actions fixadas por tag~~ **(resolvido)** | As Actions estão fixadas pelo SHA do commit (com a versão em comentário) e o `firebase-tools` em `14.27.0`. O Dependabot (`.github/dependabot.yml`) abre um PR semanal quando sai uma versão nova. |
+| 12 | ~~Release a partir de qualquer tag `v*`~~ **(resolvido no workflow)** | O `release.yml` falha antes do build se o commit da tag não estiver na `main`. | Falta, no GitHub, um ruleset de tags `v*` (Settings → Rules → Rulesets → New tag ruleset) restringindo quem pode criá-las e apagá-las. |
 
 ### Firebase
 

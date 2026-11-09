@@ -40,6 +40,10 @@ Versões fixadas de propósito (não atualizar sem testar):
 - Commits em Conventional Commits (inglês); uma branch `feature/*` (ou `fix/*`) por tarefa, criada a partir da `main` e mesclada nela por PR. Não há `develop`
 - Arquivos gerados (`*.g.dart`, `*.freezed.dart`) são versionados
 
+## CI
+- Actions fixadas pelo SHA do commit, com a versão em comentário (`uses: x/y@<sha> # vN.N.N`); o Dependabot atualiza. Nunca use `@vN` nem `@main`
+- Release: tag `v*` em um commit da `main`; o `release.yml` recusa tags fora dela
+
 ## Comandos
 - `melos bootstrap`     # resolve o workspace
 - `melos run gen`       # build_runner em todos os pacotes
