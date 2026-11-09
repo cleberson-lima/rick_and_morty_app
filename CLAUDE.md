@@ -42,7 +42,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - Arquivos gerados (`*.g.dart`, `*.freezed.dart`) são versionados
 
 ## CI
-- Actions fixadas pelo SHA do commit, com a versão em comentário (`uses: x/y@<sha> # vN.N.N`); o Dependabot atualiza. Nunca use `@vN` nem `@main`
+- Actions fixadas pelo SHA do commit, com a versão em comentário (`uses: x/y@<sha> # vN.N.N`); o Dependabot abre um PR semanal agrupado. Nunca use `@vN` nem `@main`. Antes de mesclar uma versão principal nova de `setup-java`, `auth` ou `action-gh-release`, leia as notas: elas só rodam numa tag `v*`, então o CI do PR não as exercita
 - Release: tag `v*` em um commit da `main`; o `release.yml` recusa tags fora dela
 
 ## Comandos
