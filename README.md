@@ -106,60 +106,6 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 
 > **Fonte e cores:** `AppTheme.fontFamily` (Inter) e as cores em `AppColors` foram tiradas do protótipo do Figma por inspeção visual e ainda serão conferidas no inspetor; trocar ali atualiza o app inteiro.
 
-## Build de release (Android)
-
-```bash
-flutter build apk --release
-```
-
-Sem `android/key.properties`, o build de release é assinado com a chave de **debug** (serve para testar localmente, não para publicar).
-
-### Assinatura do APK
-
-1. Gere a chave uma única vez e guarde o `.jks` e as senhas **fora do repositório**:
-
-   ```bash
-   keytool -genkeypair -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-   ```
-
-2. Para assinar localmente, crie `android/key.properties` (já está no `.gitignore`):
-
-   ```properties
-   storePassword=<senha>
-   keyPassword=<senha>
-   keyAlias=upload
-   storeFile=C:/caminho/para/upload-keystore.jks
-   ```
-
-### Publicação automática (GitHub Actions)
-
-| Workflow | Quando roda | O que faz |
-| --- | --- | --- |
-| `ci.yml` | PRs para `develop`/`main` e push em `develop` | formatação, `melos run analyze`, `melos run test` |
-| `release.yml` | push de tag `v*` | analyze + test, build assinado, anexa `app-release.apk` à GitHub Release e envia o APK aos testadores pelo Firebase App Distribution |
-
-Cadastre em **Settings → Secrets and variables → Actions** do repositório:
-
-| Secret | Valor |
-| --- | --- |
-| `KEYSTORE_BASE64` | o `.jks` em base64 (comando abaixo) |
-| `KEYSTORE_PASSWORD` | senha do keystore |
-| `KEY_PASSWORD` | senha da chave |
-| `KEY_ALIAS` | `upload` |
-| `FIREBASE_SERVICE_ACCOUNT` | o JSON inteiro da chave de uma service account com o papel *Firebase App Distribution Admin* |
-
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("$HOME\upload-keystore.jks")) | Set-Clipboard
-```
-
-Os grupos de testadores vêm da **variável** (aba *Variables*) `FIREBASE_TESTER_GROUPS`: aliases do console do Firebase separados por vírgula, `testers` por padrão. O App ID do Firebase fica no próprio workflow, porque é o mesmo valor público do `google-services.json`.
-
-Sem esses secrets o workflow de release falha de propósito, antes do build, em vez de publicar um APK assinado com a chave de debug ou uma versão que não chega aos testadores. A versão do APK vem da tag (`v1.2.0` → `versionName 1.2.0`) e o `versionCode` é o número da execução do workflow.
-
-```bash
-git tag -a v0.1.0 -m "Release 0.1.0"
-git push origin v0.1.0
-```
 
 ## Convenções
 
