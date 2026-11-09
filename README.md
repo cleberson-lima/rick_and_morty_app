@@ -136,7 +136,7 @@ Sem `android/key.properties`, o build de release é assinado com a chave de **de
 | Workflow | Quando roda | O que faz |
 | --- | --- | --- |
 | `ci.yml` | PRs para `develop`/`main` e push em `develop` | formatação, `melos run analyze`, `melos run test` |
-| `release.yml` | push de tag `v*` | analyze + test, build assinado, anexa `app-release.apk` à GitHub Release |
+| `release.yml` | push de tag `v*` | analyze + test, build assinado, anexa `app-release.apk` à GitHub Release e envia o APK aos testadores pelo Firebase App Distribution |
 
 Cadastre em **Settings → Secrets and variables → Actions** do repositório:
 
@@ -146,12 +146,15 @@ Cadastre em **Settings → Secrets and variables → Actions** do repositório:
 | `KEYSTORE_PASSWORD` | senha do keystore |
 | `KEY_PASSWORD` | senha da chave |
 | `KEY_ALIAS` | `upload` |
+| `FIREBASE_SERVICE_ACCOUNT` | o JSON inteiro da chave de uma service account com o papel *Firebase App Distribution Admin* |
 
 ```powershell
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("$HOME\upload-keystore.jks")) | Set-Clipboard
 ```
 
-Sem esses secrets o workflow de release falha de propósito, em vez de publicar um APK assinado com a chave de debug. A versão do APK vem da tag (`v1.2.0` → `versionName 1.2.0`) e o `versionCode` é o número da execução do workflow.
+Os grupos de testadores vêm da **variável** (aba *Variables*) `FIREBASE_TESTER_GROUPS`: aliases do console do Firebase separados por vírgula, `testers` por padrão. O App ID do Firebase fica no próprio workflow, porque é o mesmo valor público do `google-services.json`.
+
+Sem esses secrets o workflow de release falha de propósito, antes do build, em vez de publicar um APK assinado com a chave de debug ou uma versão que não chega aos testadores. A versão do APK vem da tag (`v1.2.0` → `versionName 1.2.0`) e o `versionCode` é o número da execução do workflow.
 
 ```bash
 git tag -a v0.1.0 -m "Release 0.1.0"

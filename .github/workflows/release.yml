@@ -1,13 +1,21 @@
 name: Release APK
 
-# Pushing a tag like v1.0.0 runs the checks, builds a signed APK and attaches
-# it to a GitHub Release as app-release.apk (the name the README links to).
+# Pushing a tag like v1.0.0 runs the checks, builds a signed APK, attaches it
+# to a GitHub Release as app-release.apk (the name the README links to) and
+# sends it to the testers through Firebase App Distribution.
 on:
   push:
     tags: ['v*']
 
 permissions:
   contents: write
+
+env:
+  # Public value, the same one shipped in android/app/google-services.json.
+  FIREBASE_APP_ID: '1:291306693478:android:8ecddfafb3312a98665ea7'
+  # Tester groups (aliases from the Firebase console), comma separated.
+  # Override with the repository variable FIREBASE_TESTER_GROUPS.
+  FIREBASE_TESTER_GROUPS: ${{ vars.FIREBASE_TESTER_GROUPS || 'testers' }}
 
 jobs:
   release:
@@ -39,15 +47,17 @@ jobs:
       - name: Test
         run: melos run test
 
-      # Fail instead of silently publishing a debug-signed APK.
-      - name: Check signing secrets
+      # Fail before building instead of silently publishing a debug-signed APK
+      # or a release that never reaches the testers.
+      - name: Check secrets
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_PASSWORD KEY_ALIAS; do
+          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_PASSWORD KEY_ALIAS FIREBASE_SERVICE_ACCOUNT; do
             if [ -z "${!name}" ]; then
               echo "::error::Missing repository secret $name"
               exit 1
@@ -82,6 +92,21 @@ jobs:
         with:
           files: build/app/outputs/flutter-apk/app-release.apk
           generate_release_notes: true
+
+      # Writes the key to a temp file and exports GOOGLE_APPLICATION_CREDENTIALS,
+      # which firebase-tools picks up.
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Distribute to Firebase testers
+        run: |
+          npx --yes firebase-tools@14 appdistribution:distribute \
+            build/app/outputs/flutter-apk/app-release.apk \
+            --app "$FIREBASE_APP_ID" \
+            --groups "$FIREBASE_TESTER_GROUPS" \
+            --release-notes "Rick & Morty $GITHUB_REF_NAME — https://github.com/${{ github.repository }}/releases/tag/$GITHUB_REF_NAME"
 
       - name: Remove signing files
         if: always()
