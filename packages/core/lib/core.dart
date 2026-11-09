@@ -10,6 +10,7 @@ export 'src/theme/app_theme.dart';
 export 'src/theme/theme_cubit.dart';
 export 'src/theme/theme_mode_selector.dart';
 export 'src/theme/theme_toggle_button.dart';
+export 'src/ui/app_logo.dart';
 export 'src/ui/app_network_image.dart';
 export 'src/ui/bottom_safe_area.dart';
 export 'src/ui/details_chip_button.dart';

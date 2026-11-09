@@ -163,4 +163,19 @@ void main() {
     expect(dark.colorScheme.brightness, Brightness.dark);
     expect(light.useMaterial3, isTrue);
   });
+
+  testWidgets('AppLogo shows the wordmark in the primary color', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(),
+        home: const Scaffold(body: AppLogo()),
+      ),
+    );
+
+    final text = tester.widget<Text>(find.text('Rick and Morty'));
+    expect(text.style?.color, AppColors.cyan);
+    expect(text.style?.fontStyle, FontStyle.italic);
+  });
 }

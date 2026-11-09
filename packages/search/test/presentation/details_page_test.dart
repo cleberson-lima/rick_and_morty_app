@@ -9,6 +9,7 @@ import 'package:search/src/data/models/models.dart';
 import 'package:search/src/presentation/bloc/details_cubit.dart';
 import 'package:search/src/presentation/bloc/related_items_cubit.dart';
 import 'package:search/src/presentation/pages/details_page.dart';
+import 'package:search/src/presentation/widgets/open_details.dart';
 
 import '../test_data.dart';
 
