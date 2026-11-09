@@ -19,6 +19,43 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 - Tema **claro/escuro** persistido, Google Fonts, cache de imagens em disco
 - **Responsivo**: lista em celular, grade de 2 a 4 colunas em tablet/paisagem; detalhes lado a lado em telas largas
 
+## Telas
+
+<table>
+  <tr>
+    <th>Início (escuro)</th>
+    <th>Início (claro)</th>
+    <th>Busca</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home.png" width="240" alt="Página inicial no tema escuro com a busca, os filtros e a seção de personagens"></td>
+    <td><img src="docs/screenshots/home-light.png" width="240" alt="Página inicial no tema claro com Rick e Morty marcados como favoritos"></td>
+    <td><img src="docs/screenshots/search.png" width="240" alt="Resultado da busca por smith em personagens"></td>
+  </tr>
+  <tr>
+    <th>Personagem</th>
+    <th>Episódio</th>
+    <th>Local</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/details-character.png" width="240" alt="Detalhes de Rick Sanchez com origem, última localização e mais personagens"></td>
+    <td><img src="docs/screenshots/details-episode.png" width="240" alt="Detalhes do episódio Pilot com a lista de mais episódios"></td>
+    <td><img src="docs/screenshots/details-location.png" width="240" alt="Detalhes do local Earth (C-137) com mais localizações"></td>
+  </tr>
+  <tr>
+    <th>Favoritos</th>
+    <th></th>
+    <th></th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/favorites.png" width="240" alt="Lista de favoritos com Morty Smith e Rick Sanchez"></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+> Capturas do app rodando com dados reais da API, em tela de celular (390 × 844).
+
 ## Requisitos
 
 | Ferramenta | Versão usada |
@@ -78,6 +115,51 @@ packages/
 tool/                # scripts de desenvolvimento (relatório de cobertura)
 ```
 
+### Desenho da arquitetura
+
+Dependências entre os pacotes (a seta aponta para quem é usado):
+
+```mermaid
+flowchart TD
+    app["<b>app</b> (raiz)<br/>main.dart · AppModule · AppWidget"]
+    search["<b>search</b><br/>busca + detalhes"]
+    favorites["<b>favorites</b><br/>favoritos + FavoritesCubit"]
+    core["<b>core</b><br/>Dio · Failure · tema · widgets · AppRoutes"]
+    api[("Rick and Morty API")]
+    prefs[("shared_preferences")]
+
+    app --> search
+    app --> favorites
+    app --> core
+    search --> favorites
+    search --> core
+    favorites --> core
+    search -. HTTP via Dio .-> api
+    favorites -. JSON local .-> prefs
+```
+
+Camadas dentro de cada feature (exemplo do `search`). As duas camadas de fora dependem do `domain`, e o `domain` não depende de nenhuma: a `presentation` chama os use cases, e a `data` implementa o contrato do repositório.
+
+```mermaid
+flowchart TB
+    subgraph presentation["presentation (Flutter)"]
+        direction LR
+        page["SearchPage<br/>DetailsPage"] --> bloc["SearchBloc#lt;T#gt; · DetailsCubit<br/><i>estados sealed (freezed)</i>"]
+    end
+    subgraph domain["domain (Dart puro)"]
+        direction LR
+        usecase["Use cases"] --> contract["SearchRepository<br/><i>contrato</i>"]
+        contract --> entity["Entities<br/>Character · Episode · Location"]
+    end
+    subgraph data["data"]
+        direction LR
+        impl["SearchRepositoryImpl<br/><i>Either#lt;Failure, T#gt;</i>"] --> source["SearchRemoteDataSource<br/><i>Dio + CancelToken</i>"]
+        source --> model["Model#lt;E#gt;<br/><i>fromJson · toEntity()</i>"]
+    end
+    presentation -- chama os use cases --> domain
+    data -. implementa o contrato .-> domain
+```
+
 - `domain` é Dart puro: importa só `package:core/domain.dart` (sem Flutter, sem Dio).
 - Repositórios retornam `Either<Failure, T>` (dartz) e nunca lançam exceção.
 - `Failure` é uma sealed class (freezed): `notFound`, `network`, `server`, `cancelled`, `cache`, `unexpected`. O 404 da busca vira o estado **não encontrado**, não um erro genérico.
@@ -106,59 +188,58 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 
 > **Fonte e cores:** `AppTheme.fontFamily` (Inter) e as cores em `AppColors` foram tiradas do protótipo do Figma por inspeção visual e ainda serão conferidas no inspetor; trocar ali atualiza o app inteiro.
 
-## Build de release (Android)
-
-```bash
-flutter build apk --release
-```
-
-Sem `android/key.properties`, o build de release é assinado com a chave de **debug** (serve para testar localmente, não para publicar).
-
-### Assinatura do APK
-
-1. Gere a chave uma única vez e guarde o `.jks` e as senhas **fora do repositório**:
-
-   ```bash
-   keytool -genkeypair -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-   ```
-
-2. Para assinar localmente, crie `android/key.properties` (já está no `.gitignore`):
-
-   ```properties
-   storePassword=<senha>
-   keyPassword=<senha>
-   keyAlias=upload
-   storeFile=C:/caminho/para/upload-keystore.jks
-   ```
-
-### Publicação automática (GitHub Actions)
-
-| Workflow | Quando roda | O que faz |
-| --- | --- | --- |
-| `ci.yml` | PRs para `develop`/`main` e push em `develop` | formatação, `melos run analyze`, `melos run test` |
-| `release.yml` | push de tag `v*` | analyze + test, build assinado, anexa `app-release.apk` à GitHub Release |
-
-Cadastre em **Settings → Secrets and variables → Actions** do repositório:
-
-| Secret | Valor |
-| --- | --- |
-| `KEYSTORE_BASE64` | o `.jks` em base64 (comando abaixo) |
-| `KEYSTORE_PASSWORD` | senha do keystore |
-| `KEY_PASSWORD` | senha da chave |
-| `KEY_ALIAS` | `upload` |
-
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("$HOME\upload-keystore.jks")) | Set-Clipboard
-```
-
-Sem esses secrets o workflow de release falha de propósito, em vez de publicar um APK assinado com a chave de debug. A versão do APK vem da tag (`v1.2.0` → `versionName 1.2.0`) e o `versionCode` é o número da execução do workflow.
-
-```bash
-git tag -a v0.1.0 -m "Release 0.1.0"
-git push origin v0.1.0
-```
-
 ## Convenções
 
 - Commits em [Conventional Commits](https://www.conventionalcommits.org/) (inglês)
 - GitFlow simplificado: `main` (releases), `develop` (integração), `feature/*`, `fix/*`, `release/*`
+
+## Limitações conhecidas e próximos passos
+
+Pontos levantados em revisão de código. Nenhum deles é um problema estrutural: são refinamentos planejados.
+
+### Arquitetura e código
+
+| # | Ponto | Situação atual | Direção |
+| --- | --- | --- | --- |
+| 1 | Mensagens de UI no `Failure` | `Failure.message` tem texto em pt-BR e vive em `core` (domínio). Os estados (`SearchError`, `MoreItemsError`, `DetailsState.error`) guardam só a `String`, então a UI não reage ao tipo de falha (ex.: "tentar de novo" só para erro de rede). | Guardar o `Failure` no estado e traduzir na `presentation`, o que também prepara a l10n. |
+| 2 | `Model.fromJson<T>` com `switch (T)` | Checagem em runtime: esquecer de registrar uma model só aparece em execução (`ArgumentError`). | Passar o parser como função (`PageModel.fromJson(json, CharacterModel.fromJson)`), com segurança em tempo de compilação. |
+| 3 | `_guard` sem log | Em `SearchRepositoryImpl`, qualquer exceção inesperada (ex.: `TypeError` por mudança no JSON da API) vira `Failure.unexpected()` sem registro. | Logar em debug e integrar um serviço de crash report. |
+| 4 | `search` depende de `favorites` | Necessário por causa do botão de favorito nos cards e nos detalhes. | `search` receber um builder do botão ou uma interface definida em `core`. |
+| 5 | Dois mecanismos de DI/ciclo de vida | O Modular entrega as instâncias e o `BlocProvider` as fecha, o que exige o `hide ModularWatchExtension`. `ThemeCubit` usa `BlocProvider.value` e `FavoritesCubit` usa `create`. O `flutter_modular` 6.x é uma versão antiga, um risco de manutenção a longo prazo. | Padronizar o ciclo de vida dos cubits globais e reavaliar o Modular quando a 7.x estabilizar. |
+| 6 | Repositório "isolado" criado à mão | `_isolated(i)` em `search_module.dart` contorna o container de DI para ter um `CancelToken` separado por cubit de "Mais ...". | Registrar uma factory do `SearchRemoteDataSource` no módulo. |
+| 7 | Arquivos grandes | `details_page.dart` (463 linhas), `search_page.dart` (395) e `result_cards.dart` (269) concentram muitos widgets privados. | Quebrar em widgets menores, em arquivos próprios. |
+
+### Produto
+
+| # | Ponto | Direção |
+| --- | --- | --- |
+| 8 | Textos fixos em pt-BR, sem `flutter_localizations`/ARB | Extrair os textos para ARB (depende do item 1). |
+| 9 | Fonte Inter baixada pelo Google Fonts em runtime: no primeiro uso offline ou com rede lenta, aparece a fonte de fallback | Empacotar a Inter como asset do `core`, como já é feito com os ícones Phosphor. |
+| 10 | Sem cache dos dados da API, só das imagens. Sem rede, só os favoritos aparecem (eles guardam um snapshot) | Cache local das respostas (ex.: última busca e detalhes já abertos). |
+
+### CI e release
+
+| # | Ponto | Direção |
+| --- | --- | --- |
+| 11 | Actions fixadas por tag (`@v4`, `@v2`) e `npx firebase-tools@14` na release | Fixar as Actions por SHA do commit e o `firebase-tools` em uma versão exata. |
+| 12 | O `release.yml` roda para qualquer tag `v*`, mesmo fora da `main` | Proteger a criação de tags `v*` e checar no workflow que o commit da tag está na `main`. |
+
+### Firebase
+
+| # | Ponto | Direção |
+| --- | --- | --- |
+| 13 | `android/app/google-services.json` versionado | É o normal no Firebase (a API key não é secreta), mas a chave precisa ter restrições no Google Cloud Console: pacote Android + SHA-1 do certificado. |
+| 14 | Firebase só no Android: o plugin `google-services` e o `firebase-analytics` estão no `build.gradle.kts`, mas não há nada no Dart nem no iOS | Se o objetivo é só distribuir o APK pelo App Distribution, o plugin e o Analytics são desnecessários e podem sair; se o Analytics for desejado, integrar com `firebase_core`/`firebase_analytics` no Dart e configurar o iOS. |
+
+### Prioridades
+
+1. Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).
+2. Parser por função em `Model`/`PageModel` (item 2).
+3. Logging no `_guard` (item 3).
+4. Empacotar a fonte Inter e restringir a API key do Firebase (itens 9 e 13).
+5. Quebrar `details_page` e `search_page` em widgets menores (item 7).
+
+## Próximas versões
+
+> [!NOTE]
+> Em uma versão futura o código passará por ajustes voltados a **melhorar a leitura** e **enxugar algumas classes**, sem mudar o comportamento do app.
