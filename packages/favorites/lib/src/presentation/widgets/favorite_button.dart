@@ -19,7 +19,9 @@ class FavoriteButton extends StatelessWidget {
     );
     final color = Theme.of(context).colorScheme.primary;
     return IconButton(
-      tooltip: isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+      tooltip: isFavorite
+          ? context.l10n.removeFromFavorites
+          : context.l10n.addToFavorites,
       isSelected: isFavorite,
       color: color,
       iconSize: compact ? 22 : 26,
@@ -63,7 +65,9 @@ class FavoritesErrorListener extends StatelessWidget {
       listenWhen: (_, current) =>
           current is FavoritesLoaded && current.actionFailure != null,
       listener: (context, state) {
-        final message = (state as FavoritesLoaded).actionFailure!.message;
+        final message = (state as FavoritesLoaded).actionFailure!.message(
+          context.l10n,
+        );
         ScaffoldMessenger.maybeOf(context)
           ?..hideCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text(message)));

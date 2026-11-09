@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
 
 import '../error/failure.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// User-facing copy and icon for each [Failure].
 ///
-/// `Failure` (in `types.dart`) carries no text; screens keep the
-/// `Failure` in their state and translate it here, so every case can get its
-/// own title and icon (and, later, localized strings).
+/// `Failure` (in `types.dart`) carries no text; screens keep the `Failure` in
+/// their state and translate it here with the app's [AppLocalizations]
+/// (`context.l10n`), so every case gets its own title and icon.
 extension FailurePresentation on Failure {
   /// Short heading for full-screen error states.
-  String get title => switch (this) {
-    NetworkFailure() => 'Sem conexão',
-    TooManyRequestsFailure() => 'Muitas requisições',
-    NotFoundFailure() => 'Nada encontrado',
-    _ => 'Ops! Algo deu errado',
+  String title(AppLocalizations l10n) => switch (this) {
+    NetworkFailure() => l10n.failureTitleNetwork,
+    TooManyRequestsFailure() => l10n.failureTitleTooManyRequests,
+    NotFoundFailure() => l10n.failureTitleNotFound,
+    _ => l10n.failureTitleGeneric,
   };
 
   /// One-sentence explanation, also used in snackbars and inline errors.
-  String get message => switch (this) {
-    NotFoundFailure() => 'Nada encontrado.',
-    NetworkFailure() =>
-      'Sem conexão com a internet. Verifique sua rede e tente novamente.',
-    TooManyRequestsFailure() =>
-      'Muitas requisições em pouco tempo. Aguarde alguns segundos e tente novamente.',
-    ServerFailure(:final statusCode) =>
-      'O servidor respondeu com erro${statusCode != null ? ' ($statusCode)' : ''}. Tente novamente.',
-    CancelledFailure() => 'Requisição cancelada.',
-    CacheFailure() => 'Não foi possível acessar os dados salvos.',
-    UnexpectedFailure() => 'Algo deu errado. Tente novamente.',
+  String message(AppLocalizations l10n) => switch (this) {
+    NotFoundFailure() => l10n.failureNotFound,
+    NetworkFailure() => l10n.failureNetwork,
+    TooManyRequestsFailure() => l10n.failureTooManyRequests,
+    ServerFailure(:final statusCode?) => l10n.failureServerWithStatus(
+      statusCode,
+    ),
+    ServerFailure() => l10n.failureServer,
+    CancelledFailure() => l10n.failureCancelled,
+    CacheFailure() => l10n.failureCache,
+    UnexpectedFailure() => l10n.failureUnexpected,
   };
 
   IconData get icon => switch (this) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/l10n.dart';
 import 'phosphor_icons.dart';
 
 /// Pill-shaped button with a small icon, used across the prototype:
@@ -71,13 +72,15 @@ class PillButton extends StatelessWidget {
 class DetailsChipButton extends StatelessWidget {
   const DetailsChipButton({
     required this.onPressed,
-    this.label = 'Saiba mais',
+    this.label,
     this.highlighted = false,
     super.key,
   });
 
   final VoidCallback? onPressed;
-  final String label;
+
+  /// Defaults to "Saiba mais".
+  final String? label;
 
   /// Cyan fill instead of grey (the prototype highlights the focused card).
   final bool highlighted;
@@ -85,7 +88,7 @@ class DetailsChipButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PillButton(
-      label: label,
+      label: label ?? context.l10n.learnMore,
       icon: PhosphorIconsRegular.info,
       onPressed: onPressed,
       filled: highlighted,

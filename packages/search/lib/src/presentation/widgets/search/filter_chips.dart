@@ -25,7 +25,7 @@ class FilterChips extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          Text('Filtrar por:', style: theme.textTheme.labelMedium),
+          Text(context.l10n.filterBy, style: theme.textTheme.labelMedium),
           for (final (type, icon) in _options) ...[
             const SizedBox(width: 8),
             Semantics(
@@ -33,7 +33,7 @@ class FilterChips extends StatelessWidget {
               button: true,
               child: PillButton(
                 key: ValueKey('filter-${type.name}'),
-                label: type.pluralLabel,
+                label: context.l10n.resourcePluralLabel(type),
                 icon: icon,
                 filled: type == selected,
                 onPressed: () => onSelected(type),

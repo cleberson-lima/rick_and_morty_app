@@ -36,10 +36,13 @@ class CharacterDetailsHeader extends StatelessWidget {
     final info = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DetailsTitle(text: character.name, favorite: character.toFavorite()),
+        DetailsTitle(
+          text: character.name,
+          favorite: character.toFavorite(context.l10n),
+        ),
         DetailsAttribute(
           icon: PhosphorIconsRegular.monitorPlay,
-          text: 'Participou de ${character.episodeCount} episódios',
+          text: context.l10n.episodeCountOfCharacter(character.episodeCount),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -49,11 +52,11 @@ class CharacterDetailsHeader extends StatelessWidget {
             DetailsAttribute(
               icon: PhosphorIconsRegular.heartbeat,
               color: statusColor(character.status),
-              text: character.status.label,
+              text: context.l10n.statusLabel(character.status),
             ),
             DetailsAttribute(
               icon: PhosphorIconsRegular.alien,
-              text: speciesLabel(character.species),
+              text: context.l10n.speciesLabel(character.species),
             ),
             DetailsAttribute(icon: _genderIcon, text: character.gender),
           ],
@@ -65,14 +68,14 @@ class CharacterDetailsHeader extends StatelessWidget {
           children: [
             PlaceCard(
               icon: PhosphorIconsRegular.planet,
-              caption: 'Origem',
+              caption: context.l10n.origin,
               name: character.originName,
               id: character.originId,
               onOpenDetails: onOpenDetails,
             ),
             PlaceCard(
               icon: PhosphorIconsRegular.mapPin,
-              caption: 'Última localização',
+              caption: context.l10n.lastLocation,
               name: character.locationName,
               id: character.locationId,
               onOpenDetails: onOpenDetails,

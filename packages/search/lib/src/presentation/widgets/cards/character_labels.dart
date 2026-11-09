@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/models.dart';
@@ -8,16 +9,25 @@ Color statusColor(CharacterStatus status) => switch (status) {
   CharacterStatus.unknown => const Color(0xFF9E9E9E),
 };
 
-/// The prototype shows species in Portuguese ("Humano"). Unknown values from
-/// the API are shown as they come.
-String speciesLabel(String species) => switch (species.toLowerCase()) {
-  'human' => 'Humano',
-  'alien' => 'Alienígena',
-  'humanoid' => 'Humanoide',
-  'robot' => 'Robô',
-  'animal' => 'Animal',
-  'mythological creature' => 'Criatura mitológica',
-  'disease' => 'Doença',
-  'unknown' => 'Desconhecido',
-  _ => species,
-};
+/// Display names of character fields, from the app's strings.
+extension CharacterLabels on AppLocalizations {
+  String statusLabel(CharacterStatus status) => switch (status) {
+    CharacterStatus.alive => statusAlive,
+    CharacterStatus.dead => statusDead,
+    CharacterStatus.unknown => statusUnknown,
+  };
+
+  /// The prototype shows species in Portuguese ("Humano"). Unknown values
+  /// from the API are shown as they come.
+  String speciesLabel(String species) => switch (species.toLowerCase()) {
+    'human' => speciesHuman,
+    'alien' => speciesAlien,
+    'humanoid' => speciesHumanoid,
+    'robot' => speciesRobot,
+    'animal' => speciesAnimal,
+    'mythological creature' => speciesMythologicalCreature,
+    'disease' => speciesDisease,
+    'unknown' => speciesUnknown,
+    _ => species,
+  };
+}

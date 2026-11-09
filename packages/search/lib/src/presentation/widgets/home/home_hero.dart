@@ -12,14 +12,12 @@ class HomeHero extends StatelessWidget {
   /// Theme illustration (step 2: exported from Figma).
   final Widget? image;
 
-  static const darkTagline = 'Aí sim, Porr#@%&*';
-  static const lightTagline = 'Wubba Lubba Dub Dub! Cuidado com os olhos.';
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = context.l10n;
     final headline = theme.textTheme.headlineMedium?.copyWith(
       fontWeight: FontWeight.w700,
       height: 1.2,
@@ -42,7 +40,7 @@ class HomeHero extends StatelessWidget {
                 const Expanded(child: AppLogo()),
                 const SizedBox(width: 12),
                 PillButton(
-                  label: 'Lista de favoritos',
+                  label: l10n.favoritesList,
                   icon: PhosphorIconsRegular.heart,
                   onPressed: onOpenFavorites,
                 ),
@@ -51,10 +49,10 @@ class HomeHero extends StatelessWidget {
             const SizedBox(height: 24),
             Text.rich(
               TextSpan(
-                text: 'Saiba tudo em\num só ',
+                text: l10n.homeHeadline,
                 children: [
                   TextSpan(
-                    text: 'lugar.',
+                    text: l10n.homeHeadlineHighlight,
                     style: TextStyle(color: scheme.primary),
                   ),
                 ],
@@ -62,10 +60,7 @@ class HomeHero extends StatelessWidget {
               style: headline,
             ),
             const SizedBox(height: 8),
-            Text(
-              'Personagens, localizações, episódios e muito mais.',
-              style: theme.textTheme.bodyMedium,
-            ),
+            Text(l10n.homeSubtitle, style: theme.textTheme.bodyMedium),
             if (image != null) ...[
               const SizedBox(height: 16),
               Center(child: image),
@@ -74,7 +69,7 @@ class HomeHero extends StatelessWidget {
             const ThemeModeSelector(),
             const SizedBox(height: 8),
             Text(
-              isDark ? darkTagline : lightTagline,
+              isDark ? l10n.homeTaglineDark : l10n.homeTaglineLight,
               style: theme.textTheme.bodySmall?.copyWith(color: scheme.primary),
             ),
           ],

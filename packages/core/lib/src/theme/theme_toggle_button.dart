@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../l10n/l10n.dart';
 import 'theme_cubit.dart';
 
 class ThemeToggleButton extends StatelessWidget {
@@ -10,7 +11,9 @@ class ThemeToggleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return IconButton(
-      tooltip: isDark ? 'Tema claro' : 'Tema escuro',
+      tooltip: isDark
+          ? context.l10n.switchToLightTheme
+          : context.l10n.switchToDarkTheme,
       icon: Icon(isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
       onPressed: () => context.read<ThemeCubit>().toggle(
         MediaQuery.platformBrightnessOf(context),

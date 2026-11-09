@@ -24,11 +24,11 @@ class SearchField extends StatelessWidget {
       onSubmitted: onSubmitted,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: 'Personagem, episódio, localização...',
+        hintText: context.l10n.searchHint,
         suffixIcon: controller.text.isEmpty
             ? const Icon(PhosphorIconsRegular.magnifyingGlass)
             : IconButton(
-                tooltip: 'Limpar',
+                tooltip: context.l10n.clear,
                 icon: const Icon(Icons.close),
                 onPressed: onClear,
               ),
