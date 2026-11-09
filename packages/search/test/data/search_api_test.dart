@@ -155,6 +155,31 @@ void main() {
     }
   });
 
+  test('a malformed payload is reported, a network error is not', () async {
+    final reported = <Object>[];
+    Result.reportError = (error, _) => reported.add(error);
+    addTearDown(() => Result.reportError = logError);
+
+    final broken = SearchApi(
+      dioWith(FakeAdapter((_) async => jsonBody({'unexpected': true}))),
+    );
+    final offline = SearchApi(
+      dioWith(
+        FakeAdapter(
+          (options) async => throw DioException(
+            requestOptions: options,
+            type: DioExceptionType.connectionError,
+          ),
+        ),
+      ),
+    );
+
+    await broken.searchCharacters('x');
+    await offline.searchCharacters('x');
+
+    expect(reported, [isA<TypeError>()]);
+  });
+
   group('cancellation', () {
     test('a new search cancels the previous one of the same type', () async {
       final staleResponse = Completer<void>();

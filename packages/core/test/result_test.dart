@@ -24,6 +24,59 @@ void main() {
     });
   });
 
+  group('Result.reportError', () {
+    final reported = <Object>[];
+
+    setUp(() {
+      reported.clear();
+      Result.reportError = (error, _) => reported.add(error);
+    });
+
+    tearDown(() => Result.reportError = logError);
+
+    Future<void> guardThrowing(Object error, Failure failure) =>
+        Result.guard<void>(() async => throw error, toFailure: (_) => failure);
+
+    test('receives errors that become unexpected or cache failures', () async {
+      final typeError = StateError('bad json');
+      final diskError = StateError('disk full');
+
+      await guardThrowing(typeError, const Failure.unexpected());
+      await guardThrowing(diskError, const Failure.cache());
+
+      expect(reported, [typeError, diskError]);
+    });
+
+    test('ignores expected failures', () async {
+      await guardThrowing(StateError('x'), const Failure.network());
+      await guardThrowing(StateError('x'), const Failure.cancelled());
+      await guardThrowing(StateError('x'), const Failure.notFound());
+      await guardThrowing(
+        StateError('x'),
+        const Failure.server(statusCode: 500),
+      );
+      await guardThrowing(StateError('x'), const Failure.tooManyRequests());
+
+      expect(reported, isEmpty);
+    });
+
+    test('is not called on success', () async {
+      await Result.guard(
+        () async => 1,
+        toFailure: (_) => const Failure.unexpected(),
+      );
+
+      expect(reported, isEmpty);
+    });
+  });
+
+  test('logError writes to the developer log without throwing', () {
+    expect(
+      () => logError(StateError('x'), StackTrace.current),
+      returnsNormally,
+    );
+  });
+
   test('Success compares by data', () {
     expect(const Success(1), const Success(1));
     expect(const Success(1), isNot(const Success(2)));

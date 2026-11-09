@@ -5,6 +5,10 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ## [Não lançado]
 
+### Adicionado
+
+- Exceções inesperadas na API e no armazenamento local (por exemplo, JSON fora do formato esperado) passam a ser registradas no log do `dart:developer` em vez de sumirem como um erro genérico. O destino pode ser trocado em `Result.reportError`.
+
 ### Alterado
 
 - Arquitetura simplificada: as features passam a ter só `data` e `presentation`. Saíram as entidades, os use cases e os contratos de repositório; as telas e os Blocs/Cubits usam as models (`Character`, `Episode`, `Location`, `FavoriteItem`) direto.

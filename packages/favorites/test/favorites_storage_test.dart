@@ -90,10 +90,14 @@ void main() {
       expect(_items(await storage.remove(ResourceType.character, 1)), [pilot]);
     });
 
-    test('corrupted storage becomes a cache failure', () async {
+    test('corrupted storage becomes a reported cache failure', () async {
+      final reported = <Object>[];
+      Result.reportError = (error, _) => reported.add(error);
+      addTearDown(() => Result.reportError = logError);
       final storage = await _storage({FavoritesStorage.storageKey: 'not json'});
 
       expect(await storage.getAll(), const Failed<Never>(Failure.cache()));
+      expect(reported, [isA<FormatException>()]);
     });
   });
 
