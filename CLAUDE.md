@@ -25,7 +25,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - `packages/<feature>/lib/src/{data,presentation}` — sem camada `domain`: nada de entidades, use cases ou contratos de repositório
 - `data/models`: uma classe freezed por recurso, com `@Freezed(fromJson: false, toJson: false)` e `factory X.fromJson` escrito à mão (models da API). A UI usa as models direto
 - `data/search_api.dart` (`SearchApi`) e `data/favorites_storage.dart` (`FavoritesStorage`) fazem o acesso; a model nova entra passando o `X.fromJson` para `_search`/`_getById`
-- API e storage retornam `Result<T>` (`Success(data)` / `Failed(failure)`, do `core`) e nunca lançam exceção; trate com `switch`, não com `try/catch`
+- API e storage retornam `Result<T>` (`Success(data)` / `Failed(failure)`, do `core`) e nunca lançam exceção; trate com `switch`, não com `try/catch`. Use `Result.guard`, que manda exceções inesperadas para `Result.reportError` (log por padrão)
 - 404 da API vira `NotFoundFailure` → estado `notFound` (não é erro genérico)
 - `Failure` não tem texto: os estados guardam o `Failure` e a UI usa `FailurePresentation` (`title`, `message`, `icon`) / `MessageView.failure` do `core`
 - Estados de tela são sealed classes do freezed: loading, success, empty, notFound, error
