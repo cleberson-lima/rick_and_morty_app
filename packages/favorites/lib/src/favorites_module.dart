@@ -1,10 +1,7 @@
 import 'package:core/core.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import 'data/datasources/favorites_local_data_source.dart';
-import 'data/repositories/favorites_repository_impl.dart';
-import 'domain/repositories/favorites_repository.dart';
-import 'domain/usecases/favorites_usecases.dart';
+import 'data/favorites_storage.dart';
 import 'presentation/cubit/favorites_cubit.dart';
 import 'presentation/pages/favorites_page.dart';
 
@@ -17,13 +14,7 @@ class FavoritesDataModule extends Module {
   @override
   void exportedBinds(Injector i) {
     i
-      ..addLazySingleton<FavoritesLocalDataSource>(
-        FavoritesLocalDataSourceImpl.new,
-      )
-      ..addLazySingleton<FavoritesRepository>(FavoritesRepositoryImpl.new)
-      ..addLazySingleton<GetFavoritesUseCase>(GetFavoritesUseCase.new)
-      ..addLazySingleton<AddFavoriteUseCase>(AddFavoriteUseCase.new)
-      ..addLazySingleton<RemoveFavoriteUseCase>(RemoveFavoriteUseCase.new)
+      ..addLazySingleton<FavoritesStorage>(FavoritesStorage.new)
       ..addLazySingleton<FavoritesCubit>(FavoritesCubit.new);
   }
 }

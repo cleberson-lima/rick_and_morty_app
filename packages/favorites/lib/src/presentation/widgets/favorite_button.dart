@@ -2,7 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/favorite_item.dart';
+import '../../data/models/favorite_item.dart';
 import '../cubit/favorites_cubit.dart';
 
 /// Cyan heart toggle (outline / filled) bound to the app-wide

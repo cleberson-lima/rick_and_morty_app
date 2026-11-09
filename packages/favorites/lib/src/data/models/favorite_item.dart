@@ -2,6 +2,7 @@ import 'package:core/domain.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'favorite_item.freezed.dart';
+part 'favorite_item.g.dart';
 
 /// Minimal snapshot of a favorited resource: enough to render it in the
 /// favorites list without hitting the API, plus (type, id) to open details.
@@ -14,6 +15,9 @@ abstract class FavoriteItem with _$FavoriteItem {
     String? subtitle,
     String? imageUrl,
   }) = _FavoriteItem;
+
+  factory FavoriteItem.fromJson(Map<String, Object?> json) =>
+      _$FavoriteItemFromJson(json);
 }
 
 extension FavoriteItemListX on List<FavoriteItem> {

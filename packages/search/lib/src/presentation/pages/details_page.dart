@@ -3,9 +3,7 @@ import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/character.dart';
-import '../../domain/entities/episode.dart';
-import '../../domain/entities/location.dart';
+import '../../data/models/models.dart';
 import '../bloc/details_cubit.dart';
 import '../widgets/home_hero.dart';
 import '../widgets/more_section.dart';

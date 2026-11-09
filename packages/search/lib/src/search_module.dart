@@ -5,14 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart'
     hide ModularWatchExtension;
 
-import 'data/datasources/search_remote_data_source.dart';
-import 'data/repositories/search_repository_impl.dart';
-import 'domain/entities/character.dart';
-import 'domain/entities/episode.dart';
-import 'domain/entities/location.dart';
-import 'domain/repositories/search_repository.dart';
-import 'domain/usecases/details_usecases.dart';
-import 'domain/usecases/search_usecases.dart';
+import 'data/models/models.dart';
+import 'data/search_api.dart';
 import 'presentation/bloc/details_cubit.dart';
 import 'presentation/bloc/more_items_cubit.dart';
 import 'presentation/bloc/search_bloc.dart';
@@ -27,34 +21,22 @@ class SearchModule extends Module {
   @override
   void binds(Injector i) {
     i
-      ..addLazySingleton<SearchRemoteDataSource>(SearchRemoteDataSourceImpl.new)
-      ..addLazySingleton<SearchRepository>(SearchRepositoryImpl.new)
-      ..addLazySingleton<SearchCharactersUseCase>(SearchCharactersUseCase.new)
-      ..addLazySingleton<SearchEpisodesUseCase>(SearchEpisodesUseCase.new)
-      ..addLazySingleton<SearchLocationsUseCase>(SearchLocationsUseCase.new)
-      ..addLazySingleton<GetCharacterUseCase>(GetCharacterUseCase.new)
-      ..addLazySingleton<GetEpisodeUseCase>(GetEpisodeUseCase.new)
-      ..addLazySingleton<GetLocationUseCase>(GetLocationUseCase.new)
+      ..addLazySingleton<SearchApi>(SearchApi.new)
       // Factories: each screen gets a fresh instance; BlocProvider closes it.
       ..add<CharacterSearchBloc>(CharacterSearchBloc.new)
       ..add<EpisodeSearchBloc>(EpisodeSearchBloc.new)
       ..add<LocationSearchBloc>(LocationSearchBloc.new)
       ..add<DetailsCubit>(DetailsCubit.new)
-      // "Mais ..." sections get their own data source: it cancels the
-      // previous search of the same type, and must not cancel the home page.
+      // "Mais ..." sections get their own SearchApi: it cancels the previous
+      // search of the same type, and must not cancel the home page's.
       ..add<MoreCharactersCubit>(
-        () => MoreCharactersCubit(SearchCharactersUseCase(_isolated(i))),
+        () => MoreCharactersCubit(SearchApi(i.get<Dio>())),
       )
-      ..add<MoreEpisodesCubit>(
-        () => MoreEpisodesCubit(SearchEpisodesUseCase(_isolated(i))),
-      )
+      ..add<MoreEpisodesCubit>(() => MoreEpisodesCubit(SearchApi(i.get<Dio>())))
       ..add<MoreLocationsCubit>(
-        () => MoreLocationsCubit(SearchLocationsUseCase(_isolated(i))),
+        () => MoreLocationsCubit(SearchApi(i.get<Dio>())),
       );
   }
-
-  static SearchRepository _isolated(Injector i) =>
-      SearchRepositoryImpl(SearchRemoteDataSourceImpl(i.get<Dio>()));
 
   @override
   void routes(RouteManager r) {

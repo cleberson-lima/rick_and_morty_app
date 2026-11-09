@@ -216,14 +216,14 @@ return $default(_that.id,_that.name,_that.type,_that.dimension,_that.residentCou
 
 
 class _Location implements Location {
-  const _Location({required this.id, required this.name, required this.type, required this.dimension, required this.residentCount});
+  const _Location({required this.id, required this.name, this.type = '', this.dimension = '', this.residentCount = 0});
   
 
 @override final  int id;
 @override final  String name;
-@override final  String type;
-@override final  String dimension;
-@override final  int residentCount;
+@override@JsonKey() final  String type;
+@override@JsonKey() final  String dimension;
+@override@JsonKey() final  int residentCount;
 
 /// Create a copy of Location
 /// with the given fields replaced by the non-null parameter values.

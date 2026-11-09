@@ -2,9 +2,7 @@ import 'package:core/core.dart';
 import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/character.dart';
-import '../../domain/entities/episode.dart';
-import '../../domain/entities/location.dart';
+import '../../data/models/models.dart';
 
 /// Entity → favorite snapshot. Lives in presentation: the domain of `search`
 /// doesn't know about favorites.

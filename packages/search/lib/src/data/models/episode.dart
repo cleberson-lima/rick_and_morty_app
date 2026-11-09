@@ -1,8 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'json.dart';
+
 part 'episode.freezed.dart';
 
-@freezed
+/// `/episode` resource.
+@Freezed(fromJson: false, toJson: false)
 abstract class Episode with _$Episode {
   const factory Episode({
     required int id,
@@ -15,4 +18,12 @@ abstract class Episode with _$Episode {
     required String code,
     required int characterCount,
   }) = _Episode;
+
+  factory Episode.fromJson(Json json) => Episode(
+    id: json['id']! as int,
+    name: json['name']! as String,
+    airDate: json['air_date']! as String,
+    code: json['episode']! as String,
+    characterCount: countOf(json['characters']),
+  );
 }

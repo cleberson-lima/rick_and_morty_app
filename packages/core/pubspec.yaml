@@ -10,7 +10,6 @@ environment:
 
 dependencies:
   cached_network_image: ^4.0.6
-  dartz: ^0.10.1
   dio: ^5.11.1
   flutter:
     sdk: flutter

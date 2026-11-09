@@ -4,10 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-import '../../domain/entities/character.dart';
-import '../../domain/entities/episode.dart';
-import '../../domain/entities/location.dart';
-import '../../domain/usecases/search_usecases.dart';
+import '../../data/models/models.dart';
+import '../../data/search_api.dart';
 
 part 'search_bloc.freezed.dart';
 part 'search_event.dart';
@@ -40,7 +38,7 @@ class SearchBloc<T> extends Bloc<SearchEvent, SearchState<T>> {
 
   static const defaultDebounce = Duration(milliseconds: 400);
 
-  final SearchUseCase<T> _search;
+  final FetchPage<T> _search;
   int _generation = 0;
 
   Future<void> _runSearch(
@@ -59,28 +57,25 @@ class SearchBloc<T> extends Bloc<SearchEvent, SearchState<T>> {
     final result = await _search(query);
     if (generation != _generation || emit.isDone) return;
 
-    result.fold(
-      (failure) {
-        switch (failure) {
-          case CancelledFailure():
-            return;
-          case NotFoundFailure():
-            emit(SearchState<T>.notFound(query: query));
-          default:
-            emit(SearchState<T>.error(query: query, failure: failure));
-        }
-      },
-      (page) => emit(
-        page.items.isEmpty
-            ? SearchState<T>.empty(query: query)
-            : SearchState<T>.success(
-                query: query,
-                items: page.items,
-                totalCount: page.totalCount,
-                nextPage: page.nextPage,
-              ),
-      ),
-    );
+    switch (result) {
+      case Success(data: final page) when page.items.isEmpty:
+        emit(SearchState<T>.empty(query: query));
+      case Success(data: final page):
+        emit(
+          SearchState<T>.success(
+            query: query,
+            items: page.items,
+            totalCount: page.totalCount,
+            nextPage: page.nextPage,
+          ),
+        );
+      case Failed(failure: CancelledFailure()):
+        return;
+      case Failed(failure: NotFoundFailure()):
+        emit(SearchState<T>.notFound(query: query));
+      case Failed(:final failure):
+        emit(SearchState<T>.error(query: query, failure: failure));
+    }
   }
 
   Future<void> _onNextPage(
@@ -100,32 +95,33 @@ class SearchBloc<T> extends Bloc<SearchEvent, SearchState<T>> {
     final result = await _search(current.query, page: current.nextPage!);
     if (generation != _generation) return;
 
-    result.fold(
-      (failure) {
-        if (failure is CancelledFailure) return;
+    switch (result) {
+      case Success(data: final page):
+        emit(
+          current.copyWith(
+            items: [...current.items, ...page.items],
+            nextPage: page.nextPage,
+            isLoadingMore: false,
+          ),
+        );
+      case Failed(failure: CancelledFailure()):
+        return;
+      case Failed(:final failure):
         emit(current.copyWith(isLoadingMore: false, loadMoreFailure: failure));
-      },
-      (page) => emit(
-        current.copyWith(
-          items: [...current.items, ...page.items],
-          nextPage: page.nextPage,
-          isLoadingMore: false,
-        ),
-      ),
-    );
+    }
   }
 }
 
 // Concrete types so the DI container can build each tab's Bloc.
 
 class CharacterSearchBloc extends SearchBloc<Character> {
-  CharacterSearchBloc(SearchCharactersUseCase super.search);
+  CharacterSearchBloc(SearchApi api) : super(api.searchCharacters);
 }
 
 class EpisodeSearchBloc extends SearchBloc<Episode> {
-  EpisodeSearchBloc(SearchEpisodesUseCase super.search);
+  EpisodeSearchBloc(SearchApi api) : super(api.searchEpisodes);
 }
 
 class LocationSearchBloc extends SearchBloc<Location> {
-  LocationSearchBloc(SearchLocationsUseCase super.search);
+  LocationSearchBloc(SearchApi api) : super(api.searchLocations);
 }

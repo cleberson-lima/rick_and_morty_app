@@ -7,6 +7,9 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- Arquitetura simplificada: as features passam a ter só `data` e `presentation`. Saíram as entidades, os use cases e os contratos de repositório; as telas e os Blocs/Cubits usam as models (`Character`, `Episode`, `Location`, `FavoriteItem`) direto.
+- O acesso aos dados fica em uma classe por fonte: `SearchApi` (Rick and Morty API) e `FavoritesStorage` (`shared_preferences`). O formato salvo dos favoritos não mudou.
+- O `Either` do `dartz` foi trocado por `Result<T>` (`Success` / `Failed`) do `core`, tratado com `switch`; o `dartz` saiu das dependências.
 - As telas de erro agora variam com o tipo de falha: sem conexão e excesso de requisições têm título e ícone próprios, e o erro do servidor mostra o código de status.
 - Os estados de tela (`SearchState`, `MoreItemsState`, `DetailsState`, `FavoritesState`) guardam o `Failure` em vez da mensagem pronta. Os textos saíram do `Failure` (domínio) para a extensão `FailurePresentation` em `core/lib/src/ui`, e o `StateView.failure` monta a tela de erro a partir dele.
 

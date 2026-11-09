@@ -4,10 +4,14 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:core/domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:search/src/domain/usecases/search_usecases.dart';
 import 'package:search/src/presentation/bloc/more_items_cubit.dart';
 
-class _MockSearch extends Mock implements SearchUseCase<String> {}
+/// Stand-in for a `SearchApi.searchX` method, so the test can stub it.
+abstract class _Search {
+  Future<Result<PageResult<String>>> call(String query, {int page = 1});
+}
+
+class _MockSearch extends Mock implements _Search {}
 
 PageResult<String> _page(List<String> items, int total) =>
     PageResult(items: items, totalCount: total);
@@ -21,8 +25,8 @@ void main() {
     'loads a page and computes the page count (20 per page)',
     setUp: () => when(
       () => search('', page: 2),
-    ).thenAnswer((_) async => Right(_page(['a', 'b'], 826))),
-    build: () => MoreItemsCubit<String>(search),
+    ).thenAnswer((_) async => Success(_page(['a', 'b'], 826))),
+    build: () => MoreItemsCubit<String>(search.call),
     act: (cubit) => cubit.load(2),
     expect: () => const [
       MoreItemsState<String>.loading(page: 2),
@@ -38,8 +42,8 @@ void main() {
     'a single short page still has one page',
     setUp: () => when(
       () => search('', page: 1),
-    ).thenAnswer((_) async => Right(_page(['a'], 1))),
-    build: () => MoreItemsCubit<String>(search),
+    ).thenAnswer((_) async => Success(_page(['a'], 1))),
+    build: () => MoreItemsCubit<String>(search.call),
     act: (cubit) => cubit.load(1),
     skip: 1,
     expect: () => const [
@@ -53,11 +57,11 @@ void main() {
       var calls = 0;
       when(() => search('', page: 3)).thenAnswer(
         (_) async => calls++ == 0
-            ? const Left(Failure.network())
-            : Right(_page(['c'], 60)),
+            ? const Failed(Failure.network())
+            : Success(_page(['c'], 60)),
       );
     },
-    build: () => MoreItemsCubit<String>(search),
+    build: () => MoreItemsCubit<String>(search.call),
     act: (cubit) async {
       await cubit.load(3);
       await cubit.retry();
@@ -77,14 +81,14 @@ void main() {
   blocTest<MoreItemsCubit<String>, MoreItemsState<String>>(
     'a slow older page never overwrites a newer one',
     setUp: () {
-      final slow = Completer<Either<Failure, PageResult<String>>>();
+      final slow = Completer<Result<PageResult<String>>>();
       when(() => search('', page: 2)).thenAnswer((_) => slow.future);
       when(
         () => search('', page: 3),
-      ).thenAnswer((_) async => Right(_page(['page 3'], 60)));
-      addTearDown(() => slow.complete(Right(_page(['page 2'], 60))));
+      ).thenAnswer((_) async => Success(_page(['page 3'], 60)));
+      addTearDown(() => slow.complete(Success(_page(['page 2'], 60))));
     },
-    build: () => MoreItemsCubit<String>(search),
+    build: () => MoreItemsCubit<String>(search.call),
     act: (cubit) async {
       unawaited(cubit.load(2));
       await cubit.load(3);
@@ -100,8 +104,8 @@ void main() {
     'a cancelled request emits nothing after loading',
     setUp: () => when(
       () => search('', page: 1),
-    ).thenAnswer((_) async => const Left(Failure.cancelled())),
-    build: () => MoreItemsCubit<String>(search),
+    ).thenAnswer((_) async => const Failed(Failure.cancelled())),
+    build: () => MoreItemsCubit<String>(search.call),
     act: (cubit) => cubit.load(1),
     expect: () => const [MoreItemsState<String>.loading(page: 1)],
   );

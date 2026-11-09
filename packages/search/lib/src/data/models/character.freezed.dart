@@ -224,14 +224,14 @@ return $default(_that.id,_that.name,_that.status,_that.species,_that.type,_that.
 
 
 class _Character implements Character {
-  const _Character({required this.id, required this.name, required this.status, required this.species, required this.type, required this.gender, required this.originName, required this.locationName, this.originId, this.locationId, required this.imageUrl, required this.episodeCount});
+  const _Character({required this.id, required this.name, required this.status, required this.species, this.type = '', required this.gender, required this.originName, required this.locationName, this.originId, this.locationId, required this.imageUrl, this.episodeCount = 0});
   
 
 @override final  int id;
 @override final  String name;
 @override final  CharacterStatus status;
 @override final  String species;
-@override final  String type;
+@override@JsonKey() final  String type;
 @override final  String gender;
 @override final  String originName;
 @override final  String locationName;
@@ -239,7 +239,7 @@ class _Character implements Character {
 @override final  int? originId;
 @override final  int? locationId;
 @override final  String imageUrl;
-@override final  int episodeCount;
+@override@JsonKey() final  int episodeCount;
 
 /// Create a copy of Character
 /// with the given fields replaced by the non-null parameter values.

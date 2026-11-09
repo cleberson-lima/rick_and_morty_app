@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'favorite_item_model.dart';
+part of 'favorite_item.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_FavoriteItemModel _$FavoriteItemModelFromJson(Map<String, dynamic> json) =>
-    _FavoriteItemModel(
+_FavoriteItem _$FavoriteItemFromJson(Map<String, dynamic> json) =>
+    _FavoriteItem(
       type: $enumDecode(_$ResourceTypeEnumMap, json['type']),
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
@@ -15,7 +15,7 @@ _FavoriteItemModel _$FavoriteItemModelFromJson(Map<String, dynamic> json) =>
       imageUrl: json['imageUrl'] as String?,
     );
 
-Map<String, dynamic> _$FavoriteItemModelToJson(_FavoriteItemModel instance) =>
+Map<String, dynamic> _$FavoriteItemToJson(_FavoriteItem instance) =>
     <String, dynamic>{
       'type': _$ResourceTypeEnumMap[instance.type]!,
       'id': instance.id,

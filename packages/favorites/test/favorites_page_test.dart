@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'favorites_data_test.dart' show pilot, rick;
+import 'favorites_storage_test.dart' show pilot, rick;
 
 class _FavoritesCubit extends MockCubit<FavoritesState>
     implements FavoritesCubit {}
