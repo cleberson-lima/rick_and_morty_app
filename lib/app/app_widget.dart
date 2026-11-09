@@ -2,20 +2,44 @@ import 'package:core/core.dart';
 import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import 'package:go_router/go_router.dart';
+import 'package:search/search.dart';
 
-/// Provides the app-wide cubits (theme, favorites) above the router so every
-/// page reaches them through `context`.
-class AppWidget extends StatelessWidget {
-  const AppWidget({super.key});
+/// App root: the router with every feature's routes, and the app-wide cubits
+/// (theme, favorites) above it so every page reaches them through `context`.
+class AppWidget extends StatefulWidget {
+  const AppWidget({required this.core, this.initialLocation, super.key});
+
+  final CoreDependencies core;
+
+  /// First route to show; `/` (the home page) when `null`.
+  final String? initialLocation;
+
+  @override
+  State<AppWidget> createState() => _AppWidgetState();
+}
+
+class _AppWidgetState extends State<AppWidget> {
+  late final GoRouter _router = GoRouter(
+    initialLocation: widget.initialLocation ?? AppRoutes.search,
+    routes: [...searchRoutes(widget.core), favoritesRoute()],
+  );
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final preferences = widget.core.preferences;
+    // Both global cubits are created and closed by their BlocProvider.
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ThemeCubit>.value(value: Modular.get<ThemeCubit>()),
+        BlocProvider<ThemeCubit>(create: (_) => ThemeCubit(preferences)),
         BlocProvider<FavoritesCubit>(
-          create: (_) => Modular.get<FavoritesCubit>()..load(),
+          create: (_) => FavoritesCubit(FavoritesStorage(preferences))..load(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
@@ -25,7 +49,7 @@ class AppWidget extends StatelessWidget {
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: themeMode,
-          routerConfig: Modular.routerConfig,
+          routerConfig: _router,
           // Features show a FavoriteSlot; here it becomes the real button.
           builder: (context, child) => FavoriteButtonProvider(
             child: BottomSafeArea(

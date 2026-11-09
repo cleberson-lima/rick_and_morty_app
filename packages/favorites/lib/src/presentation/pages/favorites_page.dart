@@ -7,7 +7,7 @@ import '../cubit/favorites_cubit.dart';
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({this.onOpen, super.key});
 
-  /// Called when a favorite is tapped (the module navigates to details).
+  /// Called when a favorite is tapped (the route opens its details).
   final ValueChanged<FavoriteItem>? onOpen;
 
   @override

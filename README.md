@@ -78,7 +78,7 @@ melos run gen
 
 ```bash
 melos run analyze    # dart analyze --fatal-infos em todo o workspace
-melos run test       # flutter test em cada pacote
+melos run test       # flutter test no app (raiz) e em cada pacote
 melos run coverage   # testes com cobertura; falha abaixo de 80%
 ```
 
@@ -86,23 +86,24 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 
 | Pacote | Linhas cobertas |
 | --- | --- |
-| core | 90,8% |
-| favorites | 91,7% |
-| search | 91,6% |
-| **Total** | **91,3%** (1223/1339) |
+| app (raiz) | 100,0% |
+| core | 90,9% |
+| favorites | 97,1% |
+| search | 95,9% |
+| **Total** | **94,5%** (1266/1340) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
 Para ver por arquivo: `dart run tool/coverage_report.dart --files`.
 
-Os testes cobrem as models com JSON real da API (`test/fixtures`), o `SearchApi` e o `FavoritesStorage` (sucesso, 404, timeout, sem rede, cancelamento, armazenamento corrompido), o `SearchBloc` (debounce, resposta antiga descartada, paginação), a injeção de dependências de cada módulo e as telas em cada estado (incluindo layout de tablet).
+Os testes cobrem as models com JSON real da API (`test/fixtures`), o `SearchApi` e o `FavoritesStorage` (sucesso, 404, timeout, sem rede, cancelamento, armazenamento corrompido), o `SearchBloc` (debounce, resposta antiga descartada, paginação), as rotas de cada feature (com o Dio de verdade sobre fixtures), o `AppWidget` (rotas, tema salvo, favoritos na abertura) e as telas em cada estado (incluindo layout de tablet).
 
 ## Arquitetura
 
 A raiz do repositório é um projeto Flutter padrão (o app). As features ficam em pacotes locais em `packages/`, ligados por **pub workspaces + Melos**. Cada feature tem só duas camadas: `data` (consumo da API ou do armazenamento local + models) e `presentation` (Bloc/Cubit, páginas e widgets).
 
 ```
-lib/                 # app: main.dart, AppModule (rotas), AppWidget (tema, cubits globais)
+lib/                 # app: main.dart, AppWidget (router, tema e favoritos globais)
 android/  ios/       # projetos nativos
 packages/
   core/              # Dio, Result, Failure, ResourceType, PaginatedList, FavoriteItem, tema, design system, AppRoutes
@@ -117,7 +118,7 @@ Dependências entre os pacotes (a seta aponta para quem é usado):
 
 ```mermaid
 flowchart TD
-    app["<b>app</b> (raiz)<br/>main.dart · AppModule · AppWidget"]
+    app["<b>app</b> (raiz)<br/>main.dart · AppWidget (GoRouter)"]
     search["<b>search</b><br/>busca + detalhes"]
     favorites["<b>favorites</b><br/>favoritos + FavoritesCubit"]
     core["<b>core</b><br/>Dio · Result · Failure · FavoriteItem · tema · widgets · AppRoutes"]
@@ -169,7 +170,7 @@ Um único `SearchBloc<T>` genérico atende as três abas: cada aba recebe o mét
 
 | Decisão | Motivo |
 | --- | --- |
-| `flutter_modular` **6.4** (não 7.x) | A 7.x é uma reescrita marcada como "work in progress" e define `context.read/watch` que conflitam com o flutter_bloc. A 6.x é estável e é a API conhecida (`Module`, `binds`, `routes`). |
+| `go_router` + `BlocProvider`, sem container de DI | O `main()` cria um `CoreDependencies` (`SharedPreferences` + `Dio`) e o passa para o `AppWidget` e para as rotas (`searchRoutes(core)`, `favoritesRoute()`). Cada tela cria seus Blocs/Cubits no `BlocProvider.create` (ex.: `DetailsCubit(SearchApi(core.dio))`) e o `BlocProvider` os fecha: um único mecanismo de ciclo de vida. Substituiu o `flutter_modular` 6.x, que duplicava o DI e exigia o `hide ModularWatchExtension`. |
 | Fonte Inter empacotada (não `google_fonts`) | Os TTFs estáticos (pesos 400, 500, 700 e 800, licença SIL OFL) ficam em `packages/core/assets/fonts`: sem requisição nem troca de fonte no primeiro uso offline ou com rede lenta. A licença aparece na página de licenças do app (`AppTheme.registerFontLicenses`). |
 | `flutter_bloc` + estados `sealed` | Cubits para carregar dados; Bloc só na busca, onde os transformers de evento dão debounce, `restartable` e `droppable` sem `Timer` à mão. |
 | Sem camada `domain` | O app só exibe dados da API: entidades, use cases e contratos de repositório duplicavam as models e repassavam chamadas sem nenhuma regra. |
@@ -198,7 +199,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 | 2 | ~~`Model.fromJson<T>` com `switch (T)`~~ **(resolvido)** | O `SearchApi` recebe o `fromJson` de cada model como função, verificado em tempo de compilação. O `Model<E>` não existe mais. | — |
 | 3 | ~~`_guard` sem log~~ **(resolvido)** | O `Result.guard` (usado pelo `SearchApi` e pelo `FavoritesStorage`) envia ao `Result.reportError` toda exceção que vira `Failure.unexpected()` ou `Failure.cache()`; por padrão ela vai para o log do `dart:developer`. Falhas esperadas (rede, status HTTP, cancelamento) não são registradas. | Apontar o `Result.reportError` para um serviço de crash report (ex.: Crashlytics) quando o Firebase entrar no Dart (item 14). |
 | 4 | ~~`search` depende de `favorites`~~ **(resolvido)** | O `FavoriteItem` está no `core`, e o `search` coloca um `FavoriteSlot` onde vai o coração. O app envolve tudo num `FavoriteButtonProvider` (do `favorites`), que transforma cada slot no `FavoriteButton`. O `search` não importa mais o `favorites`. | — |
-| 5 | Dois mecanismos de DI/ciclo de vida | O Modular entrega as instâncias e o `BlocProvider` as fecha, o que exige o `hide ModularWatchExtension`. `ThemeCubit` usa `BlocProvider.value` e `FavoritesCubit` usa `create`. O `flutter_modular` 6.x é uma versão antiga, um risco de manutenção a longo prazo. | Padronizar o ciclo de vida dos cubits globais e reavaliar o Modular quando a 7.x estabilizar. |
+| 5 | ~~Dois mecanismos de DI/ciclo de vida~~ **(resolvido)** | O `flutter_modular` saiu: rotas com `go_router` e dependências criadas direto nos `BlocProvider.create`, que também as fecham. Os dois cubits globais (`ThemeCubit` e `FavoritesCubit`) são criados do mesmo jeito no `AppWidget`. | — |
 | 6 | ~~Repositório "isolado" criado à mão~~ **(resolvido)** | Cada cubit de "Mais ..." recebe um `SearchApi` próprio (`SearchApi(i.get<Dio>())`), sem o `_isolated(i)`. | — |
 | 7 | ~~Arquivos grandes~~ **(resolvido)** | `details_page.dart` (463 → 108 linhas), `search_page.dart` (395 → 142) e `result_cards.dart` (269, removido) viraram widgets em arquivos próprios, agrupados por tela em `presentation/widgets/{cards,details,home,search}`. | — |
 

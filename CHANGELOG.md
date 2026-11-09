@@ -12,6 +12,8 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- O `flutter_modular` foi substituído por `go_router` nas rotas e por `BlocProvider` direto na criação das dependências, sem container de DI. As rotas e os links (`/details/:type/:id`) são os mesmos; os cubits globais de tema e favoritos passam a ser criados e fechados do mesmo jeito.
+- Os testes do app (raiz) entram no `melos run test` e na cobertura.
 - GitHub Actions atualizadas para as versões novas (Node 24): `checkout` 7.0.1, `setup-java` 6.2.0, `upload-artifact` 7.0.2, `google-github-actions/auth` 3.0.0 e `action-gh-release` 3.0.4. O Dependabot passa a agrupar as atualizações num PR semanal.
 - O pacote `search` deixou de depender do `favorites`: o `FavoriteItem` foi para o `core`, a busca e os detalhes mostram um `FavoriteSlot`, e o app liga o botão de favorito na raiz com o `FavoriteButtonProvider`. O app não muda.
 - CI e release mais seguros: as GitHub Actions estão fixadas pelo SHA do commit, o `firebase-tools` em uma versão exata, o Dependabot propõe as atualizações, e a release recusa tags `v*` em commits que não estão na `main`.

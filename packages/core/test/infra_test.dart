@@ -1,7 +1,5 @@
-import 'package:auto_injector/auto_injector.dart';
 import 'package:core/core.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,21 +21,27 @@ void main() {
     expect(const PaginatedList(items: [1], totalCount: 1).hasNext, isFalse);
   });
 
-  test('CoreModule exports SharedPreferences, Dio and ThemeCubit', () async {
-    SharedPreferences.setMockInitialValues({'theme_mode': 'dark'});
-    await CoreModule.initialize();
+  test(
+    'CoreDependencies.load reads storage and builds the API client',
+    () async {
+      SharedPreferences.setMockInitialValues({'theme_mode': 'dark'});
 
-    final injector = AutoInjector();
-    CoreModule().exportedBinds(injector);
-    injector.commit();
+      final core = await CoreDependencies.load();
 
-    expect(injector.get<SharedPreferences>(), isA<SharedPreferences>());
-    expect(injector.get<Dio>().options.baseUrl, ApiConfig.baseUrl);
-    expect(injector.get<ThemeCubit>().state, ThemeMode.dark);
-    expect(
-      identical(injector.get<Dio>(), injector.get<Dio>()),
-      isTrue,
-      reason: 'singleton',
+      expect(core.preferences.getString('theme_mode'), 'dark');
+      expect(core.dio.options.baseUrl, ApiConfig.baseUrl);
+    },
+  );
+
+  test('CoreDependencies keeps an injected Dio', () async {
+    SharedPreferences.setMockInitialValues({});
+    final dio = Dio();
+
+    final core = CoreDependencies(
+      preferences: await SharedPreferences.getInstance(),
+      dio: dio,
     );
+
+    expect(core.dio, same(dio));
   });
 }

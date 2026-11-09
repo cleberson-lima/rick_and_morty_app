@@ -1,5 +1,5 @@
-// Merges each package's coverage/lcov.info into coverage/lcov.info at the
-// repository root, drops generated code (*.g.dart, *.freezed.dart), prints a
+// Merges each package's coverage/lcov.info and the app's coverage/app.lcov.info
+// (tests of the repository root) into coverage/lcov.info at the root, drops generated code (*.g.dart, *.freezed.dart), prints a
 // per-package and per-file summary and, with --min=<percent>, exits 1 when the
 // total line coverage is below the threshold.
 //
@@ -26,15 +26,24 @@ void main(List<String> args) {
       .firstOrNull;
   final showFiles = args.contains('--files');
 
-  final packages =
+  final packageDirs =
       Directory('packages')
           .listSync()
           .whereType<Directory>()
           .where((d) => File('${d.path}/coverage/lcov.info').existsSync())
           .toList()
         ..sort((a, b) => a.path.compareTo(b.path));
+  final sources = [
+    if (File(_appLcov).existsSync()) const _Source('app', '.', _appLcov),
+    for (final dir in packageDirs)
+      _Source(
+        dir.uri.pathSegments.where((s) => s.isNotEmpty).last,
+        'packages/${dir.uri.pathSegments.where((s) => s.isNotEmpty).last}',
+        '${dir.path}/coverage/lcov.info',
+      ),
+  ];
 
-  if (packages.isEmpty) {
+  if (sources.isEmpty) {
     stderr.writeln('No coverage found. Run `melos run coverage` first.');
     exit(2);
   }
@@ -43,13 +52,13 @@ void main(List<String> args) {
   var totalLines = 0;
   var totalCovered = 0;
 
-  for (final dir in packages) {
-    final name = dir.uri.pathSegments.where((s) => s.isNotEmpty).last;
+  for (final source in sources) {
+    final name = source.name;
     final files = _parse(
-      File('${dir.path}/coverage/lcov.info'),
-      'packages/$name',
+      File(source.lcov),
+      source.root,
     ).where((f) => !_generated.hasMatch(f.path)).toList();
-    _warnAboutUnloadedFiles(dir, name, files);
+    _warnAboutUnloadedFiles(source.root, files);
     final lines = files.fold(0, (sum, f) => sum + f.lines);
     final covered = files.fold(0, (sum, f) => sum + f.covered);
     totalLines += lines;
@@ -87,20 +96,16 @@ void main(List<String> args) {
 /// Files that no test imports are absent from lcov.info, so they would
 /// silently inflate the percentage. List them so they get a test or an
 /// explicit `// coverage:ignore-file`.
-void _warnAboutUnloadedFiles(
-  Directory package,
-  String name,
-  List<_FileCoverage> reported,
-) {
+void _warnAboutUnloadedFiles(String root, List<_FileCoverage> reported) {
   final reportedPaths = reported.map((f) => f.path).toSet();
-  final libDir = Directory('${package.path}/lib');
+  final libDir = Directory('$root/lib');
   final missing =
       libDir
           .listSync(recursive: true)
           .whereType<File>()
           .map((f) => f.path.replaceAll(r'\', '/'))
           .where((p) => p.endsWith('.dart') && !_generated.hasMatch(p))
-          .map((p) => 'packages/$name/${p.substring(p.indexOf('lib/'))}')
+          .map((p) => _join(root, p.substring(p.indexOf('lib/'))))
           .where((p) => !reportedPaths.contains(p))
           .where((p) => _hasExecutableCode(File(p)))
           .toList()
@@ -132,9 +137,15 @@ List<_FileCoverage> _parse(File lcov, String packagePath) {
   for (final line in lcov.readAsLinesSync()) {
     if (line.startsWith('SF:')) {
       final source = line.substring(3).replaceAll(r'\', '/');
+      // The app's tests also load the packages; those files are counted in
+      // the packages' own reports, not as the app's.
+      if (packagePath == '.' && source.contains('packages/')) {
+        current = null;
+        continue;
+      }
       final libIndex = source.lastIndexOf('lib/');
       final relative = libIndex >= 0 ? source.substring(libIndex) : source;
-      current = _FileCoverage('$packagePath/$relative');
+      current = _FileCoverage(_join(packagePath, relative));
       files.add(current);
     } else if (line.startsWith('DA:') && current != null) {
       final parts = line.substring(3).split(',');
@@ -161,6 +172,22 @@ String _toLcov(List<_FileCoverage> files) {
   }
   return buffer.toString();
 }
+
+/// lcov written by `flutter test --coverage --coverage-path=...` at the root.
+const _appLcov = 'coverage/app.lcov.info';
+
+/// One lcov file and the directory its `lib/` paths are relative to.
+class _Source {
+  const _Source(this.name, this.root, this.lcov);
+
+  final String name;
+
+  /// `.` for the app at the repository root, `packages/<name>` otherwise.
+  final String root;
+  final String lcov;
+}
+
+String _join(String root, String path) => root == '.' ? path : '$root/$path';
 
 String _pct(int covered, int total) =>
     total == 0 ? '100.0%' : '${(covered / total * 100).toStringAsFixed(1)}%';

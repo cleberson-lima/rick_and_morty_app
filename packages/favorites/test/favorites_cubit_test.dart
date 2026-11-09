@@ -1,7 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:core/types.dart';
 import 'package:favorites/favorites.dart';
-import 'package:favorites/src/data/favorites_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

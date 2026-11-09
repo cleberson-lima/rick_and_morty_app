@@ -1,13 +1,12 @@
 # Rick & Morty App — regras do projeto
 
 ## Stack
-Flutter 3.41+, Dart 3.8+, Melos 8 (pub workspaces), flutter_modular, dio,
+Flutter 3.41+, Dart 3.8+, Melos 8 (pub workspaces), go_router, dio,
 freezed 4 (freezed_annotation 3) + json_serializable, mocktail, flutter_bloc + bloc_concurrency + bloc_test,
 shared_preferences, cached_network_image. Fonte Inter empacotada em `packages/core/assets/fonts` (sem `google_fonts`).
 
 Versões fixadas de propósito (não atualizar sem testar):
-- `flutter_modular: ^6.4.1` — a 7.x é outra API e seu `context.read/watch` conflita com o flutter_bloc.
-  Em arquivos que importam os dois, use `import 'package:flutter_modular/flutter_modular.dart' hide ModularWatchExtension;`
+- `go_router: ^17.0.0` — a 18.x exige Flutter 3.44 / Dart 3.12, acima do mínimo do projeto.
 
 ## Testes
 - Widget tests usam `AppTheme.light()`; a Inter não é carregada nos testes (usa a fonte de teste), a não ser via `FontLoader`.
@@ -15,7 +14,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - Fixtures reais da API em `packages/search/test/fixtures/`; `FakeAdapter` (test/helpers.dart) exercita o Dio de verdade.
 
 ## Estrutura
-- raiz do repositório — o app Flutter (`lib/`, `android/`, `ios/`): `main.dart`, `AppModule`, `AppWidget`
+- raiz do repositório — o app Flutter (`lib/`, `android/`, `ios/`): `main.dart` e `AppWidget` (GoRouter + cubits globais); testes em `test/`
 - `packages/core` — Dio client, `Result`, `Failure`, `ResourceType`, `PaginatedList`, `FavoriteItem`, tema, `ThemeCubit`, widgets em `lib/src/ui`
 - `packages/favorites` — favoritos persistidos (shared_preferences)
 - `packages/search` — busca de personagens, episódios e locais + tela de detalhe
@@ -28,6 +27,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - 404 da API vira `NotFoundFailure` → estado `notFound` (não é erro genérico)
 - `Failure` não tem texto: os estados guardam o `Failure` e a UI usa `FailurePresentation` (`title`, `message`, `icon`) / `MessageView.failure` do `core`
 - Estados de tela são sealed classes do freezed: loading, success, empty, notFound, error
+- Sem container de DI: o `main()` cria o `CoreDependencies` (`preferences`, `dio`) e o passa às rotas de cada feature (`searchRoutes(core)`, `favoritesRoute()`). Cada tela cria seus Blocs/Cubits em `BlocProvider(create: ...)`, que os fecha; nunca `BlocProvider.value` com instância criada fora. Navegação com `context.push(AppRoutes...)`
 - Cubit para carregar dados; Bloc só no `SearchBloc` (debounce/`restartable`/`droppable` pelos transformers de evento)
 - O state fica em `x_state.dart` como `part of 'x_cubit.dart'` (eventos do Bloc idem); os imports ficam só na cubit e quem usa o state importa a cubit
 - Features não dependem umas das outras (só do `core`). O coração de favorito entra como `FavoriteSlot(item: ...)`; o app liga o `FavoriteButtonProvider` do `favorites` na raiz. Nos testes do `search`, use `FakeFavorites().wrap(...)` (test/helpers.dart)
