@@ -1,7 +1,7 @@
 name: Release APK
 
 # Pushing a tag like v1.0.0 runs the checks, builds a signed APK, attaches it
-# to a GitHub Release as app-release.apk (the name the README links to) and
+# to a GitHub Release as app-release.apk and
 # sends it to the testers through Firebase App Distribution.
 on:
   push:
