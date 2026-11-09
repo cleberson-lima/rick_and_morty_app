@@ -188,11 +188,56 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 
 > **Fonte e cores:** `AppTheme.fontFamily` (Inter) e as cores em `AppColors` foram tiradas do protótipo do Figma por inspeção visual e ainda serão conferidas no inspetor; trocar ali atualiza o app inteiro.
 
-
 ## Convenções
 
 - Commits em [Conventional Commits](https://www.conventionalcommits.org/) (inglês)
 - GitFlow simplificado: `main` (releases), `develop` (integração), `feature/*`, `fix/*`, `release/*`
+
+## Limitações conhecidas e próximos passos
+
+Pontos levantados em revisão de código. Nenhum deles é um problema estrutural: são refinamentos planejados.
+
+### Arquitetura e código
+
+| # | Ponto | Situação atual | Direção |
+| --- | --- | --- | --- |
+| 1 | Mensagens de UI no `Failure` | `Failure.message` tem texto em pt-BR e vive em `core` (domínio). Os estados (`SearchError`, `MoreItemsError`, `DetailsState.error`) guardam só a `String`, então a UI não reage ao tipo de falha (ex.: "tentar de novo" só para erro de rede). | Guardar o `Failure` no estado e traduzir na `presentation`, o que também prepara a l10n. |
+| 2 | `Model.fromJson<T>` com `switch (T)` | Checagem em runtime: esquecer de registrar uma model só aparece em execução (`ArgumentError`). | Passar o parser como função (`PageModel.fromJson(json, CharacterModel.fromJson)`), com segurança em tempo de compilação. |
+| 3 | `_guard` sem log | Em `SearchRepositoryImpl`, qualquer exceção inesperada (ex.: `TypeError` por mudança no JSON da API) vira `Failure.unexpected()` sem registro. | Logar em debug e integrar um serviço de crash report. |
+| 4 | `search` depende de `favorites` | Necessário por causa do botão de favorito nos cards e nos detalhes. | `search` receber um builder do botão ou uma interface definida em `core`. |
+| 5 | Dois mecanismos de DI/ciclo de vida | O Modular entrega as instâncias e o `BlocProvider` as fecha, o que exige o `hide ModularWatchExtension`. `ThemeCubit` usa `BlocProvider.value` e `FavoritesCubit` usa `create`. O `flutter_modular` 6.x é uma versão antiga, um risco de manutenção a longo prazo. | Padronizar o ciclo de vida dos cubits globais e reavaliar o Modular quando a 7.x estabilizar. |
+| 6 | Repositório "isolado" criado à mão | `_isolated(i)` em `search_module.dart` contorna o container de DI para ter um `CancelToken` separado por cubit de "Mais ...". | Registrar uma factory do `SearchRemoteDataSource` no módulo. |
+| 7 | Arquivos grandes | `details_page.dart` (463 linhas), `search_page.dart` (395) e `result_cards.dart` (269) concentram muitos widgets privados. | Quebrar em widgets menores, em arquivos próprios. |
+
+### Produto
+
+| # | Ponto | Direção |
+| --- | --- | --- |
+| 8 | Textos fixos em pt-BR, sem `flutter_localizations`/ARB | Extrair os textos para ARB (depende do item 1). |
+| 9 | Fonte Inter baixada pelo Google Fonts em runtime: no primeiro uso offline ou com rede lenta, aparece a fonte de fallback | Empacotar a Inter como asset do `core`, como já é feito com os ícones Phosphor. |
+| 10 | Sem cache dos dados da API, só das imagens. Sem rede, só os favoritos aparecem (eles guardam um snapshot) | Cache local das respostas (ex.: última busca e detalhes já abertos). |
+
+### CI e release
+
+| # | Ponto | Direção |
+| --- | --- | --- |
+| 11 | Actions fixadas por tag (`@v4`, `@v2`) e `npx firebase-tools@14` na release | Fixar as Actions por SHA do commit e o `firebase-tools` em uma versão exata. |
+| 12 | O `release.yml` roda para qualquer tag `v*`, mesmo fora da `main` | Proteger a criação de tags `v*` e checar no workflow que o commit da tag está na `main`. |
+
+### Firebase
+
+| # | Ponto | Direção |
+| --- | --- | --- |
+| 13 | `android/app/google-services.json` versionado | É o normal no Firebase (a API key não é secreta), mas a chave precisa ter restrições no Google Cloud Console: pacote Android + SHA-1 do certificado. |
+| 14 | Firebase só no Android: o plugin `google-services` e o `firebase-analytics` estão no `build.gradle.kts`, mas não há nada no Dart nem no iOS | Se o objetivo é só distribuir o APK pelo App Distribution, o plugin e o Analytics são desnecessários e podem sair; se o Analytics for desejado, integrar com `firebase_core`/`firebase_analytics` no Dart e configurar o iOS. |
+
+### Prioridades
+
+1. Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).
+2. Parser por função em `Model`/`PageModel` (item 2).
+3. Logging no `_guard` (item 3).
+4. Empacotar a fonte Inter e restringir a API key do Firebase (itens 9 e 13).
+5. Quebrar `details_page` e `search_page` em widgets menores (item 7).
 
 ## Próximas versões
 
