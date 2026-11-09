@@ -12,6 +12,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- CI e release mais seguros: as GitHub Actions estão fixadas pelo SHA do commit, o `firebase-tools` em uma versão exata, o Dependabot propõe as atualizações, e a release recusa tags `v*` em commits que não estão na `main`.
 - As páginas de busca e de detalhes foram divididas em widgets menores, em arquivos próprios por tela (`cards/`, `home/`, `search/`, `details/`); o `AppLogo` passou para o `core`. O app não muda.
 - O `google_fonts` saiu das dependências, junto com o parâmetro `useGoogleFonts` de `AppTheme.light()`/`AppTheme.dark()`.
 - Arquitetura simplificada: as features passam a ter só `data` e `presentation`. Saíram as entidades, os use cases e os contratos de repositório; as telas e os Blocs/Cubits usam as models (`Character`, `Episode`, `Location`, `FavoriteItem`) direto.
