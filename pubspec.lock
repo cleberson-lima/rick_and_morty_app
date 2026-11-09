@@ -49,14 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
-  auto_injector:
-    dependency: transitive
-    description:
-      name: auto_injector
-      sha256: "81815294ad9a512e294d97819bdbeccc7f93f18daeceac321e0c046a6f25eeb1"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   bloc:
     dependency: transitive
     description:
@@ -290,7 +282,7 @@ packages:
     source: hosted
     version: "0.4.1"
   dio:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: dio
       sha256: "852ec3b48cc431ac04fff978413c541502b67ffc3e26921e74e3d994694192c1"
@@ -371,14 +363,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_modular:
-    dependency: "direct main"
-    description:
-      name: flutter_modular
-      sha256: "33a63d9fe61429d12b3dfa04795ed890f17d179d3d38e988ba7969651fcd5586"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.4.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -421,6 +405,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  go_router:
+    dependency: "direct main"
+    description:
+      name: go_router
+      sha256: d7a3576cb312649eaa51f2356450aed686085fb58fcdebda5b359aa951eef7ea
+      url: "https://pub.dev"
+    source: hosted
+    version: "17.5.0"
   graphs:
     dependency: transitive
     description:
@@ -613,14 +605,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
-  modular_core:
-    dependency: transitive
-    description:
-      name: modular_core
-      sha256: "1db0420a0dfb8a2c6dca846e7cbaa4ffeb778e247916dbcb27fb25aa566e5436"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.4.1"
   mustache_template:
     dependency: transitive
     description:
@@ -813,14 +797,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
-  result_dart:
-    dependency: transitive
-    description:
-      name: result_dart
-      sha256: "80096f0928e276c024e53cf1bb2aaffd5a94623dac8fdfa5cb3529e82b51eb3c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   rxdart:
     dependency: transitive
     description:

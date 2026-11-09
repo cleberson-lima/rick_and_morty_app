@@ -1,7 +1,7 @@
 /// Shared infrastructure: networking, errors, theme and design system.
 library;
 
-export 'src/di/core_module.dart';
+export 'src/di/core_dependencies.dart';
 export 'src/navigation/app_routes.dart';
 export 'src/network/dio_factory.dart';
 export 'src/network/failure_mapper.dart';

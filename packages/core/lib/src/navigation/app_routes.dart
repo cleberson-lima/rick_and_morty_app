@@ -4,9 +4,9 @@ import '../types/resource_type.dart';
 /// another package's URLs.
 abstract final class AppRoutes {
   static const search = '/';
-  static const favorites = '/favorites/';
+  static const favorites = '/favorites';
 
-  /// Relative to the search module, which is mounted at `/`.
+  /// Path pattern of the details route; build a link with [details].
   static const detailsPattern = '/details/:type/:id';
 
   static String details(ResourceType type, int id) =>
