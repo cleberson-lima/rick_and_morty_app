@@ -19,6 +19,43 @@ App Flutter para buscar **personagens, episódios e locais** da [Rick and Morty 
 - Tema **claro/escuro** persistido, Google Fonts, cache de imagens em disco
 - **Responsivo**: lista em celular, grade de 2 a 4 colunas em tablet/paisagem; detalhes lado a lado em telas largas
 
+## Telas
+
+<table>
+  <tr>
+    <th>Início (escuro)</th>
+    <th>Início (claro)</th>
+    <th>Busca</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/home.png" width="240" alt="Página inicial no tema escuro com a busca, os filtros e a seção de personagens"></td>
+    <td><img src="docs/screenshots/home-light.png" width="240" alt="Página inicial no tema claro com Rick e Morty marcados como favoritos"></td>
+    <td><img src="docs/screenshots/search.png" width="240" alt="Resultado da busca por smith em personagens"></td>
+  </tr>
+  <tr>
+    <th>Personagem</th>
+    <th>Episódio</th>
+    <th>Local</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/details-character.png" width="240" alt="Detalhes de Rick Sanchez com origem, última localização e mais personagens"></td>
+    <td><img src="docs/screenshots/details-episode.png" width="240" alt="Detalhes do episódio Pilot com a lista de mais episódios"></td>
+    <td><img src="docs/screenshots/details-location.png" width="240" alt="Detalhes do local Earth (C-137) com mais localizações"></td>
+  </tr>
+  <tr>
+    <th>Favoritos</th>
+    <th></th>
+    <th></th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/favorites.png" width="240" alt="Lista de favoritos com Morty Smith e Rick Sanchez"></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
+> Capturas do app rodando com dados reais da API, em tela de celular (390 × 844).
+
 ## Requisitos
 
 | Ferramenta | Versão usada |
@@ -78,6 +115,51 @@ packages/
 tool/                # scripts de desenvolvimento (relatório de cobertura)
 ```
 
+### Desenho da arquitetura
+
+Dependências entre os pacotes (a seta aponta para quem é usado):
+
+```mermaid
+flowchart TD
+    app["<b>app</b> (raiz)<br/>main.dart · AppModule · AppWidget"]
+    search["<b>search</b><br/>busca + detalhes"]
+    favorites["<b>favorites</b><br/>favoritos + FavoritesCubit"]
+    core["<b>core</b><br/>Dio · Failure · tema · widgets · AppRoutes"]
+    api[("Rick and Morty API")]
+    prefs[("shared_preferences")]
+
+    app --> search
+    app --> favorites
+    app --> core
+    search --> favorites
+    search --> core
+    favorites --> core
+    search -. HTTP via Dio .-> api
+    favorites -. JSON local .-> prefs
+```
+
+Camadas dentro de cada feature (exemplo do `search`). As duas camadas de fora dependem do `domain`, e o `domain` não depende de nenhuma: a `presentation` chama os use cases, e a `data` implementa o contrato do repositório.
+
+```mermaid
+flowchart TB
+    subgraph presentation["presentation (Flutter)"]
+        direction LR
+        page["SearchPage<br/>DetailsPage"] --> bloc["SearchBloc#lt;T#gt; · DetailsCubit<br/><i>estados sealed (freezed)</i>"]
+    end
+    subgraph domain["domain (Dart puro)"]
+        direction LR
+        usecase["Use cases"] --> contract["SearchRepository<br/><i>contrato</i>"]
+        contract --> entity["Entities<br/>Character · Episode · Location"]
+    end
+    subgraph data["data"]
+        direction LR
+        impl["SearchRepositoryImpl<br/><i>Either#lt;Failure, T#gt;</i>"] --> source["SearchRemoteDataSource<br/><i>Dio + CancelToken</i>"]
+        source --> model["Model#lt;E#gt;<br/><i>fromJson · toEntity()</i>"]
+    end
+    presentation -- chama os use cases --> domain
+    data -. implementa o contrato .-> domain
+```
+
 - `domain` é Dart puro: importa só `package:core/domain.dart` (sem Flutter, sem Dio).
 - Repositórios retornam `Either<Failure, T>` (dartz) e nunca lançam exceção.
 - `Failure` é uma sealed class (freezed): `notFound`, `network`, `server`, `cancelled`, `cache`, `unexpected`. O 404 da busca vira o estado **não encontrado**, não um erro genérico.
@@ -111,3 +193,8 @@ Um único `SearchBloc<T>` genérico atende as três abas; cada aba tem seu próp
 
 - Commits em [Conventional Commits](https://www.conventionalcommits.org/) (inglês)
 - GitFlow simplificado: `main` (releases), `develop` (integração), `feature/*`, `fix/*`, `release/*`
+
+## Próximas versões
+
+> [!NOTE]
+> Em uma versão futura o código passará por ajustes voltados a **melhorar a leitura** e **enxugar algumas classes**, sem mudar o comportamento do app.
