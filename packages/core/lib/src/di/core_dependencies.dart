@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../network/dio_factory.dart';
@@ -14,12 +17,23 @@ class CoreDependencies {
     : dio = dio ?? createDio();
 
   /// Reads storage before `runApp`, so the theme and favorites start from
-  /// their saved values without a flicker.
-  static Future<CoreDependencies> load() async =>
-      CoreDependencies(preferences: await SharedPreferences.getInstance());
+  /// their saved values without a flicker, and keeps the API's offline cache
+  /// in the app's cache directory (the OS may clear it when space is low).
+  ///
+  /// [cacheRoot] finds the base directory; tests pass a temporary one.
+  static Future<CoreDependencies> load({
+    Future<Directory> Function() cacheRoot = getApplicationCacheDirectory,
+  }) async {
+    final preferences = await SharedPreferences.getInstance();
+    final root = await cacheRoot();
+    return CoreDependencies(
+      preferences: preferences,
+      dio: createDio(cacheDirectory: Directory('${root.path}/api')),
+    );
+  }
 
   final SharedPreferences preferences;
 
-  /// API client with the base URL and retry interceptor (`createDio`).
+  /// API client (`createDio`); with the offline cache when built by [load].
   final Dio dio;
 }
