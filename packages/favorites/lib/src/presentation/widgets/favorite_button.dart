@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/models/favorite_item.dart';
 import '../cubit/favorites_cubit.dart';
 
 /// Cyan heart toggle (outline / filled) bound to the app-wide
@@ -30,6 +29,25 @@ class FavoriteButton extends StatelessWidget {
       onPressed: () => context.read<FavoritesCubit>().toggle(item),
     );
   }
+}
+
+/// Makes every `FavoriteSlot` below it (from `core`) show a [FavoriteButton].
+/// Place it once, high in the tree (the app root does this), so features can
+/// offer the heart without depending on this package.
+class FavoriteButtonProvider extends StatelessWidget {
+  const FavoriteButtonProvider({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      FavoriteButtonScope(builder: _build, child: child);
+
+  static Widget _build(
+    BuildContext context,
+    FavoriteItem item, {
+    bool compact = false,
+  }) => FavoriteButton(item: item, compact: compact);
 }
 
 /// Shows a snackbar when a favorites write fails. Place it once, high in the

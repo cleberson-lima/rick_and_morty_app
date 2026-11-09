@@ -1,6 +1,5 @@
 import 'package:core/types.dart';
 import 'package:favorites/src/data/favorites_storage.dart';
-import 'package:favorites/src/data/models/favorite_item.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 
 import '../../../data/models/models.dart';
 import 'character_labels.dart';

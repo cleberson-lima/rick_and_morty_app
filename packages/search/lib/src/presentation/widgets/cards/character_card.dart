@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/models.dart';
@@ -45,7 +44,7 @@ class CharacterCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  FavoriteButton(item: character.toFavorite(), compact: true),
+                  FavoriteSlot(item: character.toFavorite(), compact: true),
                 ],
               ),
               _IconLine(

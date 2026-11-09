@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/models.dart';
@@ -46,7 +45,7 @@ class LocationCard extends StatelessWidget {
               ),
               const Spacer(),
               DetailsChipButton(onPressed: onTap),
-              FavoriteButton(item: location.toFavorite(), compact: true),
+              FavoriteSlot(item: location.toFavorite(), compact: true),
             ],
           ),
         ),

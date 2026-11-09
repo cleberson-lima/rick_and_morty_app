@@ -12,6 +12,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Alterado
 
+- O pacote `search` deixou de depender do `favorites`: o `FavoriteItem` foi para o `core`, a busca e os detalhes mostram um `FavoriteSlot`, e o app liga o botão de favorito na raiz com o `FavoriteButtonProvider`. O app não muda.
 - CI e release mais seguros: as GitHub Actions estão fixadas pelo SHA do commit, o `firebase-tools` em uma versão exata, o Dependabot propõe as atualizações, e a release recusa tags `v*` em commits que não estão na `main`.
 - As páginas de busca e de detalhes foram divididas em widgets menores, em arquivos próprios por tela (`cards/`, `home/`, `search/`, `details/`); o `AppLogo` passou para o `core`. O app não muda.
 - O `google_fonts` saiu das dependências, junto com o parâmetro `useGoogleFonts` de `AppTheme.light()`/`AppTheme.dark()`.

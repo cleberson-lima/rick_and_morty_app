@@ -1,4 +1,4 @@
-import 'package:favorites/favorites.dart';
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 /// Name (headline) + heart.
@@ -20,7 +20,7 @@ class DetailsTitle extends StatelessWidget {
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
         ),
-        FavoriteButton(item: favorite),
+        FavoriteSlot(item: favorite),
       ],
     );
   }

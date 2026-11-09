@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:core/core.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 Map<String, Object?> fixture(String name) =>
     jsonDecode(File('test/fixtures/$name').readAsStringSync())
@@ -52,3 +54,28 @@ ResponseBody jsonBody(Object? body, {int status = 200}) =>
 
 Dio dioWith(FakeAdapter adapter) =>
     Dio(BaseOptions(baseUrl: 'https://api.test'))..httpClientAdapter = adapter;
+
+/// Stand-in for the app's [FavoriteButtonScope]: every [FavoriteSlot] below
+/// [wrap] renders a heart (filled for [favorites]) that records its taps.
+class FakeFavorites {
+  FakeFavorites({this.favorites = const []});
+
+  final List<FavoriteItem> favorites;
+  final List<FavoriteItem> tapped = [];
+
+  Widget wrap(Widget child) => FavoriteButtonScope(
+    builder: (context, item, {compact = false}) {
+      final isFavorite = favorites.containsResource(item.type, item.id);
+      return IconButton(
+        tooltip: isFavorite
+            ? 'Remover dos favoritos'
+            : 'Adicionar aos favoritos',
+        icon: Icon(
+          isFavorite ? PhosphorIconsFill.heart : PhosphorIconsRegular.heart,
+        ),
+        onPressed: () => tapped.add(item),
+      );
+    },
+    child: child,
+  );
+}

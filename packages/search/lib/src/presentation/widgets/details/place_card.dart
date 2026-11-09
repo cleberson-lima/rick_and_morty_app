@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 
 import '../open_details.dart';
@@ -51,7 +50,7 @@ class PlaceCard extends StatelessWidget {
                   onPressed: () =>
                       onOpenDetails?.call(ResourceType.location, id),
                 ),
-                FavoriteButton(
+                FavoriteSlot(
                   compact: true,
                   item: FavoriteItem(
                     type: ResourceType.location,

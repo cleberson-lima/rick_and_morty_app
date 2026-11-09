@@ -108,4 +108,34 @@ void main() {
     await tester.tap(find.byIcon(PhosphorIconsRegular.heart));
     verify(() => cubit.toggle(pilot)).called(1);
   });
+
+  testWidgets('FavoriteButtonProvider turns FavoriteSlots into hearts', (
+    tester,
+  ) async {
+    when(() => cubit.toggle(any())).thenAnswer((_) async {});
+    await pump(
+      tester,
+      const FavoritesState.loaded(items: [rick]),
+      home: const FavoriteButtonProvider(
+        child: Scaffold(
+          body: Row(
+            children: [
+              FavoriteSlot(item: rick),
+              FavoriteSlot(item: pilot, compact: true),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(FavoriteButton), findsNWidgets(2));
+    expect(
+      tester.widget<FavoriteButton>(find.byType(FavoriteButton).last).compact,
+      isTrue,
+    );
+    expect(find.byIcon(PhosphorIconsFill.heart), findsOneWidget);
+
+    await tester.tap(find.byIcon(PhosphorIconsRegular.heart));
+    verify(() => cubit.toggle(pilot)).called(1);
+  });
 }
