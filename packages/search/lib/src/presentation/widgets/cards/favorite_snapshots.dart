@@ -6,11 +6,12 @@ import 'character_labels.dart';
 /// Model → favorite snapshot. Lives in presentation: the models of `search`
 /// don't know about favorites.
 extension CharacterFavoriteX on Character {
-  FavoriteItem toFavorite() => FavoriteItem(
+  /// [l10n] names the species and status in the saved subtitle.
+  FavoriteItem toFavorite(AppLocalizations l10n) => FavoriteItem(
     type: ResourceType.character,
     id: id,
     name: name,
-    subtitle: '${speciesLabel(species)} · ${status.label}',
+    subtitle: '${l10n.speciesLabel(species)} · ${l10n.statusLabel(status)}',
     imageUrl: imageUrl,
   );
 }

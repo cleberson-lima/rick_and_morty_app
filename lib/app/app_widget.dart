@@ -44,8 +44,14 @@ class _AppWidgetState extends State<AppWidget> {
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) => MaterialApp.router(
-          title: 'Rick and Morty',
+          onGenerateTitle: (context) => context.l10n.appTitle,
           debugShowCheckedModeBanner: false,
+          // Only Portuguese for now: adding a language is adding an ARB in
+          // packages/core/lib/l10n. Material's own strings follow the same
+          // locale through the delegates.
+          locale: const Locale('pt'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: themeMode,

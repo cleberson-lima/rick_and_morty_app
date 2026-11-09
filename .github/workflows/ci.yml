@@ -32,7 +32,7 @@ jobs:
       - name: Check formatting (hand-written files)
         run: |
           dart format --output=none --set-exit-if-changed \
-            $(git ls-files '*.dart' | grep -vE '\.(g|freezed)\.dart$')
+            $(git ls-files '*.dart' | grep -vE '\.(g|freezed)\.dart$|/l10n/generated/')
 
       - name: Analyze
         run: melos run analyze

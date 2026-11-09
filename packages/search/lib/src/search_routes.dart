@@ -83,10 +83,10 @@ class DetailsRoute extends StatelessWidget {
     if (type == null || id == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: const MessageView(
+        body: MessageView(
           icon: Icons.link_off,
-          title: 'Link inválido',
-          message: 'Não foi possível abrir este item.',
+          title: context.l10n.invalidLinkTitle,
+          message: context.l10n.invalidLinkMessage,
         ),
       );
     }

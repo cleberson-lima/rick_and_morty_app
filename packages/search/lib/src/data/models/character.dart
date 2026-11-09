@@ -4,14 +4,12 @@ import 'json.dart';
 
 part 'character.freezed.dart';
 
+/// Status as the API reports it; its name on screen comes from
+/// `CharacterLabels.statusLabel`.
 enum CharacterStatus {
-  alive('Vivo'),
-  dead('Morto'),
-  unknown('Desconhecido');
-
-  const CharacterStatus(this.label);
-
-  final String label;
+  alive,
+  dead,
+  unknown;
 
   static CharacterStatus parse(String? value) => switch (value?.toLowerCase()) {
     'alive' => alive,

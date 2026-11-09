@@ -1,5 +1,6 @@
 // Merges each package's coverage/lcov.info and the app's coverage/app.lcov.info
-// (tests of the repository root) into coverage/lcov.info at the root, drops generated code (*.g.dart, *.freezed.dart), prints a
+// (tests of the repository root) into coverage/lcov.info at the root, drops
+// generated code (*.g.dart, *.freezed.dart, gen-l10n output), prints a
 // per-package and per-file summary and, with --min=<percent>, exits 1 when the
 // total line coverage is below the threshold.
 //
@@ -7,7 +8,8 @@
 //   dart run tool/coverage_report.dart [--min=80] [--files]
 import 'dart:io';
 
-final _generated = RegExp(r'\.(g|freezed)\.dart$');
+/// build_runner output and `flutter gen-l10n` output (lib/src/l10n/generated).
+final _generated = RegExp(r'\.(g|freezed)\.dart$|/l10n/generated/');
 
 class _FileCoverage {
   _FileCoverage(this.path);
