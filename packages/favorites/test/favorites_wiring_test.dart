@@ -84,7 +84,7 @@ void main() {
       cubit,
       Stream.fromIterable(const [
         FavoritesState.loaded(items: [rick]),
-        FavoritesState.loaded(items: [rick], errorMessage: 'Falhou ao salvar'),
+        FavoritesState.loaded(items: [rick], actionFailure: Failure.cache()),
       ]),
       initialState: const FavoritesState.loading(),
     );
@@ -99,6 +99,9 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Falhou ao salvar'), findsOneWidget);
+    expect(
+      find.text('Não foi possível acessar os dados salvos.'),
+      findsOneWidget,
+    );
   });
 }

@@ -5,6 +5,11 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ## [Não lançado]
 
+### Alterado
+
+- As telas de erro agora variam com o tipo de falha: sem conexão e excesso de requisições têm título e ícone próprios, e o erro do servidor mostra o código de status.
+- Os estados de tela (`SearchState`, `MoreItemsState`, `DetailsState`, `FavoritesState`) guardam o `Failure` em vez da mensagem pronta. Os textos saíram do `Failure` (domínio) para a extensão `FailurePresentation` em `core/lib/src/ui`, e o `StateView.failure` monta a tela de erro a partir dele.
+
 ## [0.1.0] - 2026-11-08
 
 Primeira versão publicada.

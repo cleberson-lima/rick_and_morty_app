@@ -76,6 +76,46 @@ void main() {
     expect(find.text('Pilot | S01E01'), findsOneWidget);
   });
 
+  testWidgets('a network error shows its own title and icon', (tester) async {
+    await pump(
+      tester,
+      const SearchState.error(query: 'rick', failure: Failure.network()),
+    );
+
+    expect(find.text('Sem conexão'), findsOneWidget);
+    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+  });
+
+  testWidgets('a server error shows the generic title and the status', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const SearchState.error(
+        query: 'rick',
+        failure: Failure.server(statusCode: 500),
+      ),
+    );
+
+    expect(find.text('Ops! Algo deu errado'), findsOneWidget);
+    expect(find.textContaining('(500)'), findsOneWidget);
+  });
+
+  testWidgets('a failed page shows the failure message', (tester) async {
+    await pump(
+      tester,
+      const SearchState.success(
+        query: '',
+        items: [_pilot],
+        totalCount: 51,
+        nextPage: 2,
+        loadMoreFailure: Failure.tooManyRequests(),
+      ),
+    );
+
+    expect(find.text(const Failure.tooManyRequests().message), findsOneWidget);
+  });
+
   testWidgets('a failed page offers an explicit retry', (tester) async {
     await pump(
       tester,
@@ -84,7 +124,7 @@ void main() {
         items: [_pilot],
         totalCount: 51,
         nextPage: 2,
-        loadMoreError: 'Sem conexão',
+        loadMoreFailure: Failure.network(),
       ),
     );
     clearInteractions(bloc);
@@ -156,7 +196,10 @@ void main() {
     expect(const SearchState<Episode>.initial().currentQuery, isNull);
     expect(const SearchState<Episode>.empty(query: 'x').currentQuery, 'x');
     expect(
-      const SearchState<Episode>.error(query: 'y', message: 'm').currentQuery,
+      const SearchState<Episode>.error(
+        query: 'y',
+        failure: Failure.unexpected(),
+      ).currentQuery,
       'y',
     );
   });

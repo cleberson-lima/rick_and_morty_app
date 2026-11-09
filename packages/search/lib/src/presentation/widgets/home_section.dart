@@ -61,8 +61,8 @@ class HomeSection<T> extends StatelessWidget {
               // The overview only shows the unfiltered list.
               SearchSuccess(:final items, :final query) when query.isEmpty =>
                 _grid(items.take(maxItems).toList()),
-              SearchError(:final message) => _SectionMessage(
-                text: message,
+              SearchError(:final failure) => _SectionMessage(
+                text: failure.message,
                 actionLabel: 'Tentar novamente',
                 onAction: () => context.read<SearchBloc<T>>().add(
                   const SearchSubmitted(''),

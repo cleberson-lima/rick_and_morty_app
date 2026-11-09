@@ -93,7 +93,7 @@ void main() {
     act: (cubit) => cubit.load(ResourceType.character, 1),
     expect: () => [
       const DetailsState.loading(),
-      DetailsState.error(const Failure.network().message),
+      const DetailsState.error(Failure.network()),
     ],
   );
 }

@@ -14,6 +14,7 @@ export 'src/theme/theme_toggle_button.dart';
 export 'src/ui/app_network_image.dart';
 export 'src/ui/bottom_safe_area.dart';
 export 'src/ui/details_chip_button.dart';
+export 'src/ui/failure_presentation.dart';
 export 'src/ui/loading_skeleton.dart';
 export 'src/ui/page_selector.dart';
 export 'src/ui/phosphor_icons.dart';

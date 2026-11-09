@@ -51,8 +51,8 @@ class MoreSection<T> extends StatelessWidget {
                   height: 160,
                   child: Center(child: CircularProgressIndicator()),
                 ),
-                MoreItemsError(:final message) => StateView.error(
-                  message: message,
+                MoreItemsError(:final failure) => StateView.failure(
+                  failure: failure,
                   onRetry: cubit.retry,
                 ),
                 MoreItemsSuccess(

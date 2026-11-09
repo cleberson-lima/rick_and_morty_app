@@ -82,7 +82,7 @@ void main() {
     );
 
     blocTest<SearchBloc<String>, SearchState<String>>(
-      'network failure becomes error with a message',
+      'network failure becomes error with the failure',
       setUp: () => when(
         () => search(''),
       ).thenAnswer((_) async => const Left(Failure.network())),
@@ -90,10 +90,7 @@ void main() {
       act: (bloc) => bloc.add(const SearchSubmitted('')),
       expect: () => [
         const SearchState<String>.loading(query: ''),
-        SearchState<String>.error(
-          query: '',
-          message: const Failure.network().message,
-        ),
+        const SearchState<String>.error(query: '', failure: Failure.network()),
       ],
     );
 
@@ -210,7 +207,7 @@ void main() {
       act: (bloc) => bloc.add(const SearchNextPageRequested()),
       expect: () => [
         firstPage.copyWith(isLoadingMore: true),
-        firstPage.copyWith(loadMoreError: const Failure.network().message),
+        firstPage.copyWith(loadMoreFailure: const Failure.network()),
       ],
     );
 
@@ -220,7 +217,7 @@ void main() {
         () => search('rick', page: 2),
       ).thenAnswer((_) async => Right(_page(['c'], total: 3))),
       build: build,
-      seed: () => firstPage.copyWith(loadMoreError: 'boom'),
+      seed: () => firstPage.copyWith(loadMoreFailure: const Failure.network()),
       act: (bloc) async {
         bloc.add(const SearchNextPageRequested());
         await Future<void>.delayed(Duration.zero);

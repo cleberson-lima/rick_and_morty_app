@@ -6,13 +6,13 @@ sealed class FavoritesState with _$FavoritesState {
 
   const factory FavoritesState.loading() = FavoritesLoading;
 
-  /// [errorMessage] reports a failed add/remove while keeping the list usable.
+  /// [actionFailure] reports a failed add/remove while keeping the list usable.
   const factory FavoritesState.loaded({
     required List<FavoriteItem> items,
-    String? errorMessage,
+    Failure? actionFailure,
   }) = FavoritesLoaded;
 
-  const factory FavoritesState.error(String message) = FavoritesError;
+  const factory FavoritesState.error(Failure failure) = FavoritesError;
 
   List<FavoriteItem> get items => switch (this) {
     FavoritesLoaded(:final items) => items,

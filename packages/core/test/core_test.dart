@@ -72,22 +72,6 @@ void main() {
         const Failure.unexpected(),
       );
     });
-
-    test('every failure has a user-facing message', () {
-      const failures = [
-        Failure.notFound(),
-        Failure.network(),
-        Failure.server(statusCode: 500),
-        Failure.tooManyRequests(),
-        Failure.cancelled(),
-        Failure.cache(),
-        Failure.unexpected(),
-      ];
-      for (final failure in failures) {
-        expect(failure.message, isNotEmpty);
-      }
-      expect(const Failure.server(statusCode: 500).message, contains('500'));
-    });
   });
 
   group('parseNextPage', () {
@@ -160,6 +144,76 @@ void main() {
     expect(find.text('Sem conexão'), findsOneWidget);
     await tester.tap(find.text('Tentar novamente'));
     expect(retried, isTrue);
+  });
+
+  group('FailurePresentation', () {
+    const failures = [
+      Failure.notFound(),
+      Failure.network(),
+      Failure.server(statusCode: 500),
+      Failure.server(),
+      Failure.tooManyRequests(),
+      Failure.cancelled(),
+      Failure.cache(),
+      Failure.unexpected(),
+    ];
+
+    test('every failure has a title and a user-facing message', () {
+      for (final failure in failures) {
+        expect(failure.title, isNotEmpty);
+        expect(failure.message, isNotEmpty);
+      }
+    });
+
+    test('the server message includes the status code when known', () {
+      expect(const Failure.server(statusCode: 500).message, contains('500'));
+      expect(const Failure.server().message, isNot(contains('(')));
+    });
+
+    test('network and rate-limit failures get their own title and icon', () {
+      expect(const Failure.network().title, 'Sem conexão');
+      expect(const Failure.network().icon, Icons.wifi_off);
+      expect(const Failure.tooManyRequests().title, 'Muitas requisições');
+      expect(const Failure.tooManyRequests().icon, Icons.hourglass_empty);
+      expect(const Failure.notFound().icon, Icons.search_off);
+      expect(const Failure.cache().icon, Icons.sd_card_alert_outlined);
+      expect(const Failure.unexpected().title, 'Ops! Algo deu errado');
+      expect(const Failure.unexpected().icon, Icons.cloud_off_outlined);
+    });
+  });
+
+  testWidgets('StateView.failure shows the failure copy and retries', (
+    tester,
+  ) async {
+    var retried = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: StateView.failure(
+            failure: const Failure.network(),
+            onRetry: () => retried = true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Sem conexão'), findsOneWidget);
+    expect(find.text(const Failure.network().message), findsOneWidget);
+    expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    await tester.tap(find.text('Tentar novamente'));
+    expect(retried, isTrue);
+  });
+
+  testWidgets('StateView.failure without onRetry shows no button', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: StateView.failure(failure: const Failure.cache())),
+      ),
+    );
+
+    expect(find.text('Tentar novamente'), findsNothing);
   });
 
   test('AppRoutes.details builds the details path', () {

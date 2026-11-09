@@ -43,9 +43,9 @@ class FavoritesErrorListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<FavoritesCubit, FavoritesState>(
       listenWhen: (_, current) =>
-          current is FavoritesLoaded && current.errorMessage != null,
+          current is FavoritesLoaded && current.actionFailure != null,
       listener: (context, state) {
-        final message = (state as FavoritesLoaded).errorMessage!;
+        final message = (state as FavoritesLoaded).actionFailure!.message;
         ScaffoldMessenger.maybeOf(context)
           ?..hideCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text(message)));

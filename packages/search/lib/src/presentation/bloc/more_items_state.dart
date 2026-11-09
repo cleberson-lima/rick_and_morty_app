@@ -12,7 +12,7 @@ sealed class MoreItemsState<T> with _$MoreItemsState<T> {
   }) = MoreItemsSuccess<T>;
 
   const factory MoreItemsState.error({
-    required String message,
+    required Failure failure,
     required int page,
   }) = MoreItemsError<T>;
 }

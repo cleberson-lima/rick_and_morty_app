@@ -48,9 +48,9 @@ class DetailsPage extends StatelessWidget {
                 message: 'Este item não existe ou foi removido da API.',
               ),
             ),
-            DetailsError(:final message) => _Message(
+            DetailsError(:final failure) => _Message(
               topBar: topBar,
-              child: StateView.error(message: message, onRetry: onRetry),
+              child: StateView.failure(failure: failure, onRetry: onRetry),
             ),
             DetailsCharacter(:final character) => _Content<Character>(
               topBar: topBar,

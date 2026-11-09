@@ -21,8 +21,8 @@ class FavoritesPage extends StatelessWidget {
       body: BlocBuilder<FavoritesCubit, FavoritesState>(
         builder: (context, state) => switch (state) {
           FavoritesLoading() => const LoadingSkeleton(),
-          FavoritesError(:final message) => StateView.error(
-            message: message,
+          FavoritesError(:final failure) => StateView.failure(
+            failure: failure,
             onRetry: () => context.read<FavoritesCubit>().load(),
           ),
           FavoritesLoaded(:final items) when items.isEmpty => const StateView(
