@@ -1,5 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
 /// Colors from the Figma prototype ("Indentity" page and the Dark/White
 /// screens).
@@ -33,8 +34,12 @@ abstract final class AppColors {
 
 /// Palette and typography applied to the whole app.
 abstract final class AppTheme {
+  /// Inter, bundled in `packages/core/assets/fonts` (weights 400, 500, 700
+  /// and 800). Fonts declared by a package are registered as
+  /// `packages/<package>/<family>`.
+  ///
   /// TODO(figma): confirm the family name in the inspector (looks like Inter).
-  static const fontFamily = 'Inter';
+  static const fontFamily = 'packages/core/Inter';
 
   static const _radius = 12.0;
 
@@ -74,21 +79,26 @@ abstract final class AppTheme {
     onPrimaryContainer: Color(0xFFBDEFF6),
   );
 
-  static ThemeData light({bool useGoogleFonts = true}) =>
-      _build(_lightScheme, useGoogleFonts: useGoogleFonts);
+  static ThemeData light() => _build(_lightScheme);
 
-  static ThemeData dark({bool useGoogleFonts = true}) =>
-      _build(_darkScheme, useGoogleFonts: useGoogleFonts);
+  static ThemeData dark() => _build(_darkScheme);
 
-  static ThemeData _build(ColorScheme scheme, {required bool useGoogleFonts}) {
+  /// Adds the Inter license (SIL OFL 1.1) to the app's license page. Call it
+  /// once at startup.
+  static void registerFontLicenses() => LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(const [
+      'Inter',
+    ], await rootBundle.loadString('packages/core/assets/fonts/INTER_LICENSE'));
+  });
+
+  static ThemeData _build(ColorScheme scheme) {
     final base = ThemeData(
       colorScheme: scheme,
       useMaterial3: true,
+      fontFamily: fontFamily,
       scaffoldBackgroundColor: scheme.surface,
     );
-    final textTheme = useGoogleFonts
-        ? GoogleFonts.getTextTheme(fontFamily, base.textTheme)
-        : base.textTheme;
+    final textTheme = base.textTheme;
 
     return base.copyWith(
       textTheme: textTheme.apply(

@@ -55,7 +55,7 @@ void main() {
       BlocProvider<FavoritesCubit>.value(
         value: favorites,
         child: MaterialApp(
-          theme: AppTheme.dark(useGoogleFonts: false),
+          theme: AppTheme.dark(),
           home: Scaffold(
             body: ResponsiveResultsView(
               itemCount: cards.length,

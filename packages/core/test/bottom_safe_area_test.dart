@@ -11,7 +11,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.light(useGoogleFonts: false),
+        theme: AppTheme.light(),
         builder: (context, child) => BottomSafeArea(child: child!),
         home: const Scaffold(
           body: Align(

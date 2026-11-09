@@ -101,7 +101,7 @@ void main() {
           BlocProvider<RelatedItemsCubit<Location>>.value(value: moreLocations),
         ],
         child: MaterialApp(
-          theme: AppTheme.dark(useGoogleFonts: false),
+          theme: AppTheme.dark(),
           home: DetailsPage(
             onRetry: onRetry ?? () {},
             onOpenDetails: onOpen,

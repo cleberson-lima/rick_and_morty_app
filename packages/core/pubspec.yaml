@@ -16,7 +16,6 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_modular: ^6.4.1
   freezed_annotation: ^3.1.0
-  google_fonts: 8.0.0
   shared_preferences: ^2.5.6
 
 dev_dependencies:
@@ -29,8 +28,23 @@ dev_dependencies:
   mocktail: ^1.0.5
 
 flutter:
-  # Phosphor icon fonts (MIT), see lib/src/ui/phosphor_icons.dart.
+  assets:
+    - assets/fonts/INTER_LICENSE
   fonts:
+    # Inter 4.1 (SIL OFL 1.1), static weights used by the theme. Bundled so
+    # the first launch offline or on a slow network doesn't fall back to
+    # another font. See AppTheme.fontFamily.
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter-ExtraBold.ttf
+          weight: 800
+    # Phosphor icon fonts (MIT), see lib/src/ui/phosphor_icons.dart.
     - family: Phosphor
       fonts:
         - asset: assets/fonts/Phosphor.ttf

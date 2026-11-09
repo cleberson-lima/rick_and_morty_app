@@ -7,10 +7,12 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Adicionado
 
+- Fonte **Inter** empacotada no app (pesos 400, 500, 700 e 800): o texto aparece na fonte certa já no primeiro uso, mesmo offline. A licença da fonte (SIL OFL) aparece na página de licenças.
 - Exceções inesperadas na API e no armazenamento local (por exemplo, JSON fora do formato esperado) passam a ser registradas no log do `dart:developer` em vez de sumirem como um erro genérico. O destino pode ser trocado em `Result.reportError`.
 
 ### Alterado
 
+- O `google_fonts` saiu das dependências, junto com o parâmetro `useGoogleFonts` de `AppTheme.light()`/`AppTheme.dark()`.
 - Arquitetura simplificada: as features passam a ter só `data` e `presentation`. Saíram as entidades, os use cases e os contratos de repositório; as telas e os Blocs/Cubits usam as models (`Character`, `Episode`, `Location`, `FavoriteItem`) direto.
 - O acesso aos dados fica em uma classe por fonte: `SearchApi` (Rick and Morty API) e `FavoritesStorage` (`shared_preferences`). O formato salvo dos favoritos não mudou.
 - O `Either` do `dartz` foi trocado por `Result<T>` (`Success` / `Failed`) do `core`, tratado com `switch`; o `dartz` saiu das dependências.

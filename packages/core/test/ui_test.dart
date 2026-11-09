@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Widget _app(Widget child, {ThemeData? theme}) => MaterialApp(
-  theme: theme ?? AppTheme.light(useGoogleFonts: false),
+  theme: theme ?? AppTheme.light(),
   home: Scaffold(body: child),
 );
 
@@ -148,10 +148,7 @@ void main() {
     await tester.pumpWidget(
       BlocProvider.value(
         value: cubit,
-        child: _app(
-          const ThemeToggleButton(),
-          theme: AppTheme.dark(useGoogleFonts: false),
-        ),
+        child: _app(const ThemeToggleButton(), theme: AppTheme.dark()),
       ),
     );
     await tester.pumpAndSettle(); // theme changes animate
@@ -159,8 +156,8 @@ void main() {
   });
 
   test('AppTheme builds light and dark schemes from the seed', () {
-    final light = AppTheme.light(useGoogleFonts: false);
-    final dark = AppTheme.dark(useGoogleFonts: false);
+    final light = AppTheme.light();
+    final dark = AppTheme.dark();
 
     expect(light.colorScheme.brightness, Brightness.light);
     expect(dark.colorScheme.brightness, Brightness.dark);

@@ -90,7 +90,7 @@ void main() {
           BlocProvider<SearchBloc<Location>>.value(value: locations),
         ],
         child: MaterialApp(
-          theme: AppTheme.light(useGoogleFonts: false),
+          theme: AppTheme.light(),
           home: SearchPage(
             onOpenDetails: onOpen,
             onOpenFavorites: onOpenFavorites,
