@@ -222,15 +222,15 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Direção |
 | --- | --- | --- |
-| 13 | `android/app/google-services.json` versionado | É o normal no Firebase (a API key não é secreta), mas a chave precisa ter restrições no Google Cloud Console: pacote Android + SHA-1 do certificado. |
-| 14 | Firebase só no Android: o plugin `google-services` e o `firebase-analytics` estão no `build.gradle.kts`, mas não há nada no Dart nem no iOS | Se o objetivo é só distribuir o APK pelo App Distribution, o plugin e o Analytics são desnecessários e podem sair; se o Analytics for desejado, integrar com `firebase_core`/`firebase_analytics` no Dart e configurar o iOS. |
+| 13 | `android/app/google-services.json` com a API key do Firebase | **(parcial)** O arquivo saiu do repositório junto com o item 14, mas a chave continua no histórico do git. | Restringir a chave no Google Cloud Console (pacote Android + SHA-1 do certificado), ou apagá-la, já que o app não usa mais nenhum serviço do Firebase. |
+| 14 | ~~Firebase só no Android~~ **(resolvido)** | O plugin `google-services`, o `firebase-analytics` e o `google-services.json` saíram: o app não usava o Firebase. A release continua distribuindo o APK pelo App Distribution, que só precisa do `FIREBASE_APP_ID` no `release.yml`. | Se um dia o Analytics for desejado, integrar com `firebase_core`/`firebase_analytics` no Dart e configurar também o iOS. |
 
 ### Prioridades
 
 1. ~~Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).~~ Feito.
 2. ~~Parser por função em `Model`/`PageModel` (item 2).~~ Feito.
 3. ~~Logging no `_guard` (item 3).~~ Feito.
-4. ~~Empacotar a fonte Inter (item 9).~~ Feito. Falta restringir a API key do Firebase (item 13), no Google Cloud Console.
+4. ~~Empacotar a fonte Inter (item 9).~~ Feito. Falta restringir ou apagar a API key do Firebase (item 13), no Google Cloud Console.
 5. ~~Quebrar `details_page` e `search_page` em widgets menores (item 7).~~ Feito.
 
 ## Próximas versões

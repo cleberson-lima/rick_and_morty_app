@@ -12,7 +12,8 @@ permissions:
   contents: write
 
 env:
-  # Public value, the same one shipped in android/app/google-services.json.
+  # Firebase Android app ID (public; Firebase console → Project settings).
+  # App Distribution only needs this ID, not google-services.json.
   FIREBASE_APP_ID: '1:291306693478:android:8ecddfafb3312a98665ea7'
   # Tester groups (aliases from the Firebase console), comma separated.
   # Override with the repository variable FIREBASE_TESTER_GROUPS.
