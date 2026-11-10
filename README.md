@@ -13,7 +13,7 @@ O que mudou em cada versão está no [CHANGELOG](CHANGELOG.md).
 - **Detalhes** de cada item no layout do protótipo (personagem com cards de origem e última localização; episódio; local), com seção **"Mais ..."** e **paginação numerada**; acessíveis da busca, dos favoritos ou por deep link (`/details/:type/:id`)
 - **Favoritos** persistidos localmente: salvar, listar, remover; o coração fica sincronizado em todas as telas
 - Tema **claro/escuro** persistido, fonte Inter empacotada no app (funciona offline), cache de imagens em disco
-- **Sem rede**, buscas e detalhes já vistos continuam aparecendo: cada resposta da API fica em cache e é usada quando a conexão falha
+- **Sem rede**, buscas e detalhes já vistos continuam aparecendo: cada resposta da API fica em cache e é usada quando a conexão falha, com uma faixa no rodapé avisando "Sem conexão. Mostrando os dados salvos."
 - **Responsivo**: lista em celular, grade de 2 a 4 colunas em tablet/paisagem; detalhes lado a lado em telas largas
 
 ## Telas
@@ -88,10 +88,10 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 | Pacote | Linhas cobertas |
 | --- | --- |
 | app (raiz) | 100,0% |
-| core | 91,8% |
-| favorites | 97,1% |
+| core | 92,3% |
+| favorites | 98,0% |
 | search | 95,9% |
-| **Total** | **94,6%** (1336/1412) |
+| **Total** | **94,8%** (1370/1445) |
 
 O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
@@ -226,6 +226,5 @@ O que ainda está em aberto:
 | --- | --- | --- |
 | API key do Firebase no histórico do git | O `google-services.json` saiu do repositório, mas a chave continua nos commits antigos. | Restringir a chave no Google Cloud Console (pacote Android + SHA-1 do certificado) ou apagá-la, já que o app não usa nenhum serviço do Firebase além do App Distribution. |
 | Quem pode criar tags `v*` | O `release.yml` já recusa tags fora da `main`. | Criar um ruleset de tags `v*` no GitHub (Settings → Rules → Rulesets → New tag ruleset) restringindo quem pode criá-las e apagá-las. |
-| Aviso de dados offline | Sem rede, o app mostra os dados do cache sem avisar (a resposta já traz `extra['from_offline_cache']`). | Mostrar na tela quando os dados vêm do cache. |
 | Registro de erros inesperados | O `Result.reportError` grava no log do `dart:developer`. | Apontar o `Result.reportError` para um serviço de crash report, se o app passar a ter um. |
 | Outros idiomas | Os textos estão em `AppStrings`, só em português. | Se o app ganhar outro idioma, trocar as constantes por arquivos de tradução (ARB + `flutter gen-l10n`). |

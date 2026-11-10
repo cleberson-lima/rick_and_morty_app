@@ -39,6 +39,7 @@ void main() {
           .whereType<OfflineCacheInterceptor>()
           .single;
       expect(cache.directory.path, '${temp.path}/api');
+      expect(cache.status, same(core.offlineStatus));
     },
   );
 

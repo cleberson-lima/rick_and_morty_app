@@ -181,4 +181,54 @@ void main() {
       hasLength(1),
     );
   });
+
+  group('OfflineStatus', () {
+    late OfflineStatus status;
+
+    setUp(() {
+      status = OfflineStatus();
+      dio.interceptors
+        ..clear()
+        ..add(OfflineCacheInterceptor(cacheDir, status: status));
+    });
+
+    test('starts as not showing saved data', () {
+      expect(status.isShowingSavedData, isFalse);
+    });
+
+    test(
+      'turns on when the cache answers, off on the next network answer',
+      () async {
+        await dio.get<Object?>('/character/1');
+        expect(status.value, isFalse);
+
+        adapter.online = false;
+        await dio.get<Object?>('/character/1');
+        expect(status.value, isTrue);
+
+        adapter.online = true;
+        await dio.get<Object?>('/character/2');
+        expect(status.value, isFalse);
+      },
+    );
+
+    test('stays as it was when offline without a saved copy', () async {
+      adapter.online = false;
+
+      await expectLater(
+        dio.get<Object?>('/character/3'),
+        throwsA(isA<DioException>()),
+      );
+      expect(status.value, isFalse);
+    });
+
+    test('createDio passes the status to the cache', () {
+      final cache = createDio(
+        cacheDirectory: cacheDir,
+        offlineStatus: status,
+      ).interceptors.whereType<OfflineCacheInterceptor>().single;
+
+      expect(cache.status, same(status));
+    });
+  });
 }

@@ -57,10 +57,15 @@ class _AppWidgetState extends State<AppWidget> {
           themeMode: themeMode,
           routerConfig: _router,
           // Features show a FavoriteSlot; here it becomes the real button.
+          // OfflineBanner warns, on every screen, when the data came from
+          // the offline cache.
           builder: (context, child) => FavoriteButtonProvider(
             child: BottomSafeArea(
-              child: FavoritesErrorListener(
-                child: child ?? const SizedBox.shrink(),
+              child: OfflineBanner(
+                status: widget.core.offlineStatus,
+                child: FavoritesErrorListener(
+                  child: child ?? const SizedBox.shrink(),
+                ),
               ),
             ),
           ),

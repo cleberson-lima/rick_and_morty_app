@@ -7,6 +7,7 @@ O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e 
 
 ### Adicionado
 
+- Aviso **"Sem conexão. Mostrando os dados salvos."** no rodapé de todas as telas enquanto os dados vêm do cache offline; some sozinho quando a rede volta.
 - **Modo offline**: as respostas da API ficam em cache no aparelho e, sem conexão, o app mostra a última busca e os detalhes já abertos em vez do erro de rede.
 - Fonte **Inter** empacotada no app (pesos 400, 500, 700 e 800): o texto aparece na fonte certa já no primeiro uso, mesmo offline. A licença da fonte (SIL OFL) aparece na página de licenças.
 - Exceções inesperadas na API e no armazenamento local (por exemplo, JSON fora do formato esperado) passam a ser registradas no log do `dart:developer` em vez de sumirem como um erro genérico. O destino pode ser trocado em `Result.reportError`.
