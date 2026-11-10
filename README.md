@@ -104,13 +104,41 @@ Os testes cobrem as models com JSON real da API (`test/fixtures`), o `SearchApi`
 A raiz do repositório é um projeto Flutter padrão (o app). As features ficam em pacotes locais em `packages/`, ligados por **pub workspaces + Melos**. Cada feature tem só duas camadas: `data` (consumo da API ou do armazenamento local + models) e `presentation` (Bloc/Cubit, páginas e widgets).
 
 ```
-lib/                 # app: main.dart, AppWidget (router, tema e favoritos globais)
-android/  ios/       # projetos nativos
+lib/                          # o app
+  main.dart                   # carrega o CoreDependencies e chama runApp
+  app/app_widget.dart         # GoRouter, ThemeCubit e FavoritesCubit globais, FavoriteButtonProvider
+test/                         # testes do AppWidget (rotas, tema salvo, favoritos na abertura)
+android/  ios/                # projetos nativos
 packages/
-  core/              # Dio, Result, Failure, ResourceType, PaginatedList, FavoriteItem, tema, design system, AppRoutes
-  favorites/         # favoritos (shared_preferences) + FavoritesCubit global
-  search/            # busca + detalhes (Rick and Morty API)
-tool/                # scripts de desenvolvimento (relatório de cobertura)
+  core/                       # base compartilhada; as features só dependem dele
+    assets/fonts/             # Inter e ícones Phosphor (com as licenças)
+    lib/src/
+      di/                     # CoreDependencies (SharedPreferences + Dio)
+      error/                  # Failure
+      navigation/             # AppRoutes
+      network/                # createDio, retry em 429, cache offline, DioException → Failure
+      strings/                # AppStrings: todos os textos de tela
+      theme/                  # AppTheme, AppColors, ThemeCubit e seletores de tema
+      types/                  # Result, PaginatedList, ResourceType, FavoriteItem (Dart puro)
+      ui/                     # widgets genéricos: MessageView, LoadingSkeleton, FavoriteSlot...
+  favorites/
+    lib/src/
+      data/                   # FavoritesStorage (JSON no shared_preferences)
+      presentation/           # FavoritesCubit, FavoritesPage, FavoriteButton
+      favorites_routes.dart   # rota /favorites
+  search/
+    lib/src/
+      data/
+        models/               # Character, Episode, Location (fromJson)
+        search_api.dart       # SearchApi: busca e detalhes na Rick and Morty API
+      presentation/
+        bloc/                 # SearchBloc, DetailsCubit, RelatedItemsCubit e seus estados
+        pages/                # SearchPage, DetailsPage
+        widgets/              # uma pasta por tela: cards/, home/, search/, details/
+      search_routes.dart      # rotas / e /details/:type/:id
+    test/fixtures/            # JSON real da API usado nos testes
+tool/coverage_report.dart     # junta a cobertura do app e dos pacotes
+.github/                      # CI, release e Dependabot
 ```
 
 ### Desenho da arquitetura
@@ -190,53 +218,14 @@ Um único `SearchBloc<T>` genérico atende as três abas: cada aba recebe o mét
 - Uma branch só, a `main`: cada tarefa sai em uma `feature/*` ou `fix/*` criada a partir dela e volta por PR, com o CI (`ci.yml`) passando
 - Release: tag `v*` em um commit da `main` (`release.yml`)
 
-## Limitações conhecidas e próximos passos
+## Próximos passos
 
-Pontos levantados em revisão de código. Nenhum deles é um problema estrutural: são refinamentos planejados.
+O que ainda está em aberto:
 
-### Arquitetura e código
-
-| # | Ponto | Situação atual | Direção |
-| --- | --- | --- | --- |
-| 1 | ~~Mensagens de UI no `Failure`~~ **(resolvido)** | Os estados guardam o `Failure` e a extensão `FailurePresentation` (`core/lib/src/ui`) gera título, mensagem e ícone de cada caso; `MessageView.failure` monta a tela de erro. O `Failure` do domínio não tem mais texto. | — (os textos já estão no ARB, item 8) |
-| 2 | ~~`Model.fromJson<T>` com `switch (T)`~~ **(resolvido)** | O `SearchApi` recebe o `fromJson` de cada model como função, verificado em tempo de compilação. O `Model<E>` não existe mais. | — |
-| 3 | ~~`_guard` sem log~~ **(resolvido)** | O `Result.guard` (usado pelo `SearchApi` e pelo `FavoritesStorage`) envia ao `Result.reportError` toda exceção que vira `Failure.unexpected()` ou `Failure.cache()`; por padrão ela vai para o log do `dart:developer`. Falhas esperadas (rede, status HTTP, cancelamento) não são registradas. | Apontar o `Result.reportError` para um serviço de crash report (ex.: Crashlytics) quando o Firebase entrar no Dart (item 14). |
-| 4 | ~~`search` depende de `favorites`~~ **(resolvido)** | O `FavoriteItem` está no `core`, e o `search` coloca um `FavoriteSlot` onde vai o coração. O app envolve tudo num `FavoriteButtonProvider` (do `favorites`), que transforma cada slot no `FavoriteButton`. O `search` não importa mais o `favorites`. | — |
-| 5 | ~~Dois mecanismos de DI/ciclo de vida~~ **(resolvido)** | O `flutter_modular` saiu: rotas com `go_router` e dependências criadas direto nos `BlocProvider.create`, que também as fecham. Os dois cubits globais (`ThemeCubit` e `FavoritesCubit`) são criados do mesmo jeito no `AppWidget`. | — |
-| 6 | ~~Repositório "isolado" criado à mão~~ **(resolvido)** | Cada cubit de "Mais ..." recebe um `SearchApi` próprio (`SearchApi(i.get<Dio>())`), sem o `_isolated(i)`. | — |
-| 7 | ~~Arquivos grandes~~ **(resolvido)** | `details_page.dart` (463 → 108 linhas), `search_page.dart` (395 → 142) e `result_cards.dart` (269, removido) viraram widgets em arquivos próprios, agrupados por tela em `presentation/widgets/{cards,details,home,search}`. | — |
-
-### Produto
-
-| # | Ponto | Direção |
+| Ponto | Situação | Próximo passo |
 | --- | --- | --- |
-| 8 | ~~Textos fixos espalhados pelo código~~ **(resolvido)** | Todos os textos de tela estão em `AppStrings` (`packages/core/lib/src/strings/app_strings.dart`) e as telas os leem dali. | Se um dia o app tiver outro idioma, trocar as constantes por arquivos de tradução (ARB + `flutter gen-l10n`). |
-| 9 | ~~Fonte Inter baixada pelo Google Fonts em runtime~~ **(resolvido)** | A Inter 4.1 está empacotada no `core` (pesos 400, 500, 700 e 800) e o `google_fonts` saiu das dependências. |
-| 10 | ~~Sem cache dos dados da API~~ **(resolvido)** | O `OfflineCacheInterceptor` (`core`) guarda cada resposta `GET` bem-sucedida na pasta de cache do app (um arquivo por URL, até 100) e, quando a rede falha (sem conexão ou timeout), responde com a última cópia daquela URL. Sem rede, o app mostra a última busca e os detalhes já abertos. | Avisar na tela quando os dados vêm do cache (a resposta já traz `extra['from_offline_cache']`). |
-
-### CI e release
-
-| # | Ponto | Direção |
-| --- | --- | --- |
-| 11 | ~~Actions fixadas por tag~~ **(resolvido)** | As Actions estão fixadas pelo SHA do commit (com a versão em comentário) e o `firebase-tools` em `14.27.0`. O Dependabot (`.github/dependabot.yml`) abre um único PR por semana com todas as actions que tiverem versão nova. |
-| 12 | ~~Release a partir de qualquer tag `v*`~~ **(resolvido no workflow)** | O `release.yml` falha antes do build se o commit da tag não estiver na `main`. | Falta, no GitHub, um ruleset de tags `v*` (Settings → Rules → Rulesets → New tag ruleset) restringindo quem pode criá-las e apagá-las. |
-
-### Firebase
-
-| # | Ponto | Direção |
-| --- | --- | --- |
-| 13 | `android/app/google-services.json` com a API key do Firebase | **(parcial)** O arquivo saiu do repositório junto com o item 14, mas a chave continua no histórico do git. | Restringir a chave no Google Cloud Console (pacote Android + SHA-1 do certificado), ou apagá-la, já que o app não usa mais nenhum serviço do Firebase. |
-| 14 | ~~Firebase só no Android~~ **(resolvido)** | O plugin `google-services`, o `firebase-analytics` e o `google-services.json` saíram: o app não usava o Firebase. A release continua distribuindo o APK pelo App Distribution, que só precisa do `FIREBASE_APP_ID` no `release.yml`. | Se um dia o Analytics for desejado, integrar com `firebase_core`/`firebase_analytics` no Dart e configurar também o iOS. |
-
-### Prioridades
-
-1. ~~Guardar o `Failure` nos estados e mover as mensagens para a UI (item 1).~~ Feito.
-2. ~~Parser por função em `Model`/`PageModel` (item 2).~~ Feito.
-3. ~~Logging no `_guard` (item 3).~~ Feito.
-4. ~~Empacotar a fonte Inter (item 9).~~ Feito. Falta restringir ou apagar a API key do Firebase (item 13), no Google Cloud Console.
-5. ~~Quebrar `details_page` e `search_page` em widgets menores (item 7).~~ Feito.
-
-## Próximas versões
-
-> [!NOTE]
-> Em uma versão futura o código passará por ajustes voltados a **melhorar a leitura** e **enxugar algumas classes**, sem mudar o comportamento do app.
+| API key do Firebase no histórico do git | O `google-services.json` saiu do repositório, mas a chave continua nos commits antigos. | Restringir a chave no Google Cloud Console (pacote Android + SHA-1 do certificado) ou apagá-la, já que o app não usa nenhum serviço do Firebase além do App Distribution. |
+| Quem pode criar tags `v*` | O `release.yml` já recusa tags fora da `main`. | Criar um ruleset de tags `v*` no GitHub (Settings → Rules → Rulesets → New tag ruleset) restringindo quem pode criá-las e apagá-las. |
+| Aviso de dados offline | Sem rede, o app mostra os dados do cache sem avisar (a resposta já traz `extra['from_offline_cache']`). | Mostrar na tela quando os dados vêm do cache. |
+| Registro de erros inesperados | O `Result.reportError` grava no log do `dart:developer`. | Apontar o `Result.reportError` para um serviço de crash report, se o app passar a ter um. |
+| Outros idiomas | Os textos estão em `AppStrings`, só em português. | Se o app ganhar outro idioma, trocar as constantes por arquivos de tradução (ARB + `flutter gen-l10n`). |
