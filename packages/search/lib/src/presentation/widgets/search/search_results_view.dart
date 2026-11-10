@@ -22,8 +22,7 @@ class SearchResultsView<T> extends StatelessWidget {
     return BlocBuilder<SearchBloc<T>, SearchState<T>>(
       builder: (context, state) {
         final bloc = context.read<SearchBloc<T>>();
-        final l10n = context.l10n;
-        final typeName = l10n.resourceLabel(type).toLowerCase();
+        final typeName = AppStrings.resourceLabel(type).toLowerCase();
         return switch (state) {
           SearchInitial() || SearchLoading() => const LoadingSkeleton(),
           SearchError(:final query, :final failure) => MessageView.failure(
@@ -32,15 +31,15 @@ class SearchResultsView<T> extends StatelessWidget {
           ),
           SearchNotFound(:final query) => MessageView(
             icon: Icons.search_off,
-            title: l10n.noResultsTitle,
+            title: AppStrings.noResultsTitle,
             message: query.isEmpty
-                ? l10n.noResultsOfType(typeName)
-                : l10n.noResultsForQuery(typeName, query),
+                ? AppStrings.noResultsOfType(typeName)
+                : AppStrings.noResultsForQuery(typeName, query),
           ),
-          SearchEmpty() => MessageView(
+          SearchEmpty() => const MessageView(
             icon: Icons.inbox_outlined,
-            title: l10n.emptyTitle,
-            message: l10n.emptyMessage,
+            title: AppStrings.emptyTitle,
+            message: AppStrings.emptyMessage,
           ),
           SearchSuccess(:final items) => ResponsiveResultsView(
             tileHeight: switch (type) {
@@ -83,18 +82,18 @@ class _PaginationFooter extends StatelessWidget {
     } else if (state.loadMoreFailure case final failure?) {
       child = Column(
         children: [
-          Text(failure.message(context.l10n), textAlign: TextAlign.center),
+          Text(failure.message, textAlign: TextAlign.center),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: Text(context.l10n.retry),
+            label: const Text(AppStrings.retry),
           ),
         ],
       );
     } else if (state.nextPage == null) {
       child = Text(
-        context.l10n.resultCount(state.totalCount),
+        AppStrings.resultCount(state.totalCount),
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         ),

@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../l10n/l10n.dart';
+import '../strings/app_strings.dart';
 import 'phosphor_icons.dart';
 
 /// Numbered pagination from the prototype: `‹ 1 2 3 4 5 ›`, current page in
@@ -37,7 +37,7 @@ class PageSelector extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
-          tooltip: context.l10n.previousPage,
+          tooltip: AppStrings.previousPage,
           icon: const Icon(PhosphorIconsRegular.caretLeft, size: 18),
           onPressed: currentPage > 1
               ? () => onPageSelected(currentPage - 1)
@@ -50,7 +50,7 @@ class PageSelector extends StatelessWidget {
             onTap: () => onPageSelected(page),
           ),
         IconButton(
-          tooltip: context.l10n.nextPage,
+          tooltip: AppStrings.nextPage,
           icon: const Icon(PhosphorIconsRegular.caretRight, size: 18),
           onPressed: currentPage < totalPages
               ? () => onPageSelected(currentPage + 1)
@@ -78,7 +78,7 @@ class _PageDot extends StatelessWidget {
     return Semantics(
       selected: selected,
       button: true,
-      label: context.l10n.pageNumber(page),
+      label: AppStrings.pageNumber(page),
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),

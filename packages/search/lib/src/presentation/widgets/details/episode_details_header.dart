@@ -37,7 +37,7 @@ class EpisodeDetailsHeader extends StatelessWidget {
         const SizedBox(height: 12),
         DetailsAttribute(
           icon: PhosphorIconsRegular.users,
-          text: context.l10n.charactersInEpisode(episode.characterCount),
+          text: AppStrings.charactersInEpisode(episode.characterCount),
         ),
       ],
     );

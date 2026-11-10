@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/l10n.dart';
+import '../strings/app_strings.dart';
 import 'responsive_results_view.dart';
 import 'result_card.dart';
 
@@ -32,7 +32,7 @@ class _LoadingSkeletonState extends State<LoadingSkeleton>
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.surfaceContainerHighest;
     return Semantics(
-      label: context.l10n.loading,
+      label: AppStrings.loading,
       child: FadeTransition(
         opacity: _controller,
         child: IgnorePointer(

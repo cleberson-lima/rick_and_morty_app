@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../l10n/l10n.dart';
+import '../strings/app_strings.dart';
 
 /// "Rick and Morty" wordmark. TODO(figma): replace with the exported LogoA.
 class AppLogo extends StatelessWidget {
@@ -12,7 +12,7 @@ class AppLogo extends StatelessWidget {
       fit: BoxFit.scaleDown,
       alignment: Alignment.centerLeft,
       child: Text(
-        context.l10n.appTitle,
+        AppStrings.appTitle,
         maxLines: 1,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
           color: Theme.of(context).colorScheme.primary,

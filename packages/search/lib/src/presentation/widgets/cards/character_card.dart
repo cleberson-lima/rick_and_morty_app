@@ -44,20 +44,17 @@ class CharacterCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  FavoriteSlot(
-                    item: character.toFavorite(context.l10n),
-                    compact: true,
-                  ),
+                  FavoriteSlot(item: character.toFavorite(), compact: true),
                 ],
               ),
               _IconLine(
                 icon: PhosphorIconsRegular.heartbeat,
                 iconColor: statusColor(character.status),
-                text: context.l10n.statusLabel(character.status),
+                text: statusLabel(character.status),
               ),
               _IconLine(
                 icon: PhosphorIconsRegular.alien,
-                text: context.l10n.speciesLabel(character.species),
+                text: speciesLabel(character.species),
               ),
               _IconLine(
                 icon: PhosphorIconsRegular.planet,

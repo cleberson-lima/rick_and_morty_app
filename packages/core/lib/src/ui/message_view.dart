@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../error/failure.dart';
-import '../l10n/l10n.dart';
+import '../strings/app_strings.dart';
 import 'failure_presentation.dart';
 
 /// Centered illustration + message used for empty, not-found and error states.
@@ -54,13 +54,12 @@ class MessageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = context.l10n;
     final failure = this.failure;
     final icon = this.icon ?? failure!.icon;
     final title =
-        this.title ?? failure?.title(l10n) ?? l10n.failureTitleGeneric;
-    final message = this.message ?? failure?.message(l10n);
-    final actionLabel = this.actionLabel ?? l10n.retry;
+        this.title ?? failure?.title ?? AppStrings.failureTitleGeneric;
+    final message = this.message ?? failure?.message;
+    final actionLabel = this.actionLabel ?? AppStrings.retry;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),

@@ -89,11 +89,11 @@ melos run coverage   # testes com cobertura; falha abaixo de 80%
 | --- | --- |
 | app (raiz) | 100,0% |
 | core | 91,8% |
-| favorites | 97,2% |
-| search | 96,1% |
-| **Total** | **94,8%** (1378/1454) |
+| favorites | 97,1% |
+| search | 95,9% |
+| **Total** | **94,6%** (1336/1412) |
 
-O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart` e a saída do `flutter gen-l10n`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
+O `melos run coverage` roda os testes de cada pacote e junta tudo em `coverage/lcov.info` na raiz, sem os arquivos gerados (`*.g.dart`, `*.freezed.dart`). O script [`tool/coverage_report.dart`](tool/coverage_report.dart) também avisa quando um arquivo com código não é carregado por nenhum teste, já que esses arquivos não aparecem no `lcov.info` e inflariam o percentual. No CI o relatório fica disponível como artefato (`coverage-lcov`) e o build falha abaixo de 80%.
 
 Para ver por arquivo: `dart run tool/coverage_report.dart --files`.
 
@@ -176,7 +176,7 @@ Um único `SearchBloc<T>` genérico atende as três abas: cada aba recebe o mét
 | `flutter_bloc` + estados `sealed` | Cubits para carregar dados; Bloc só na busca, onde os transformers de evento dão debounce, `restartable` e `droppable` sem `Timer` à mão. |
 | Sem camada `domain` | O app só exibe dados da API: entidades, use cases e contratos de repositório duplicavam as models e repassavam chamadas sem nenhuma regra. |
 | Cache da API em arquivos, rede primeiro | Sempre tenta a rede; o cache só responde quando ela falha, então os dados nunca ficam velhos com conexão. Um arquivo por URL na pasta de cache do app (e não no `shared_preferences`, que regravaria tudo a cada resposta); o sistema pode limpar essa pasta quando falta espaço. |
-| Textos num ARB só, no `core` | Todas as features já dependem do `core`, então um único `app_pt.arb` + `AppLocalizations` atende o app inteiro. Os tipos (`Failure`, `ResourceType`, `CharacterStatus`) não têm texto: a UI os traduz (`failure.message(l10n)`, `l10n.resourceLabel(type)`, `l10n.statusLabel(status)`). |
+| Textos numa classe de constantes, no `core` | Todas as features já dependem do `core`, então uma única `AppStrings` (`static const` por texto; funções para os que têm valor, como `AppStrings.resultCount(n)`) atende o app inteiro, sem arquivo de tradução nem código gerado. Os tipos (`Failure`, `ResourceType`, `CharacterStatus`) não têm texto: a UI os traduz (`failure.message`, `AppStrings.resourceLabel(type)`, `statusLabel(status)`). Os textos do Material saem em pt pelo `flutter_localizations` no `AppWidget`. |
 | `Result<T>` próprio (não `dartz`) | `Success`/`Failed` dizem o que cada caso é, ao contrário de `Left`/`Right`, e o `switch` do Dart trata os dois sem `fold`. |
 | Favoritos com `shared_preferences` (JSON) | Simples e suficiente para o volume; o `FavoriteItem` guarda um snapshot mínimo (tipo, id, nome, subtítulo, imagem) para listar sem rede. |
 | Detalhes carregam por `(tipo, id)` | A mesma rota serve para busca, favoritos e deep link. |
@@ -210,7 +210,7 @@ Pontos levantados em revisão de código. Nenhum deles é um problema estrutural
 
 | # | Ponto | Direção |
 | --- | --- | --- |
-| 8 | ~~Textos fixos em pt-BR, sem `flutter_localizations`/ARB~~ **(resolvido)** | Todos os textos de tela estão em `packages/core/lib/l10n/app_pt.arb`; o `flutter gen-l10n` gera o `AppLocalizations`, lido com `context.l10n`. O app roda em pt-BR (inclusive os textos do Material) e um idioma novo é só um ARB novo. | — |
+| 8 | ~~Textos fixos espalhados pelo código~~ **(resolvido)** | Todos os textos de tela estão em `AppStrings` (`packages/core/lib/src/strings/app_strings.dart`) e as telas os leem dali. | Se um dia o app tiver outro idioma, trocar as constantes por arquivos de tradução (ARB + `flutter gen-l10n`). |
 | 9 | ~~Fonte Inter baixada pelo Google Fonts em runtime~~ **(resolvido)** | A Inter 4.1 está empacotada no `core` (pesos 400, 500, 700 e 800) e o `google_fonts` saiu das dependências. |
 | 10 | ~~Sem cache dos dados da API~~ **(resolvido)** | O `OfflineCacheInterceptor` (`core`) guarda cada resposta `GET` bem-sucedida na pasta de cache do app (um arquivo por URL, até 100) e, quando a rede falha (sem conexão ou timeout), responde com a última cópia daquela URL. Sem rede, o app mostra a última busca e os detalhes já abertos. | Avisar na tela quando os dados vêm do cache (a resposta já traz `extra['from_offline_cache']`). |
 

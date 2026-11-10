@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/l10n.dart';
+import '../strings/app_strings.dart';
 import 'phosphor_icons.dart';
 
 /// Pill-shaped button with a small icon, used across the prototype:
@@ -88,7 +88,7 @@ class DetailsChipButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PillButton(
-      label: label ?? context.l10n.learnMore,
+      label: label ?? AppStrings.learnMore,
       icon: PhosphorIconsRegular.info,
       onPressed: onPressed,
       filled: highlighted,
