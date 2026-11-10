@@ -2,13 +2,12 @@
 library;
 
 export 'src/di/core_dependencies.dart';
-export 'src/l10n/generated/app_localizations.dart';
-export 'src/l10n/l10n.dart';
 export 'src/navigation/app_routes.dart';
 export 'src/network/dio_factory.dart';
 export 'src/network/failure_mapper.dart';
 export 'src/network/offline_cache_interceptor.dart';
 export 'src/network/rate_limit_retry_interceptor.dart';
+export 'src/strings/app_strings.dart';
 export 'src/theme/app_theme.dart';
 export 'src/theme/theme_cubit.dart';
 export 'src/theme/theme_mode_selector.dart';

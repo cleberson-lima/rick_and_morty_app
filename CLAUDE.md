@@ -9,7 +9,7 @@ Versões fixadas de propósito (não atualizar sem testar):
 - `go_router: ^17.0.0` — a 18.x exige Flutter 3.44 / Dart 3.12, acima do mínimo do projeto.
 
 ## Testes
-- Widget tests não precisam registrar o `AppLocalizations`: sem ele, `context.l10n` usa pt-BR. Para textos fora de widget, `lookupAppLocalizations(const Locale('pt'))`.
+- Nos testes, compare com o texto literal ou com `AppStrings.chave`.
 - Widget tests usam `AppTheme.light()`; a Inter não é carregada nos testes (usa a fonte de teste), a não ser via `FontLoader`.
 - O `LoadingSkeleton` anima para sempre: não use `pumpAndSettle` com ele na tela; faça `pump` em passos.
 - Fixtures reais da API em `packages/search/test/fixtures/`; `FakeAdapter` (test/helpers.dart) exercita o Dio de verdade.
@@ -26,8 +26,8 @@ Versões fixadas de propósito (não atualizar sem testar):
 - `data/search_api.dart` (`SearchApi`) e `data/favorites_storage.dart` (`FavoritesStorage`) fazem o acesso; a model nova entra passando o `X.fromJson` para `_search`/`_getById`
 - API e storage retornam `Result<T>` (`Success(data)` / `Failed(failure)`, do `core`) e nunca lançam exceção; trate com `switch`, não com `try/catch`. Use `Result.guard`, que manda exceções inesperadas para `Result.reportError` (log por padrão)
 - 404 da API vira `NotFoundFailure` → estado `notFound` (não é erro genérico)
-- `Failure` não tem texto: os estados guardam o `Failure` e a UI usa `FailurePresentation` (`title(l10n)`, `message(l10n)`, `icon`) / `MessageView.failure` do `core`
-- Nenhum texto de tela no código: tudo vai em `packages/core/lib/l10n/app_pt.arb` e é lido com `context.l10n.chave`. Tipos e models não têm texto (`ResourceType`, `CharacterStatus`): use `l10n.resourceLabel(type)`, `l10n.statusLabel(status)`, `l10n.speciesLabel(species)`. Depois de editar o ARB, rode `flutter gen-l10n` em `packages/core` (também roda no `pub get`); a saída em `lib/src/l10n/generated` é versionada
+- `Failure` não tem texto: os estados guardam o `Failure` e a UI usa `FailurePresentation` (`title`, `message`, `icon`) / `MessageView.failure` do `core`
+- Nenhum texto de tela escrito direto no widget: todos ficam em `AppStrings` (`packages/core/lib/src/strings/app_strings.dart`), como `static const` (ou função, quando o texto tem um valor dentro), e as telas usam `AppStrings.chave`. Tipos e models não têm texto (`ResourceType`, `CharacterStatus`): use `AppStrings.resourceLabel(type)`, `statusLabel(status)`, `speciesLabel(species)`
 - Estados de tela são sealed classes do freezed: loading, success, empty, notFound, error
 - Sem container de DI: o `main()` cria o `CoreDependencies` (`preferences`, `dio`) e o passa às rotas de cada feature (`searchRoutes(core)`, `favoritesRoute()`). Cada tela cria seus Blocs/Cubits em `BlocProvider(create: ...)`, que os fecha; nunca `BlocProvider.value` com instância criada fora. Navegação com `context.push(AppRoutes...)`
 - Cubit para carregar dados; Bloc só no `SearchBloc` (debounce/`restartable`/`droppable` pelos transformers de evento)

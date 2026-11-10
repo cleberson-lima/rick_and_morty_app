@@ -47,11 +47,11 @@ class HomeSection<T> extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               PillButton(
-                label: context.l10n.seeAll,
+                label: AppStrings.seeAll,
                 icon: PhosphorIconsRegular.queue,
                 dense: true,
                 onPressed: onSeeAll,
-                tooltip: context.l10n.seeAllOf(title),
+                tooltip: AppStrings.seeAllOf(title),
               ),
             ],
           ),
@@ -62,14 +62,15 @@ class HomeSection<T> extends StatelessWidget {
               SearchSuccess(:final items, :final query) when query.isEmpty =>
                 _grid(items.take(maxItems).toList()),
               SearchError(:final failure) => _SectionMessage(
-                text: failure.message(context.l10n),
-                actionLabel: context.l10n.retry,
+                text: failure.message,
+                actionLabel: AppStrings.retry,
                 onAction: () => context.read<SearchBloc<T>>().add(
                   const SearchSubmitted(''),
                 ),
               ),
-              SearchEmpty() ||
-              SearchNotFound() => const _SectionMessage(text: 'Nada por aqui.'),
+              SearchEmpty() || SearchNotFound() => const _SectionMessage(
+                text: AppStrings.nothingHereShort,
+              ),
               _ => const SizedBox(
                 height: 120,
                 child: Center(child: CircularProgressIndicator()),

@@ -39,7 +39,7 @@ class LocationDetailsHeader extends StatelessWidget {
         const SizedBox(height: 12),
         DetailsAttribute(
           icon: PhosphorIconsRegular.users,
-          text: context.l10n.residentCount(location.residentCount),
+          text: AppStrings.residentCount(location.residentCount),
         ),
       ],
     );

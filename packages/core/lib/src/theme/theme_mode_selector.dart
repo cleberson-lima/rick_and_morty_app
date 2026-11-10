@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../l10n/l10n.dart';
+import '../strings/app_strings.dart';
 import 'theme_cubit.dart';
 
 /// "Escuro / Claro" pill pair from the prototype's hero. The highlighted chip
@@ -18,13 +18,13 @@ class ThemeModeSelector extends StatelessWidget {
       spacing: 8,
       children: [
         _ModeChip(
-          label: context.l10n.themeDark,
+          label: AppStrings.themeDark,
           icon: Icons.dark_mode_outlined,
           selected: isDark,
           onSelected: () => cubit.setMode(ThemeMode.dark),
         ),
         _ModeChip(
-          label: context.l10n.themeLight,
+          label: AppStrings.themeLight,
           icon: Icons.light_mode_outlined,
           selected: !isDark,
           onSelected: () => cubit.setMode(ThemeMode.light),
@@ -56,7 +56,7 @@ class _ModeChip extends StatelessWidget {
       onSelected: (_) => onSelected(),
       avatar: Icon(icon, size: 16, color: foreground),
       label: Text(label, style: TextStyle(color: foreground)),
-      tooltip: context.l10n.themeTooltip(label.toLowerCase()),
+      tooltip: AppStrings.themeTooltip(label.toLowerCase()),
     );
   }
 }

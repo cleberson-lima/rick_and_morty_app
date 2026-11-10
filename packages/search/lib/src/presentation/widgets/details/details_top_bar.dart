@@ -14,14 +14,14 @@ class DetailsTopBar extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            tooltip: context.l10n.back,
+            tooltip: AppStrings.back,
             icon: const Icon(PhosphorIconsRegular.caretLeft),
             onPressed: () => Navigator.of(context).maybePop(),
           ),
           const Expanded(child: AppLogo()),
           const SizedBox(width: 12),
           PillButton(
-            label: context.l10n.favoritesList,
+            label: AppStrings.favoritesList,
             icon: PhosphorIconsRegular.heart,
             onPressed: onOpenFavorites,
           ),

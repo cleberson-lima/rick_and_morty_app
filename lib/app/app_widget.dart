@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:favorites/favorites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:search/search.dart';
 
@@ -44,14 +45,13 @@ class _AppWidgetState extends State<AppWidget> {
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) => MaterialApp.router(
-          onGenerateTitle: (context) => context.l10n.appTitle,
+          title: AppStrings.appTitle,
           debugShowCheckedModeBanner: false,
-          // Only Portuguese for now: adding a language is adding an ARB in
-          // packages/core/lib/l10n. Material's own strings follow the same
-          // locale through the delegates.
+          // The app's texts are in AppStrings (pt-BR); these delegates put
+          // Material's own strings (back tooltip, etc.) in Portuguese too.
           locale: const Locale('pt'),
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: const [Locale('pt')],
+          localizationsDelegates: GlobalMaterialLocalizations.delegates,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: themeMode,

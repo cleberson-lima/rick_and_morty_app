@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
 
 import '../error/failure.dart';
-import '../l10n/generated/app_localizations.dart';
+import '../strings/app_strings.dart';
 
 /// User-facing copy and icon for each [Failure].
 ///
 /// `Failure` (in `types.dart`) carries no text; screens keep the `Failure` in
-/// their state and translate it here with the app's [AppLocalizations]
-/// (`context.l10n`), so every case gets its own title and icon.
+/// their state and turn it into [AppStrings] here, so every case gets its own
+/// title and icon.
 extension FailurePresentation on Failure {
   /// Short heading for full-screen error states.
-  String title(AppLocalizations l10n) => switch (this) {
-    NetworkFailure() => l10n.failureTitleNetwork,
-    TooManyRequestsFailure() => l10n.failureTitleTooManyRequests,
-    NotFoundFailure() => l10n.failureTitleNotFound,
-    _ => l10n.failureTitleGeneric,
+  String get title => switch (this) {
+    NetworkFailure() => AppStrings.failureTitleNetwork,
+    TooManyRequestsFailure() => AppStrings.failureTitleTooManyRequests,
+    NotFoundFailure() => AppStrings.failureTitleNotFound,
+    _ => AppStrings.failureTitleGeneric,
   };
 
   /// One-sentence explanation, also used in snackbars and inline errors.
-  String message(AppLocalizations l10n) => switch (this) {
-    NotFoundFailure() => l10n.failureNotFound,
-    NetworkFailure() => l10n.failureNetwork,
-    TooManyRequestsFailure() => l10n.failureTooManyRequests,
-    ServerFailure(:final statusCode?) => l10n.failureServerWithStatus(
+  String get message => switch (this) {
+    NotFoundFailure() => AppStrings.failureNotFound,
+    NetworkFailure() => AppStrings.failureNetwork,
+    TooManyRequestsFailure() => AppStrings.failureTooManyRequests,
+    ServerFailure(:final statusCode?) => AppStrings.failureServerWithStatus(
       statusCode,
     ),
-    ServerFailure() => l10n.failureServer,
-    CancelledFailure() => l10n.failureCancelled,
-    CacheFailure() => l10n.failureCache,
-    UnexpectedFailure() => l10n.failureUnexpected,
+    ServerFailure() => AppStrings.failureServer,
+    CancelledFailure() => AppStrings.failureCancelled,
+    CacheFailure() => AppStrings.failureCache,
+    UnexpectedFailure() => AppStrings.failureUnexpected,
   };
 
   IconData get icon => switch (this) {

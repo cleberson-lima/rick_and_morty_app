@@ -1,5 +1,5 @@
 /// The three kinds of resource the Rick and Morty API exposes. Their names
-/// on screen come from `AppLocalizations.resourceLabel`.
+/// on screen come from `AppStrings.resourceLabel`.
 enum ResourceType {
   character,
   episode,
