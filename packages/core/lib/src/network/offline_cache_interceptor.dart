@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
+import 'offline_status.dart';
+
 /// Network first, cache as fallback: every successful `GET` response is saved
 /// to [directory] (one file per URL), and when a later request for the same
 /// URL fails because there is no connection or it timed out, it is answered
@@ -14,14 +16,17 @@ import 'package:dio/dio.dart';
 /// carry `extra[fromCacheKey] == true`.
 ///
 /// Keeps at most [maxEntries] files; the least recently written go first.
+/// When given a [status], it tells whether the last response came from the
+/// cache, so the app can warn that the data shown may be old.
 class OfflineCacheInterceptor extends Interceptor {
-  OfflineCacheInterceptor(this.directory, {this.maxEntries = 100});
+  OfflineCacheInterceptor(this.directory, {this.maxEntries = 100, this.status});
 
   /// Set to `true` in [Response.extra] when the response came from the cache.
   static const fromCacheKey = 'from_offline_cache';
 
   final Directory directory;
   final int maxEntries;
+  final OfflineStatus? status;
 
   @override
   Future<void> onResponse(
@@ -30,6 +35,7 @@ class OfflineCacheInterceptor extends Interceptor {
   ) async {
     final options = response.requestOptions;
     if (options.method == 'GET' && response.statusCode == 200) {
+      status?.value = false;
       await _guard(() => _save(options.uri, response.data));
     }
     handler.next(response);
@@ -45,6 +51,7 @@ class OfflineCacheInterceptor extends Interceptor {
 
     final cached = await _guard(() => _read(options.uri));
     if (cached == null) return handler.next(err);
+    status?.value = true;
     handler.resolve(
       Response<dynamic>(
         requestOptions: options,

@@ -40,6 +40,7 @@ Dio _offlineApi(List<String> requested) =>
 
 void main() {
   late List<String> requested;
+  late CoreDependencies core;
 
   Future<void> pumpApp(
     WidgetTester tester, {
@@ -48,7 +49,7 @@ void main() {
   }) async {
     SharedPreferences.setMockInitialValues(stored);
     requested = [];
-    final core = CoreDependencies(
+    core = CoreDependencies(
       preferences: await SharedPreferences.getInstance(),
       dio: _offlineApi(requested),
     );
@@ -79,6 +80,20 @@ void main() {
     expect(app.locale, const Locale('pt'));
     final context = tester.element(find.text('Lista de favoritos'));
     expect(MaterialLocalizations.of(context).backButtonTooltip, 'Voltar');
+  });
+
+  testWidgets('warns on every screen while showing saved data', (tester) async {
+    await pumpApp(tester);
+    expect(find.text(AppStrings.offlineBanner), findsNothing);
+
+    core.offlineStatus.value = true;
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text(AppStrings.offlineBanner), findsOneWidget);
+
+    await tester.tap(find.text('Lista de favoritos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Favoritos'), findsOneWidget);
+    expect(find.text(AppStrings.offlineBanner), findsOneWidget);
   });
 
   testWidgets('restores the saved theme', (tester) async {

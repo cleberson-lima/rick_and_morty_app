@@ -32,6 +32,9 @@ abstract final class AppStrings {
 
   static const clear = 'Limpar';
 
+  /// Bottom banner while the screens show data saved by the offline cache.
+  static const offlineBanner = 'Sem conexão. Mostrando os dados salvos.';
+
   static const previousPage = 'Página anterior';
 
   static const nextPage = 'Próxima página';
